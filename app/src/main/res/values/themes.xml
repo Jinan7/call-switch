@@ -3,6 +3,38 @@
     <style name="Base.Theme.CallSwitch" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
+        <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
+    </style>
+
+    <!--    Toolbar styles -->
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Toolbar" parent="">
+        <item name="colorSurface">@color/blue</item>
+        <item name="colorOnSurface">@color/blue</item>
+        <item name="colorSurfaceContainer">@color/blue</item>
+        <item name="titleTextColor">@color/white</item>
+    </style>
+
+    <!--    Bottom nav bar style    -->
+    <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>
+    </style>
+
+    <style name="ThemeOverlay.App.BottomNavigationView" parent="">
+        <!--        icon and text color for unselected item -->
+        <item name="colorOnSurfaceVariant">@color/white</item>
+        <!--        background color -->
+        <item name="colorSurfaceContainer">@color/blue</item>
+        <!--        text color for selected item -->
+        <item name="colorSecondary">@color/blue</item>
+        <!--        background color for selected item -->
+        <item name="colorSecondaryContainer">@color/white</item>
+        <!--        icon color for selected item -->
+        <item name="colorOnSecondaryContainer">@color/blue</item>
     </style>
 
     <style name="Theme.CallSwitch" parent="Base.Theme.CallSwitch" />
