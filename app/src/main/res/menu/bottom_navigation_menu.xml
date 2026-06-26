@@ -3,9 +3,11 @@
 
     <item android:id="@+id/menu_replies"
         android:enabled="true"
-        android:title="Replies" />
+        android:title="Replies"
+        android:icon="@drawable/ic_action_message"/>
 
     <item android:id="@+id/menu_contacts"
         android:enabled="true"
-        android:title="Contacts" />
+        android:title="Contacts"
+        android:icon="@drawable/ic_action_contact"/>
 </menu>

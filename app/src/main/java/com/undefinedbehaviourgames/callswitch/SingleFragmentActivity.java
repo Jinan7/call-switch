@@ -7,6 +7,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -23,6 +24,14 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, 0, systemBars.right, 0);
             return insets;
         });
+
+        //make status bar icons and text light color
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
+                .setAppearanceLightStatusBars(false);
+
+        //make status bar icons and text light color
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
+                .setAppearanceLightNavigationBars(false);
 
         //make nav system bar transparent or make is same color
         //as nav bar

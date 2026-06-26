@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Call Switch</string>
     <string name="replies_label">Replies</string>
+    <string name="empty_reply">Empty reply</string>
 </resources>
