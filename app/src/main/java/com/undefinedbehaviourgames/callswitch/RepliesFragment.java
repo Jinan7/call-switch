@@ -1,25 +1,33 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class RepliesFragment extends Fragment {
 
+    private static final String TAG = "RepliesFragmentLogger";
     private RecyclerView mRecyclerView;
+    private MaterialToolbar mToolbar;
 
     public static RepliesFragment newInstance() {
         RepliesFragment fragment = new RepliesFragment();
@@ -34,10 +42,31 @@ public class RepliesFragment extends Fragment {
         mRecyclerView = v.findViewById(R.id.replies_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new RepliesAdapter());
+        mToolbar = v.findViewById(R.id.menu_toolbar);
+        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                if (item.getItemId() == R.id.add_reply) {
+
+                    Intent intent = EditReplyActivity.newIntent(getContext());
+                    startActivity(intent);
+                    Log.d(TAG, "Opening edit reply activity");
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
         return v;
     }
 
 
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        return super.onContextItemSelected(item);
+    }
 
     private class RepliesHolder extends RecyclerView.ViewHolder {
 

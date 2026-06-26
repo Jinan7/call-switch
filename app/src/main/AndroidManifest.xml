@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CallSwitch">
         <activity
+            android:name=".EditReplyActivity"
+            android:exported="false" />
+        <activity
             android:name=".RepliesActivity"
             android:exported="true">
             <intent-filter>
