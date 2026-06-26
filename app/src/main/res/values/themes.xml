@@ -17,7 +17,9 @@
         <item name="colorSurface">@color/blue</item>
         <item name="colorOnSurface">@color/blue</item>
         <item name="colorSurfaceContainer">@color/blue</item>
+        <item name="colorOnSurfaceVariant">@color/white</item>
         <item name="titleTextColor">@color/white</item>
+        <item name="iconTint">@color/white</item>
         <item name="textAppearanceTitleLarge">@style/TextAppearance.App.TitleLarge</item>
         <item name="textAppearanceTitleMedium">@style/TextAppearance.App.TitleMedium</item>
     </style>

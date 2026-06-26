@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fitsSystemWindows="true"
-    app:menu="@menu/replies_menu"
     app:liftOnScrollColor="@color/blue"
-    app:liftOnScroll="false">
+    app:liftOnScroll="true">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
+        app:menu="@menu/replies_menu"
         app:title="@string/replies_label"/>
 </com.google.android.material.appbar.AppBarLayout>
