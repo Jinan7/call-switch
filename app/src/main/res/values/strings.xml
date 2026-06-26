@@ -2,4 +2,7 @@
     <string name="app_name">Call Switch</string>
     <string name="replies_label">Replies</string>
     <string name="empty_reply">Empty reply</string>
+    <string name="edit_reply">Edit Reply</string>
+    <string name="send_to">Send to</string>
+    <string name="add_contacts_hint">Add contacts to send reply to</string>
 </resources>

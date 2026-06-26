@@ -51,7 +51,6 @@ public class RepliesFragment extends Fragment {
 
                     Intent intent = EditReplyActivity.newIntent(getContext());
                     startActivity(intent);
-                    Log.d(TAG, "Opening edit reply activity");
                     return true;
                 }
                 return false;

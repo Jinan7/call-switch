@@ -6,4 +6,20 @@
     <color name="gradient">#1591DC</color>
     <color name="sky">#4BB8FA</color>
     <color name="cold">#4BB8FA</color>
+    <color name="grey_1">#f6f6f6</color>
+    <color name="grey_2">#e6e6e6</color>
+    <color name="grey_3">#d4d4d4</color>
+    <color name="grey_4">#c3c3c3</color>
+    <color name="grey_5">#b3b3b3</color>
+    <color name="grey_6">#a1a1a1</color>
+    <color name="grey_7">#909090</color>
+    <color name="grey_8">#808080</color>
+    <color name="grey_9">#6e6e6e</color>
+    <color name="grey_10">#5d5d5d</color>
+    <color name="grey_11">#4d4d4d</color>
+    <color name="grey_12">#3b3b3b</color>
+    <color name="grey_13">#2a2a2a</color>
+    <color name="grey_14">#2a2a2a</color>
+    <color name="grey_15">#080808</color>
+
 </resources>
