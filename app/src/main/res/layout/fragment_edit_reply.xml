@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
             <com.google.android.material.textfield.TextInputLayout
-                android:hint="Type message..."
+                android:hint="@string/type_message"
                 android:id="@+id/reply_text_field"
                 app:errorEnabled="true"
                 android:layout_marginTop="16dp"
@@ -34,6 +34,38 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/priority"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reply_unsaved_numbers"
+                    android:textSize="16sp"/>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:layout_marginEnd="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -47,6 +79,8 @@
                     android:textSize="20sp"
                     android:textStyle="bold"/>
                 <ImageButton
+                    android:layout_marginEnd="8dp"
+                    android:id="@+id/add_contacts_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
