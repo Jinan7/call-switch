@@ -40,10 +40,12 @@
                 android:orientation="horizontal">
                 <TextView
                     android:layout_marginHorizontal="8dp"
-                    android:layout_width="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/priority"
                     android:textSize="16sp"/>
+
             </LinearLayout>
 
             <LinearLayout
@@ -85,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:contentDescription="@string/add_contacts_hint"
-                    android:backgroundTint="@color/white"
+                    android:background="@null"
                     app:tint="@color/black"
                     android:src="@drawable/ic_action_add"/>
             </LinearLayout>
