@@ -58,7 +58,7 @@
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/reply_unsaved_numbers"
+                    android:text="@string/reply_unknown"
                     android:textSize="16sp"/>
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
@@ -92,6 +92,10 @@
                     android:src="@drawable/ic_action_add"/>
             </LinearLayout>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/selected_contacts_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
         </LinearLayout>
 
 

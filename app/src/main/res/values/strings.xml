@@ -6,6 +6,6 @@
     <string name="send_to">Send to</string>
     <string name="add_contacts_hint">Add contacts to send reply to</string>
     <string name="priority">Priority</string>
-    <string name="reply_unsaved_numbers">Reply Unsaved Numbers</string>
+    <string name="reply_unknown">Reply Unknown Callers</string>
     <string name="type_message">Type message...</string>
 </resources>
