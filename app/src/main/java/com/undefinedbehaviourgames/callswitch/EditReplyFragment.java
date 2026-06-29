@@ -43,6 +43,7 @@ public class EditReplyFragment extends Fragment {
     private static final String ARGS_MODE = "mode";
     private static final int SELECT_CONTACT_REQUEST_CODE = 0;
     public static final String EXTRA_SELECTED_CONTACTS = "com.undefinedbehaviourgames.callswitch.selected_contacts";
+    private int mode;
     private ImageButton mAddContactButton;
     private RecyclerView mRecyclerView;
     private MaterialToolbar mToolbar;
@@ -70,7 +71,7 @@ public class EditReplyFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        int mode = getArguments().getInt(ARGS_MODE);
+        mode = getArguments().getInt(ARGS_MODE);
 
         if (mode == EDIT_REPLY) {
 
@@ -114,7 +115,14 @@ public class EditReplyFragment extends Fragment {
             public boolean onMenuItemClick(MenuItem item) {
 
                 if (item.getItemId() == R.id.menu_save_reply) {
-                    ReplyLab.getInstance().add(mReply);
+
+                    switch (mode) {
+                        case NEW_REPLY:
+                            ReplyLab.getInstance().add(mReply);
+                        case EDIT_REPLY:
+                            ReplyLab.getInstance().update(mReply);
+                    }
+
                     getActivity().finish();
                     return true;
                 }

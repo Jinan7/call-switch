@@ -37,4 +37,5 @@ public class ReplyLab {
     public void add(Reply reply) {
         mReplies.add(reply);
     }
+    public void update(Reply reply) {}
 }
