@@ -28,4 +28,5 @@ public class ContactLab {
     public List<Contact> getContacts() {
         return mContacts;
     }
+
 }

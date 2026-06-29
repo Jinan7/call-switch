@@ -60,6 +60,16 @@ public class SelectContactLab {
         return mContacts;
     }
 
+    public ArrayList<Contact> getSelectedContacts() {
+        ArrayList<Contact> selectedContacts = new ArrayList<>();
+        for (SelectContact contact : mContacts) {
+            if (contact.isChecked()) {
+                selectedContacts.add((Contact) contact);
+            }
+        }
+        return selectedContacts;
+    }
+
     public void cancel() {
         mHandler.cancelOperation(TOKEN_CONTACT);
         mHandler.cancelOperation(TOKEN_PHONE);

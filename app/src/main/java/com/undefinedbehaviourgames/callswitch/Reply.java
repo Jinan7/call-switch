@@ -1,5 +1,7 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 enum Priority {
@@ -12,10 +14,11 @@ public class Reply {
     private UUID mUuid;
     private Priority mPriority;
     private String mReply;
-
+    private List<Contact> mReplyToList;
     public Reply() {
         mUuid = UUID.randomUUID();
         mPriority = Priority.NORMAL;
+        mReplyToList = new ArrayList<>();
         mReply = "";
     }
 
@@ -37,5 +40,13 @@ public class Reply {
 
     public void setReply(String reply) {
         mReply = reply;
+    }
+
+    public List<Contact> getReplyToList() {
+        return mReplyToList;
+    }
+
+    public void setReplyToList(List<Contact> replyToList) {
+        mReplyToList = replyToList;
     }
 }

@@ -8,4 +8,7 @@
     <string name="priority">Priority</string>
     <string name="reply_unknown">Reply Unknown Callers</string>
     <string name="type_message">Type message...</string>
+    <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
+    <string name="finish">Finish</string>
 </resources>
