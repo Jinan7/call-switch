@@ -9,9 +9,10 @@
     app:liftOnScroll="true">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/menu_toolbar"
+        android:id="@+id/edit_reply_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
+        app:menu="@menu/new_reply_menu"
         app:title="@string/edit_reply"/>
 </com.google.android.material.appbar.AppBarLayout>

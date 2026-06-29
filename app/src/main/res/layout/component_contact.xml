@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/contact_background"
+    android:background="@drawable/rounded_rectangle_background_4"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingHorizontal="16dp"
@@ -14,7 +14,7 @@
         android:gravity="center"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="@drawable/contact_icon_background"
+        android:background="@drawable/circle_background"
         android:textSize="34sp"
         android:textColor="@color/white"
         android:text="A"/>

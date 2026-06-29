@@ -25,13 +25,13 @@
                 android:orientation="vertical">
                 <com.google.android.material.textfield.TextInputLayout
                     android:hint="@string/type_message"
-                    android:id="@+id/reply_text_field"
                     app:errorEnabled="true"
                     android:layout_marginTop="16dp"
                     android:layout_marginHorizontal="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/reply_text_field"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         />

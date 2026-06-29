@@ -2,15 +2,14 @@ package com.undefinedbehaviourgames.callswitch;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,8 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
+import java.util.List;
 
 public class RepliesFragment extends Fragment {
 
@@ -41,15 +41,15 @@ public class RepliesFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_replies, container, false);
         mRecyclerView = v.findViewById(R.id.replies_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(new RepliesAdapter());
-        mToolbar = v.findViewById(R.id.menu_toolbar);
+        mRecyclerView.setAdapter(new RepliesAdapter(ReplyLab.getInstance().getReplies()));
+        mToolbar = v.findViewById(R.id.replies_toolbar);
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
                 if (item.getItemId() == R.id.add_reply) {
 
-                    Intent intent = EditReplyActivity.newIntent(getContext());
+                    Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.NEW_REPLY);
                     startActivity(intent);
                     return true;
                 }
@@ -63,25 +63,55 @@ public class RepliesFragment extends Fragment {
 
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         return super.onContextItemSelected(item);
     }
 
-    private class RepliesHolder extends RecyclerView.ViewHolder {
+    private class RepliesHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
-        private LinearLayout mReplyButton;
+        private Reply mReply;
+        private ImageButton mReplyPriorityButton;
         private TextView mReplyTextView;
         private SwitchMaterial mSwitch;
         public RepliesHolder(@NonNull View itemView) {
             super(itemView);
-            mReplyButton = (LinearLayout) itemView.findViewById(R.id.reply_button);
+            mReplyPriorityButton = (ImageButton) itemView.findViewById(R.id.reply_priority_button);
             mReplyTextView = (TextView) itemView.findViewById(R.id.reply_text_view);
             mSwitch = (SwitchMaterial) itemView.findViewById(R.id.toggle_reply);
+            mReplyPriorityButton.setOnClickListener(this);
+            mReplyTextView.setOnClickListener(this);
+        }
+
+        public void bind(Reply reply) {
+            mReply = reply;
+            mReplyTextView.setText(reply.getReply());
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mReply.getId());
+            startActivity(intent);
+        }
+
+        @Override
+        public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+            mReply.setEnabled(isChecked);
         }
     }
 
     private class RepliesAdapter extends RecyclerView.Adapter<RepliesHolder> {
 
+        List<Reply> mReplies;
+
+        public RepliesAdapter(List<Reply> replies) {
+            mReplies = replies;
+        }
         @NonNull
         @Override
         public RepliesHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -92,12 +122,12 @@ public class RepliesFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull RepliesHolder holder, int position) {
-
+            holder.bind(mReplies.get(position));
         }
 
         @Override
         public int getItemCount() {
-            return 20;
+            return mReplies.size();
         }
     }
 }

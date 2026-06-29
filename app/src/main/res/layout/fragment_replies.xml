@@ -16,12 +16,9 @@
         android:layout_height="match_parent">
 
         <FrameLayout
-
             android:id="@+id/toggle_all_frame_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/grey_8"
-            >
+            android:layout_height="wrap_content">
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:layout_gravity="end"
                 android:id="@+id/toggle_all"
@@ -29,8 +26,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 />
+            <View
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey_3"/>
         </FrameLayout>
         <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="16dp"
             android:layout_below="@id/toggle_all_frame_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

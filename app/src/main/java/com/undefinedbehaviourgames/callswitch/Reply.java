@@ -14,6 +14,7 @@ public class Reply {
     private UUID mUuid;
     private Priority mPriority;
     private String mReply;
+    private boolean enabled;
     private List<Contact> mReplyToList;
     public Reply() {
         mUuid = UUID.randomUUID();
@@ -48,5 +49,13 @@ public class Reply {
 
     public void setReplyToList(List<Contact> replyToList) {
         mReplyToList = replyToList;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
