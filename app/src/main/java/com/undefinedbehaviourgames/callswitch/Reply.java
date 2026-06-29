@@ -19,7 +19,7 @@ public class Reply {
         mReply = "";
     }
 
-    public UUID getUuid() {
+    public UUID getId() {
         return mUuid;
     }
 

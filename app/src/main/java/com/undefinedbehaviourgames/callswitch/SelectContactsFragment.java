@@ -1,7 +1,9 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import static android.app.Activity.RESULT_OK;
 import static com.undefinedbehaviourgames.callswitch.SelectContactsActivity.READ_CONTACT_REQUEST_CODE;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,22 +18,32 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.UUID;
 
 public class SelectContactsFragment extends Fragment implements SelectContactLab.Callbacks {
 
+    private static final String ARGS_ID = "reply_id";
     private RecyclerView mRecyclerView;
     private SelectContactLab mSelectContactLab;
-    public static SelectContactsFragment newInstance() {
+    private Reply mReply;
+    public static SelectContactsFragment newInstance(UUID id) {
         SelectContactsFragment fragment = new SelectContactsFragment();
-
+        Bundle args = new Bundle();
+        args.putSerializable(ARGS_ID, id);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        UUID id = (UUID) getArguments().getSerializable(ARGS_ID);
+        mReply = ReplyLab.getInstance().get(id);
         mSelectContactLab = new SelectContactLab(getContext(), this);
         mSelectContactLab.startQuery();
+        Intent result = new Intent();
+        result.putExtra("result", "result sent successfully");
+        getActivity().setResult(RESULT_OK, result);
     }
 
     @Nullable
@@ -48,6 +60,7 @@ public class SelectContactsFragment extends Fragment implements SelectContactLab
     public void onQueryComplete() {
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
+
 
     @Override
     public void onDestroy() {

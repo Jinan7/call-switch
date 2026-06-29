@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/contact_background"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingHorizontal="16dp"

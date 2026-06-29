@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -12,16 +13,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.util.UUID;
+
 public class SelectContactsActivity extends SingleFragmentActivity {
 
     public static final int READ_CONTACT_REQUEST_CODE = 0;
-    public static Intent newIntent(Context context) {
+    private static final String EXTRA_ID = "com.undefinedbehaviourgames.callswitch.extra_reply_id";
+    public static Intent newIntent(Context context, UUID id) {
 
         Intent intent = new Intent(context, SelectContactsActivity.class);
+        intent.putExtra(EXTRA_ID, id);
         return intent;
     }
 
@@ -32,11 +38,23 @@ public class SelectContactsActivity extends SingleFragmentActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String [] {Manifest.permission.READ_CONTACTS}, READ_CONTACT_REQUEST_CODE);
         }
+
+        //make nav system bar transparent or make is same color
+        //as nav bar
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getWindow().setNavigationBarContrastEnforced(true);
+        } else {
+            getWindow().setNavigationBarColor(getColor(R.color.white));
+        }
+        //make status bar icons and text light color
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
+                .setAppearanceLightNavigationBars(true);
     }
 
     @Override
     public Fragment createFragment() {
-        return SelectContactsFragment.newInstance();
+        UUID id = (UUID) getIntent().getSerializableExtra(EXTRA_ID);
+        return SelectContactsFragment.newInstance(id);
     }
 
     @Override

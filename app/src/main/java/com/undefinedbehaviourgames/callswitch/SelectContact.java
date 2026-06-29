@@ -1,6 +1,8 @@
 package com.undefinedbehaviourgames.callswitch;
 
-public class SelectContact extends Contact {
+import java.io.Serializable;
+
+public class SelectContact extends Contact implements Serializable {
 
     public boolean mChecked;
 

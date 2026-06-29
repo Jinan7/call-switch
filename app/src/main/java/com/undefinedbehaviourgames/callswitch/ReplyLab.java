@@ -2,6 +2,7 @@ package com.undefinedbehaviourgames.callswitch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ReplyLab {
 
@@ -11,7 +12,7 @@ public class ReplyLab {
         mReplies = new ArrayList<>();
     };
 
-    private static ReplyLab getInstance() {
+    public static ReplyLab getInstance() {
         if (sReplyLab == null) {
             sReplyLab = new ReplyLab();
         }
@@ -19,11 +20,21 @@ public class ReplyLab {
         return sReplyLab;
     }
 
+    public Reply get(UUID id) {
+
+        for (Reply reply : mReplies) {
+            if (reply.getId().equals(id)) {
+                return reply;
+            }
+        }
+
+        return null;
+    }
     public List<Reply> getReplies() {
         return mReplies;
     }
 
-    public void addReply(Reply reply) {
+    public void add(Reply reply) {
         mReplies.add(reply);
     }
 }
