@@ -25,4 +25,15 @@ public class Contact {
     public void setPhone(String phone) {
         mPhone = phone;
     }
+
+    public String getIcon() {
+        String result;
+        try {
+            result = mName.substring(0,1);
+        } catch (IndexOutOfBoundsException e) {
+           result = "?";
+        }
+
+        return result;
+    }
 }
