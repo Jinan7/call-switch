@@ -7,6 +7,8 @@ import static com.undefinedbehaviourgames.callswitch.SelectContactsActivity.READ
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,7 +27,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.reflect.Array;
+import com.google.android.material.search.SearchView;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,9 +37,11 @@ public class SelectContactsFragment extends Fragment implements SelectContactLab
 
     private static final String ARGS_ID = "reply_id";
     private RecyclerView mRecyclerView;
+    private RecyclerView mSearchResultRecyclerView;
     private SelectContactLab mSelectContactLab;
     private FrameLayout mOptionsLayout;
     private Button mFinishButton;
+    private SearchView mSearchView;
     private Reply mReply;
     public static SelectContactsFragment newInstance(UUID id) {
         SelectContactsFragment fragment = new SelectContactsFragment();
@@ -61,9 +65,12 @@ public class SelectContactsFragment extends Fragment implements SelectContactLab
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_select_contacts, container, false);
-        mRecyclerView = v.findViewById(R.id.select_contacts_recycler_view);
+        mRecyclerView = (RecyclerView) v.findViewById(R.id.select_contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(new SelectContactAdaper(mSelectContactLab.getContacts()));
+        mRecyclerView.setAdapter(new SelectContactAdapter(mSelectContactLab.getContacts()));
+        mSearchResultRecyclerView = (RecyclerView) v.findViewById(R.id.search_results);
+        mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mSearchResultRecyclerView.setAdapter(new SelectContactAdapter(mSelectContactLab.getSearchResults()));
         mOptionsLayout =(FrameLayout) v.findViewById(R.id.options);
         ViewCompat.setOnApplyWindowInsetsListener(mOptionsLayout, new OnApplyWindowInsetsListener() {
             @Override
@@ -79,12 +86,44 @@ public class SelectContactsFragment extends Fragment implements SelectContactLab
                 onFinish();
             }
         });
+        mSearchView = v.findViewById(R.id.select_contact_search_view);
+        mSearchView.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mSelectContactLab.startSearchQuery(s.toString());
+            }
+        });
+        mSearchView.addTransitionListener(new SearchView.TransitionListener() {
+            @Override
+            public void onStateChanged(@NonNull SearchView searchView, @NonNull SearchView.TransitionState transitionState, @NonNull SearchView.TransitionState transitionState1) {
+
+                if (transitionState1 == SearchView.TransitionState.HIDING) {
+                    mRecyclerView.getAdapter().notifyDataSetChanged();
+                }
+
+            }
+        });
         return v;
     }
 
     @Override
     public void onQueryComplete() {
         mRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    @Override
+    public void onSearchComplete() {
+        mSearchResultRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     public void onFinish() {
@@ -139,6 +178,7 @@ public class SelectContactsFragment extends Fragment implements SelectContactLab
             mSelectContactName.setText(contact.getName());
             mSelectContactPhone.setText(contact.getPhone());
             mSelectContactIcon.setText(contact.getIcon());
+            mSelectContactCheckBox.setChecked(contact.isChecked());
         }
 
 
@@ -148,10 +188,10 @@ public class SelectContactsFragment extends Fragment implements SelectContactLab
         }
     }
 
-    private class SelectContactAdaper extends RecyclerView.Adapter<SelectContactHolder> {
+    private class SelectContactAdapter extends RecyclerView.Adapter<SelectContactHolder> {
 
         private List<SelectContact> mContacts;
-        public SelectContactAdaper(List<SelectContact> contacts) {
+        public SelectContactAdapter(List<SelectContact> contacts) {
 
             mContacts = contacts;
         }

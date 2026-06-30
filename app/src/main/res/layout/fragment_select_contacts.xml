@@ -26,7 +26,7 @@
                 android:orientation="horizontal">
                 <com.google.android.material.search.SearchBar
                     android:backgroundTint="@color/white"
-                    android:id="@+id/search_bar"
+                    android:id="@+id/select_contact_search_bar"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
                     android:layout_weight="1"
@@ -95,12 +95,16 @@
     </RelativeLayout>
 
     <com.google.android.material.search.SearchView
+        android:id="@+id/select_contact_search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="Search"
-        app:layout_anchor="@id/search_bar">
-
-        <!-- Search suggestions/results go here (ScrollView, RecyclerView, etc.). -->
-
+        app:layout_anchor="@id/select_contact_search_bar">
+        <androidx.recyclerview.widget.RecyclerView
+            android:fitsSystemWindows="true"
+            android:clipToPadding="false"
+            android:id="@+id/search_results"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </com.google.android.material.search.SearchView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -6,10 +6,19 @@ public class Contact implements Serializable {
 
     private String mName;
     private String mPhone;
+    private Long mId;
 
     public Contact() {
         mName = "";
         mPhone = "";
+    }
+
+    public Long getId() {
+        return mId;
+    }
+
+    public void setId(Long id) {
+        mId = id;
     }
 
     public String getName() {
