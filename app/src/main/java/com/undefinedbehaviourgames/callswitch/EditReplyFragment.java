@@ -110,6 +110,11 @@ public class EditReplyFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_edit_reply, container, false);
         mToolbar = (MaterialToolbar) v.findViewById(R.id.edit_reply_toolbar);
+
+        if (mode == EDIT_REPLY) {
+            mToolbar.inflateMenu(R.menu.edit_reply_menu);
+        }
+
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {

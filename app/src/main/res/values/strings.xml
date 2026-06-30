@@ -12,4 +12,10 @@
     <string name="done">Done</string>
     <string name="finish">Finish</string>
     <string name="select_all">Select All</string>
+    <string name="normal">Normal</string>
+    <string-array name="priority_array">
+        <item>High</item>
+        <item>Normal</item>
+        <item>Low</item>
+    </string-array>
 </resources>
