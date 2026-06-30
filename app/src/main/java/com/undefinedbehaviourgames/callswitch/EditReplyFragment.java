@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResult;
@@ -39,6 +40,7 @@ import java.util.UUID;
 public class EditReplyFragment extends Fragment {
 
     private static final String TAG = "EditReplyFragmentLogger";
+    private static final String PRIORITY_DIALOG_TAG = "Priority dialog";
     private static final String ARGS_ID = "reply_id";
     private static final String ARGS_MODE = "mode";
     private static final int SELECT_CONTACT_REQUEST_CODE = 0;
@@ -48,6 +50,7 @@ public class EditReplyFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private MaterialToolbar mToolbar;
     private TextInputEditText mReplyTextField;
+    private LinearLayout mPriorityButton;
     ActivityResultLauncher<Intent> mLauncher;
     private Reply mReply;
     public static EditReplyFragment newInstance(int mode) {
@@ -163,6 +166,14 @@ public class EditReplyFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mReply.setReply(s.toString());
+            }
+        });
+        mPriorityButton = (LinearLayout) v.findViewById(R.id.priority_button);
+        mPriorityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PriorityModalBottomSheetDialog dialog = PriorityModalBottomSheetDialog.newInstance();
+                dialog.show(getParentFragmentManager(), PRIORITY_DIALOG_TAG);
             }
         });
         return v;

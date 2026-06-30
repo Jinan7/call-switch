@@ -52,6 +52,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <LinearLayout
+                        android:id="@+id/priority_button"
                         android:gravity="center_vertical"
                         android:layout_marginEnd="8dp"
                         android:layout_marginTop="8dp"
@@ -102,7 +103,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
-                            android:tint="@color/grey_10"
+                            app:tint="@color/grey_10"
                             android:src="@drawable/ic_action_unknown"/>
                         <TextView
                             android:layout_marginHorizontal="16dp"
@@ -164,6 +165,5 @@
             android:id="@+id/bottom_nav_view"/>
 
     </RelativeLayout>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
