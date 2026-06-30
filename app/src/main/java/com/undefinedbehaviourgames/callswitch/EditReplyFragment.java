@@ -113,6 +113,8 @@ public class EditReplyFragment extends Fragment {
 
         if (mode == EDIT_REPLY) {
             mToolbar.inflateMenu(R.menu.edit_reply_menu);
+        } else {
+            mToolbar.inflateMenu(R.menu.new_reply_menu);
         }
 
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
