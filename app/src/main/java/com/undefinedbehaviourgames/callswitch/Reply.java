@@ -1,5 +1,9 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import android.content.Context;
+
+import androidx.core.app.ActivityCompat;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -57,5 +61,23 @@ public class Reply {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getPriorityText(Context context) {
+        String result = "";
+        switch (mPriority) {
+            case HIGH:
+                result = context.getResources().getString(R.string.priority_high);
+                break;
+            case NORMAL:
+                result = context.getResources().getString(R.string.priority_normal);
+                break;
+            case LOW:
+                result = context.getResources().getString(R.string.priority_low);
+                break;
+
+        }
+
+        return result;
     }
 }

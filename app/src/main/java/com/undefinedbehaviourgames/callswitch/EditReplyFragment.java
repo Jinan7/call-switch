@@ -1,7 +1,9 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import static android.app.Activity.RESULT_OK;
 import static com.undefinedbehaviourgames.callswitch.EditReplyActivity.EDIT_REPLY;
 import static com.undefinedbehaviourgames.callswitch.EditReplyActivity.NEW_REPLY;
+import static com.undefinedbehaviourgames.callswitch.PriorityModalBottomSheetDialog.EXTRA_PRIORITY;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,6 +43,7 @@ public class EditReplyFragment extends Fragment {
 
     private static final String TAG = "EditReplyFragmentLogger";
     private static final String PRIORITY_DIALOG_TAG = "Priority dialog";
+    private static final int PRIORITY_REQUEST_CODE = 0;
     private static final String ARGS_ID = "reply_id";
     private static final String ARGS_MODE = "mode";
     private static final int SELECT_CONTACT_REQUEST_CODE = 0;
@@ -51,6 +54,7 @@ public class EditReplyFragment extends Fragment {
     private MaterialToolbar mToolbar;
     private TextInputEditText mReplyTextField;
     private LinearLayout mPriorityButton;
+    private TextView mPriorityTextView;
     ActivityResultLauncher<Intent> mLauncher;
     private Reply mReply;
     public static EditReplyFragment newInstance(int mode) {
@@ -151,7 +155,6 @@ public class EditReplyFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new ContactAdapter(mReply.getReplyToList()));
         mReplyTextField = v.findViewById(R.id.reply_text_field);
-        mReplyTextField.setText(mReply.getReply());
         mReplyTextField.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
@@ -173,10 +176,35 @@ public class EditReplyFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 PriorityModalBottomSheetDialog dialog = PriorityModalBottomSheetDialog.newInstance();
+                dialog.setTargetFragment(EditReplyFragment.this, PRIORITY_REQUEST_CODE);
                 dialog.show(getParentFragmentManager(), PRIORITY_DIALOG_TAG);
             }
         });
+        mPriorityTextView = v.findViewById(R.id.priority);
+        updateUI();
         return v;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_OK) return;
+
+        switch (requestCode) {
+            case PRIORITY_REQUEST_CODE:
+                if (data != null) {
+                    Priority priority = (Priority) data.getSerializableExtra(EXTRA_PRIORITY);
+                    mReply.setPriority(priority);
+                    updateUI();
+                }
+
+        }
+    }
+
+    private void updateUI() {
+        mReplyTextField.setText(mReply.getReply());
+        mPriorityTextView.setText(mReply.getPriorityText(getContext()));
     }
 
     private class ContactHolder extends RecyclerView.ViewHolder {
