@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -35,7 +36,7 @@ public class SelectContactsFragment extends Fragment implements SelectContactLab
     private static final String ARGS_ID = "reply_id";
     private RecyclerView mRecyclerView;
     private SelectContactLab mSelectContactLab;
-    private LinearLayout mOptionsLayout;
+    private FrameLayout mOptionsLayout;
     private Button mFinishButton;
     private Reply mReply;
     public static SelectContactsFragment newInstance(UUID id) {
@@ -63,11 +64,11 @@ public class SelectContactsFragment extends Fragment implements SelectContactLab
         mRecyclerView = v.findViewById(R.id.select_contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new SelectContactAdaper(mSelectContactLab.getContacts()));
-        mOptionsLayout =(LinearLayout) v.findViewById(R.id.options);
+        mOptionsLayout =(FrameLayout) v.findViewById(R.id.options);
         ViewCompat.setOnApplyWindowInsetsListener(mOptionsLayout, new OnApplyWindowInsetsListener() {
             @Override
             public @org.jspecify.annotations.NonNull WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat insets) {
-                v.setPadding(v.getLeft(), v.getPaddingTop(), v.getPaddingBottom(), insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom);
+                v.setPadding(v.getLeft(), v.getPaddingTop(), v.getPaddingRight(), insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom);
                 return insets;
             }
         });
