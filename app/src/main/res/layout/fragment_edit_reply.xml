@@ -36,19 +36,34 @@
                         android:layout_height="wrap_content"
                         />
                 </com.google.android.material.textfield.TextInputLayout>
-
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Options"
+                    app:textAllCaps="true"
+                    android:layout_marginHorizontal="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/grey_10"/>
                 <LinearLayout
+                    android:layout_marginTop="8dp"
                     android:layout_marginHorizontal="8dp"
                     android:background="@drawable/rounded_rectangle_background_4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <LinearLayout
+                        android:gravity="center_vertical"
                         android:layout_marginEnd="8dp"
                         android:layout_marginTop="8dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+                        <ImageView
+                            android:layout_marginStart="12dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:tint="@color/grey_10"
+                            android:src="@drawable/ic_action_priority"/>
                         <TextView
                             android:layout_marginHorizontal="16dp"
                             android:layout_weight="1"
@@ -66,8 +81,10 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/normal"
+                                android:textColor="@color/grey_10"
                                 android:layout_marginEnd="4dp"/>
                             <ImageView
+                                app:tint="@color/grey_10"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/ic_action_down"/>
@@ -76,10 +93,17 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:gravity="center_vertical"
                         android:layout_marginTop="8dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:tint="@color/grey_10"
+                            android:src="@drawable/ic_action_unknown"/>
                         <TextView
                             android:layout_marginHorizontal="16dp"
                             android:layout_weight="1"
@@ -102,14 +126,15 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <com.google.android.material.textview.MaterialTextView
-                        android:layout_marginHorizontal="8dp"
+                        android:layout_marginHorizontal="12dp"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="@string/send_to"
-                        android:textSize="20sp"
-                        android:textStyle="bold"/>
+                        app:textAllCaps="true"
+                        android:textStyle="bold"
+                        android:textColor="@color/grey_10"/>
                     <ImageButton
                         android:layout_marginEnd="8dp"
                         android:id="@+id/add_contacts_button"
@@ -123,7 +148,7 @@
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp"
                     android:layout_marginHorizontal="8dp"
                     android:id="@+id/selected_contacts_recycler_view"
