@@ -18,16 +18,20 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class SelectContactsActivity extends SingleFragmentActivity {
 
     public static final int READ_CONTACT_REQUEST_CODE = 0;
     private static final String EXTRA_ID = "com.undefinedbehaviourgames.callswitch.extra_reply_id";
-    public static Intent newIntent(Context context, UUID id) {
+    private static final String EXTRA_SELECTED_CONTACTS = "com.undefinedbehaviourgames.callswitch.extra_selected_contacts";
+    public static Intent newIntent(Context context, UUID id, List<Contact> selectedContacts) {
 
         Intent intent = new Intent(context, SelectContactsActivity.class);
         intent.putExtra(EXTRA_ID, id);
+        intent.putExtra(EXTRA_SELECTED_CONTACTS, (ArrayList<Contact>) selectedContacts);
         return intent;
     }
 
@@ -54,7 +58,9 @@ public class SelectContactsActivity extends SingleFragmentActivity {
     @Override
     public Fragment createFragment() {
         UUID id = (UUID) getIntent().getSerializableExtra(EXTRA_ID);
-        return SelectContactsFragment.newInstance(id);
+        @SuppressWarnings("unchecked")
+        ArrayList<Contact> selectedContacts = (ArrayList<Contact>) getIntent().getSerializableExtra(EXTRA_SELECTED_CONTACTS);
+        return SelectContactsFragment.newInstance(id, selectedContacts);
     }
 
     @Override

@@ -147,7 +147,7 @@ public class EditReplyFragment extends Fragment {
         mAddContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = SelectContactsActivity.newIntent(getContext(), mReply.getId());
+                Intent intent = SelectContactsActivity.newIntent(getContext(), mReply.getId(), mReply.getReplyToList());
                 mLauncher.launch(intent);
             }
         });

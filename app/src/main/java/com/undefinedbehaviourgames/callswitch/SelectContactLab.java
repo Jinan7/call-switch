@@ -40,6 +40,7 @@ public class SelectContactLab {
     private Context mContext;
     private List<SelectContact> mContacts;
     private List<SelectContact> mSearchResults;
+    private List<Contact> mPreviousSelectedContacts;
     private QueryHandler mHandler;
     public SelectContactLab(Context context, Callbacks callbacks) {
         mContext = context.getApplicationContext();
@@ -47,6 +48,7 @@ public class SelectContactLab {
         mCallbacks = new WeakReference<>(callbacks);
         mContacts = new ArrayList<>();
         mSearchResults = new ArrayList<>();
+        mPreviousSelectedContacts = new ArrayList<>();
     }
 
     public void startQuery() {
@@ -84,6 +86,7 @@ public class SelectContactLab {
 
     public SelectContact get(Long id) {
 
+        //make asynchronous
         for (SelectContact contact : mContacts) {
             if (contact.getId().equals(id)) {
                 return contact;
@@ -110,6 +113,20 @@ public class SelectContactLab {
         return selectedContacts;
     }
 
+    public void setPreviousSelectedContacts(List<Contact> selectedContacts) {
+        mPreviousSelectedContacts = selectedContacts;
+    }
+
+    public boolean isPreviousSelected(Long id) {
+        //make asynchronous
+        for (Contact contact : mPreviousSelectedContacts) {
+            if (contact.getId().equals(id)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
     public void cancel() {
         mHandler.cancelOperation(TOKEN_CONTACT);
         mHandler.cancelOperation(TOKEN_PHONE);
@@ -158,7 +175,7 @@ public class SelectContactLab {
                     SelectContact contact = new SelectContact();
                     contact.setName(name);
                     contact.setId(id);
-
+                    contact.setChecked(isPreviousSelected(id));
                     Uri.Builder builder = ContactsContract.Contacts.CONTENT_URI.buildUpon();
                     ContentUris.appendId(builder, cursor.getLong(CONTACT_ID_INDEX));
                     builder.appendEncodedPath(ContactsContract.Contacts.Data.CONTENT_DIRECTORY);

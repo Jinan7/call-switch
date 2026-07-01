@@ -36,6 +36,7 @@ import java.util.UUID;
 public class SelectContactsFragment extends Fragment implements SelectContactLab.Callbacks {
 
     private static final String ARGS_ID = "reply_id";
+    private static final String ARGS_SELECTED_CONTACTS = "selected_contacts";
     private RecyclerView mRecyclerView;
     private RecyclerView mSearchResultRecyclerView;
     private SelectContactLab mSelectContactLab;
@@ -43,20 +44,25 @@ public class SelectContactsFragment extends Fragment implements SelectContactLab
     private Button mFinishButton;
     private SearchView mSearchView;
     private Reply mReply;
-    public static SelectContactsFragment newInstance(UUID id) {
+    private List<Contact> mPrevSelectedContacts;
+    public static SelectContactsFragment newInstance(UUID id, ArrayList<Contact> selectedContacts ) {
         SelectContactsFragment fragment = new SelectContactsFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARGS_ID, id);
+        args.putSerializable(ARGS_SELECTED_CONTACTS, selectedContacts);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         UUID id = (UUID) getArguments().getSerializable(ARGS_ID);
+        mPrevSelectedContacts = (ArrayList<Contact>) getArguments().getSerializable(ARGS_SELECTED_CONTACTS);
         mReply = ReplyLab.getInstance().get(id);
         mSelectContactLab = new SelectContactLab(getContext(), this);
+        mSelectContactLab.setPreviousSelectedContacts(mPrevSelectedContacts);
         mSelectContactLab.startQuery();
     }
 
