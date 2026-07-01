@@ -60,7 +60,7 @@ public class SelectContactsFragment extends Fragment implements SelectContactLab
         super.onCreate(savedInstanceState);
         UUID id = (UUID) getArguments().getSerializable(ARGS_ID);
         mPrevSelectedContacts = (ArrayList<Contact>) getArguments().getSerializable(ARGS_SELECTED_CONTACTS);
-        mReply = ReplyLab.getInstance().get(id);
+        mReply = ReplyLab.getInstance(getContext()).get(id);
         mSelectContactLab = new SelectContactLab(getContext(), this);
         mSelectContactLab.setPreviousSelectedContacts(mPrevSelectedContacts);
         mSelectContactLab.startQuery();

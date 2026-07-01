@@ -83,7 +83,7 @@ public class EditReplyFragment extends Fragment {
         if (mode == EDIT_REPLY) {
 
             UUID id = (UUID) getArguments().getSerializable(ARGS_ID);
-            mReply = ReplyLab.getInstance().get(id);
+            mReply = ReplyLab.getInstance(getContext()).get(id);
         } else {
             mReply = new Reply();
         }
@@ -132,9 +132,9 @@ public class EditReplyFragment extends Fragment {
 
                     switch (mode) {
                         case NEW_REPLY:
-                            ReplyLab.getInstance().add(mReply);
+                            ReplyLab.getInstance(getContext()).add(mReply);
                         case EDIT_REPLY:
-                            ReplyLab.getInstance().update(mReply);
+                            ReplyLab.getInstance(getContext()).update(mReply);
                     }
 
                     getActivity().finish();

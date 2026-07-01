@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class SelectContactLab {
+public class SelectContactLab extends ContactLabHelper<SelectContact> {
 
     public static final int TOKEN_CONTACT = 0;
     public static final int TOKEN_PHONE = 1;

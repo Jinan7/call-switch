@@ -3,7 +3,7 @@ package com.undefinedbehaviourgames.callswitch;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactLab {
+public class ContactLab extends ContactLabHelper<Contact> {
 
     private static ContactLab sContactLab;
     private List<Contact> mContacts;

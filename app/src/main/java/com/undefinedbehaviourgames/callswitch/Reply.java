@@ -2,8 +2,6 @@ package com.undefinedbehaviourgames.callswitch;
 
 import android.content.Context;
 
-import androidx.core.app.ActivityCompat;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +16,8 @@ public class Reply {
     private UUID mUuid;
     private Priority mPriority;
     private String mReply;
-    private boolean enabled;
+    private boolean mEnabled;
+    private boolean mReplyUnknown;
     private List<Contact> mReplyToList;
     public Reply() {
         mUuid = UUID.randomUUID();
@@ -56,11 +55,19 @@ public class Reply {
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return mEnabled;
     }
 
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        this.mEnabled = enabled;
+    }
+
+    public boolean replyUnknown() {
+        return mReplyUnknown;
+    }
+
+    public void setReplyUnknown(boolean replyUnknown) {
+        mReplyUnknown = replyUnknown;
     }
 
     public String getPriorityText(Context context) {

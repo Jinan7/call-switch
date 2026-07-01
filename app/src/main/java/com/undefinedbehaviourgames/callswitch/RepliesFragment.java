@@ -41,7 +41,7 @@ public class RepliesFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_replies, container, false);
         mRecyclerView = v.findViewById(R.id.replies_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(new RepliesAdapter(ReplyLab.getInstance().getReplies()));
+        mRecyclerView.setAdapter(new RepliesAdapter(ReplyLab.getInstance(getContext()).getReplies()));
         mToolbar = v.findViewById(R.id.replies_toolbar);
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override

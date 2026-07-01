@@ -1,20 +1,27 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import database.DBOpenHelper;
+
 public class ReplyLab {
 
+    private SQLiteDatabase mDatabase;
     private static ReplyLab sReplyLab;
     private List<Reply> mReplies;
-    private ReplyLab() {
+    private ReplyLab(Context context) {
+        mDatabase = new DBOpenHelper(context.getApplicationContext()).getWritableDatabase();
         mReplies = new ArrayList<>();
     };
 
-    public static ReplyLab getInstance() {
+    public static ReplyLab getInstance(Context context) {
         if (sReplyLab == null) {
-            sReplyLab = new ReplyLab();
+            sReplyLab = new ReplyLab(context);
         }
 
         return sReplyLab;

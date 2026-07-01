@@ -1,12 +1,15 @@
 package com.undefinedbehaviourgames.callswitch;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Contact implements Serializable {
 
     private String mName;
     private String mPhone;
     private Long mId;
+    private List<Reply> mReplies;
+    private Reply mActiveReply;
 
     public Contact() {
         mName = "";
