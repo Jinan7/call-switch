@@ -16,6 +16,9 @@
     <string name="priority_high">High</string>
     <string name="priority_normal">Normal</string>
     <string name="priority_low">Low</string>
+    <string name="options">Options</string>
+    <string name="replies">Replies</string>
+    <string name="active_reply">Active Reply</string>
     <string-array name="priority_array">
         <item>High</item>
         <item>Normal</item>

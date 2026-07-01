@@ -23,7 +23,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.List;
 
-public class RepliesFragment extends Fragment {
+public class RepliesFragment extends BottomNavBarFragment {
 
     private static final String TAG = "RepliesFragmentLogger";
     private RecyclerView mRecyclerView;
@@ -39,6 +39,7 @@ public class RepliesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_replies, container, false);
+        setUpNavBar(v, R.id.menu_replies);
         mRecyclerView = v.findViewById(R.id.replies_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new RepliesAdapter(ReplyLab.getInstance(getContext()).getReplies()));

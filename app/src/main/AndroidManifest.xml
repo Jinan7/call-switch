@@ -14,10 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CallSwitch">
         <activity
+            android:name=".ContactActivity"
+            android:exported="false" />
+        <activity
             android:name=".SelectContactsActivity"
             android:exported="false" />
         <activity
             android:name=".EditReplyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ContactsActivity"
             android:exported="false" />
         <activity
             android:name=".RepliesActivity"

@@ -43,6 +43,7 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
     private List<Contact> mPreviousSelectedContacts;
     private QueryHandler mHandler;
     public SelectContactLab(Context context, Callbacks callbacks) {
+        super(context);
         mContext = context.getApplicationContext();
         mHandler = new QueryHandler(mContext);
         mCallbacks = new WeakReference<>(callbacks);
@@ -254,8 +255,4 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
 //        }
     }
 
-    public interface Callbacks {
-        void onQueryComplete();
-        void onSearchComplete();
-    }
 }

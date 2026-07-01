@@ -5,14 +5,14 @@ import android.content.Intent;
 
 import androidx.fragment.app.Fragment;
 
-public class RepliesActivity extends SingleFragmentActivity {
+public class ContactsActivity extends SingleFragmentActivity{
 
     public static Intent newIntent(Context context) {
-        Intent intent = new Intent(context, RepliesActivity.class);
+        Intent intent = new Intent(context, ContactsActivity.class);
         return intent;
     }
     @Override
     public Fragment createFragment() {
-        return RepliesFragment.newInstance();
+        return ContactsFragment.newInstance();
     }
 }

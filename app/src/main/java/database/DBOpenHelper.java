@@ -24,6 +24,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                         "_id integer primary key autoincrement, " +
                         Schema.Contact.Cols.id + ", " +
                         Schema.Contact.Cols.name + ", " +
+                        Schema.Contact.Cols.active_reply + ", " +
                         Schema.Contact.Cols.replies +
                         ")"
         );

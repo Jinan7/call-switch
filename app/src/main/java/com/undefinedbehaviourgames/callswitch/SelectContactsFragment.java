@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SelectContactsFragment extends Fragment implements SelectContactLab.Callbacks {
+public class SelectContactsFragment extends Fragment implements ContactLabHelper.Callbacks {
 
     private static final String ARGS_ID = "reply_id";
     private static final String ARGS_SELECTED_CONTACTS = "selected_contacts";
