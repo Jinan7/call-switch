@@ -1,14 +1,14 @@
 package com.undefinedbehaviourgames.callswitch;
 
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -76,21 +76,42 @@ public class RepliesFragment extends Fragment {
     private class RepliesHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
         private Reply mReply;
-        private ImageButton mReplyPriorityButton;
+        private FrameLayout mReplyPriorityButton;
         private TextView mReplyTextView;
         private SwitchMaterial mSwitch;
         public RepliesHolder(@NonNull View itemView) {
             super(itemView);
-            mReplyPriorityButton = (ImageButton) itemView.findViewById(R.id.reply_priority_button);
+            mReplyPriorityButton = (FrameLayout) itemView.findViewById(R.id.reply_priority_button);
             mReplyTextView = (TextView) itemView.findViewById(R.id.reply_text_view);
             mSwitch = (SwitchMaterial) itemView.findViewById(R.id.toggle_reply);
             mReplyPriorityButton.setOnClickListener(this);
             mReplyTextView.setOnClickListener(this);
+
         }
 
         public void bind(Reply reply) {
             mReply = reply;
             mReplyTextView.setText(reply.getReply());
+            GradientDrawable background = (GradientDrawable) mReplyPriorityButton.getBackground();
+            background.mutate();
+            int stroke_width = (int)getResources().getDimension(R.dimen.circle_stroke_2);
+            switch (mReply.getPriority()) {
+
+                case LOW:
+
+                    background.setColor(getResources().getColor(R.color.priority_green_2, getContext().getTheme()));
+                    background.setStroke(stroke_width, getResources().getColor(R.color.priority_green_3, getContext().getTheme()));
+                    break;
+                case NORMAL:
+                    background.setColor(getResources().getColor(R.color.priority_blue_1, getContext().getTheme()));
+                    background.setStroke(stroke_width, getResources().getColor(R.color.priority_blue_2, getContext().getTheme()));
+                    break;
+                case HIGH:
+                    background.setColor(getResources().getColor(R.color.priority_red_1, getContext().getTheme()));
+                    background.setStroke(stroke_width, getResources().getColor(R.color.priority_red_2, getContext().getTheme()));
+                    break;
+
+            }
         }
 
         @Override

@@ -7,13 +7,17 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="8dp"
     android:layout_marginBottom="8dp">
-    <ImageButton
+    <FrameLayout
         android:id="@+id/reply_priority_button"
-        android:background="@drawable/circle_background"
-        android:scaleType="center"
+        android:background="@drawable/circle_background_stroke_2"
         android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_action_message"/>
+        android:layout_height="50dp">
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:src="@drawable/icons8_urgent_message_96"/>
+    </FrameLayout>
     <LinearLayout
         android:background="@drawable/rounded_rectangle_background_16"
         android:gravity="center_vertical"
