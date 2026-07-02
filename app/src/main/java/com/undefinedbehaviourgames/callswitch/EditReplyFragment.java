@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
@@ -55,6 +57,9 @@ public class EditReplyFragment extends Fragment {
     private TextInputEditText mReplyTextField;
     private LinearLayout mPriorityButton;
     private TextView mPriorityTextView;
+    private SwitchMaterial mEnableSwitch;
+    private SwitchMaterial mReplyUnknownSwitch;
+    private SwitchMaterial mReplaceEqualPrioritySwitch;
     ActivityResultLauncher<Intent> mLauncher;
     private Reply mReply;
     public static EditReplyFragment newInstance(int mode) {
@@ -134,7 +139,7 @@ public class EditReplyFragment extends Fragment {
                         case NEW_REPLY:
                             ReplyLab.getInstance(getContext()).add(getContext(), mReply);
                         case EDIT_REPLY:
-                            ReplyLab.getInstance(getContext()).update(mReply);
+                            ReplyLab.getInstance(getContext()).update(getContext(), mReply);
 
                     }
 
@@ -182,6 +187,34 @@ public class EditReplyFragment extends Fragment {
             }
         });
         mPriorityTextView = v.findViewById(R.id.priority);
+        mEnableSwitch = v.findViewById(R.id.enable_reply_switch);
+
+        mReplyUnknownSwitch = v.findViewById(R.id.reply_unknown_switch);
+        mReplaceEqualPrioritySwitch = v.findViewById(R.id.replace_same_priority_switch);
+
+        mEnableSwitch.setChecked(mReply.isEnabled());
+        mEnableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                mReply.setEnabled(isChecked);
+            }
+        });
+
+        mReplyUnknownSwitch.setChecked(mReply.replyUnknown());
+        mReplyUnknownSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                mReply.setReplyUnknown(isChecked);
+            }
+        });
+
+        mReplaceEqualPrioritySwitch.setChecked(mReply.replaceEqualPriority());
+        mReplaceEqualPrioritySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                mReply.setReplaceEqualPriority(isChecked);
+            }
+        });
         updateUI();
         return v;
     }

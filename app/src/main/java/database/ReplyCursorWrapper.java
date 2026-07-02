@@ -33,6 +33,7 @@ public class ReplyCursorWrapper extends CursorWrapper {
         String replyToListString = getString(getColumnIndex(Cols.reply_to_list));
         int replyUnknown = getInt(getColumnIndex(Cols.reply_unknown));
         int priorityOrdinal = getInt(getColumnIndex(Cols.priority));
+        int replaceEqualPriority = getInt(getColumnIndex(Cols.replace_equal_priority));
 
         ArrayList<Long> replyToList = new Gson().fromJson(replyToListString, new TypeToken<ArrayList<Long>>() {}.getType());
 
@@ -42,7 +43,7 @@ public class ReplyCursorWrapper extends CursorWrapper {
         reply.setReplyToList(replyToList);
         if (replyUnknown == 1) reply.setReplyUnknown(true); else reply.setReplyUnknown(false);
         reply.setPriority(priorityOrdinal);
-
+        if (replaceEqualPriority == 1) reply.setReplaceEqualPriority(true); else reply.setReplaceEqualPriority(false);
         return reply;
     }
 }

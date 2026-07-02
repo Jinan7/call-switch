@@ -12,6 +12,7 @@ public class Schema {
             public static String enabled = "enabled";
             public static String reply_unknown = "reply_unknown";
             public static String reply_to_list = "reply_to_list";
+            public static String replace_equal_priority = "replace_equal_priority";
         }
     }
 

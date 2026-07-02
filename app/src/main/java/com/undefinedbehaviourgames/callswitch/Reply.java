@@ -19,13 +19,14 @@ public class Reply {
     private String mReply;
     private boolean mEnabled;
     private boolean mReplyUnknown;
+    private boolean mReplaceEqualPriority;
     private List<Long> mReplyToList;
     public Reply() {
         mUuid = UUID.randomUUID();
         mPriority = Priority.NORMAL;
         mReplyToList = new ArrayList<>();
         mReply = "";
-        mEnabled = true;
+        mEnabled = false;
     }
 
     public UUID getId() {
@@ -90,6 +91,14 @@ public class Reply {
 
     public void setReplyUnknown(boolean replyUnknown) {
         mReplyUnknown = replyUnknown;
+    }
+
+    public boolean replaceEqualPriority() {
+        return mReplaceEqualPriority;
+    }
+
+    public void setReplaceEqualPriority(boolean replaceEqualPriority) {
+        mReplaceEqualPriority = replaceEqualPriority;
     }
 
     public String getPriorityText(Context context) {

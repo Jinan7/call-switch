@@ -19,6 +19,9 @@
     <string name="options">Options</string>
     <string name="replies">Replies</string>
     <string name="active_reply">Active Reply</string>
+    <string name="enable">Enable</string>
+    <string name="replace_same_priority">Replace Same Priority</string>
+    <string name="if_reply_is_set_to_enabled_all_recipients_active_reply_will_be_replaced_with_they_have_equal_or_less_priority">If Reply is set to Enabled, all Recipients\' active reply will be replaced with they have equal or less priority</string>
     <string-array name="priority_array">
         <item>High</item>
         <item>Normal</item>

@@ -51,6 +51,34 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
+                    <LinearLayout
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            app:tint="@color/grey_10"
+                            android:src="@drawable/ic_action_check"/>
+                        <TextView
+                            android:layout_marginHorizontal="16dp"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/enable"
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/enable_reply_switch"
+                            android:layout_marginEnd="8dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
                     <LinearLayout
                         android:id="@+id/priority_button"
                         android:gravity="center_vertical"
@@ -93,7 +121,6 @@
                         </LinearLayout>
 
                     </LinearLayout>
-
                     <LinearLayout
                         android:gravity="center_vertical"
                         android:layout_marginTop="8dp"
@@ -116,6 +143,33 @@
                             android:textSize="16sp"/>
 
                         <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/reply_unknown_switch"
+                            android:layout_marginEnd="8dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            app:tint="@color/grey_10"
+                            android:src="@drawable/ic_action_swap"/>
+                        <TextView
+                            android:layout_marginHorizontal="16dp"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/replace_same_priority"
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/replace_same_priority_switch"
                             android:layout_marginEnd="8dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>

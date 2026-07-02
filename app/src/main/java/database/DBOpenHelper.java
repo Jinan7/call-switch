@@ -41,6 +41,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                         Schema.Reply.Cols.message + ", " +
                         Schema.Reply.Cols.enabled + ", " +
                         Schema.Reply.Cols.reply_to_list + ", " +
+                        Schema.Reply.Cols.replace_equal_priority + ", " +
                         Schema.Reply.Cols.reply_unknown +
                         ")"
         );
