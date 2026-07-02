@@ -75,22 +75,42 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginHorizontal="8dp"
                 android:background="@drawable/rounded_rectangle_background_16"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/contact_active_reply"
+                android:orientation="horizontal">
+                <FrameLayout
+                    android:id="@+id/contact_reply_priority_button"
+                    android:background="@drawable/circle_background_stroke_2"
+                    android:layout_marginStart="12dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="16dp">
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/icons8_urgent_message_96"/>
+                </FrameLayout>
+                <LinearLayout
+                    android:layout_marginVertical="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="12dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="8dp"
-                    android:layout_marginTop="16dp"/>
-                <ImageButton
-                    android:background="@null"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_action_edit"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="16dp"
-                    android:layout_gravity="end"/>
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/contact_active_reply"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"/>
+                    <ImageButton
+                        android:background="@null"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_action_edit"
+                        android:layout_marginTop="8dp"
+
+                        android:layout_gravity="end"/>
+                </LinearLayout>
+
 
             </LinearLayout>
             <TextView

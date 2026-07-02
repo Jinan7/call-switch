@@ -9,7 +9,8 @@ import java.util.UUID;
 enum Priority {
     LOW,
     NORMAL,
-    HIGH
+    HIGH,
+    DEFAULT
 }
 public class Reply {
 
@@ -24,6 +25,7 @@ public class Reply {
         mPriority = Priority.NORMAL;
         mReplyToList = new ArrayList<>();
         mReply = "";
+        mEnabled = true;
     }
 
     public UUID getId() {

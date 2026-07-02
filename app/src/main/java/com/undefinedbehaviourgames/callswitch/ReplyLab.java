@@ -34,8 +34,8 @@ public class ReplyLab {
 
     public Reply get(UUID id) {
 
-//        ReplyCursorWrapper cursor = queryDatabase( Cols.uuid + " = ?", new String []  { id.toString() });
-        ReplyCursorWrapper cursor = queryDatabase(null, null) ;
+        if (id == null) return null;
+        ReplyCursorWrapper cursor = queryDatabase( Cols.uuid + " = ?", new String []  { id.toString() });
         Reply reply;
         try {
 
@@ -66,13 +66,35 @@ public class ReplyLab {
         return replies;
     }
 
-    public void add(Reply reply) {
+    public void add(Context context, Reply reply) {
 
         ContentValues values = getContentValues(reply);
 
         mDatabase.insert(Schema.Reply.name, null, values);
+
+        //if reply was added successfully, go through reply to list and add reply to each contact and update active reply based on reply priority
+        //make asynchronous
+        Reply newReply = get(reply.getId());
+
+        //if null, reply was not added successfully
+        if (newReply != null) {
+            List<Contact> replyToList = newReply.getReplyToList();
+
+            for (Contact contact : replyToList) {
+                //add the new reply to the list of contact replies
+                contact.addReply(newReply);
+                //update active reply if necessary
+                contact.updateActiveReply(context, newReply);
+                //write to database
+                ContactLab.getInstance(context).update(contact);
+            }
+        }
     }
-    public void update(Reply reply) {}
+    public void update(Reply reply) {
+        ContentValues values = getContentValues(reply);
+        mDatabase.update(Schema.Reply.name, values, Cols.uuid + " = ?", new String[] {reply.getId().toString()});
+    }
+
 
     public ContentValues getContentValues(Reply reply) {
         ContentValues values = new ContentValues();

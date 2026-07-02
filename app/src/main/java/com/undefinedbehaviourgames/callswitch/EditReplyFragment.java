@@ -132,9 +132,10 @@ public class EditReplyFragment extends Fragment {
 
                     switch (mode) {
                         case NEW_REPLY:
-                            ReplyLab.getInstance(getContext()).add(mReply);
+                            ReplyLab.getInstance(getContext()).add(getContext(), mReply);
                         case EDIT_REPLY:
                             ReplyLab.getInstance(getContext()).update(mReply);
+
                     }
 
                     getActivity().finish();

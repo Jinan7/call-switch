@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -156,12 +157,24 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
 
         ContentValues values = getContentValues(contact);
 
-        mDatabase.insert(
-                Schema.Contact.name,
-                null,
-                values
-        );
 
+            mDatabase.insert(
+                    Schema.Contact.name,
+                    null,
+                    values
+            );
+
+    }
+
+    public void update(Contact contact) {
+        ContentValues values = getContentValues(contact);
+
+        mDatabase.update(
+                Schema.Contact.name,
+                values,
+                Schema.Contact.Cols.id + " = ?",
+                new String [] { contact.getId().toString()}
+        );
     }
 
     public ContactCursorWrapper queryDatabase(String queryString, String [] queryArgs, String orderBy ) {

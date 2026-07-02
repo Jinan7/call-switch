@@ -1,8 +1,9 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import android.content.Context;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class Contact implements Serializable {
@@ -17,6 +18,26 @@ public class Contact implements Serializable {
         mName = "";
         mPhone = "";
         mReplies = new ArrayList<>();
+    }
+
+    public void updateActiveReply(Context context, Reply reply) {
+        Reply activeReply = ReplyLab.getInstance(context).get(mActiveReplyId);
+
+        //if there is no current active reply then set active reply to reply argument;
+        if (activeReply == null) {
+            mActiveReplyId = reply.getId();
+            return;
+        }
+
+        //if reply argument has a higher or equal priority than active reply, then replace active reply
+        if (reply.getPriority().ordinal() >= activeReply.getPriority().ordinal()) {
+            mActiveReplyId = reply.getId();
+        }
+
+    }
+
+    public void addReply(Reply reply) {
+        mReplies.add(reply.getId());
     }
 
     public Long getId() {
@@ -60,6 +81,22 @@ public class Contact implements Serializable {
 
     public void setActiveReplyId(UUID id) {
         mActiveReplyId = id;
+    }
+
+    public String getActiveReplyText(Context context) {
+        Reply reply = ReplyLab.getInstance(context).get(mActiveReplyId);
+
+        if (reply == null) return "";
+
+        return reply.getReply();
+    }
+
+    public Priority getActiveReplyPriority(Context context) {
+        Reply reply = ReplyLab.getInstance(context).get(mActiveReplyId);
+
+        if (reply == null) return Priority.DEFAULT;
+
+        return reply.getPriority();
     }
 
     public ArrayList<UUID> getReplies() {
