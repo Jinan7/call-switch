@@ -33,7 +33,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         //create replies table
         db.execSQL(
                 "create table " +
-                        "replies" +
+                        Schema.Reply.name +
                         "(" +
                         "_id integer primary key autoincrement, " +
                         Schema.Reply.Cols.uuid + " UNIQUE, " +

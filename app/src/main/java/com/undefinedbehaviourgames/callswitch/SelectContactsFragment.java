@@ -63,7 +63,7 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
         mReply = ReplyLab.getInstance(getContext()).get(id);
         mSelectContactLab = new SelectContactLab(getContext(), this);
         mSelectContactLab.setPreviousSelectedContacts(mPrevSelectedContacts);
-        mSelectContactLab.startQuery();
+        mSelectContactLab.startQuery(SelectContactsFragment.this);
     }
 
     @Nullable
@@ -106,7 +106,7 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mSelectContactLab.startSearchQuery(s.toString());
+                mSelectContactLab.startSearchQuery(s.toString(), SelectContactsFragment.this);
             }
         });
         mSearchView.addTransitionListener(new SearchView.TransitionListener() {
@@ -142,11 +142,6 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mSelectContactLab.cancel();
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -158,7 +153,7 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     getActivity().finish();
                 }else{
-                    if (mSelectContactLab != null) mSelectContactLab.startQuery();
+                    if (mSelectContactLab != null) mSelectContactLab.startQuery(SelectContactsFragment.this);
                 }
         }
     }

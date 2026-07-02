@@ -5,14 +5,12 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactLab extends ContactLabHelper<Contact> {
+public class ContactLab extends ContactLabHelper<Contact, ContactLabHelper.QueryHandler> {
 
     private static ContactLab sContactLab;
-//    private List<Contact> mContacts;
 
     private ContactLab(Context context) {
-        super(context, Contact.class);
-//        mContacts = new ArrayList<>();
+        super(context, Contact.class, QueryHandler.class);
     }
 
     public static ContactLab getInstance(Context context) {
@@ -24,12 +22,5 @@ public class ContactLab extends ContactLabHelper<Contact> {
         return sContactLab;
     }
 
-//    public void add(Contact contact) {
-//        mContacts.add(contact);
-//    }
-
-//    public List<Contact> getContacts() {
-//        return mContacts;
-//    }
 
 }

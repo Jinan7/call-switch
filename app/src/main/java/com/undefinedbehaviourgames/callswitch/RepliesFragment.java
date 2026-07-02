@@ -66,6 +66,7 @@ public class RepliesFragment extends BottomNavBarFragment {
     @Override
     public void onResume() {
         super.onResume();
+        ((RepliesAdapter)mRecyclerView.getAdapter()).setReplies(ReplyLab.getInstance(getContext()).getReplies());
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -150,6 +151,10 @@ public class RepliesFragment extends BottomNavBarFragment {
         @Override
         public int getItemCount() {
             return mReplies.size();
+        }
+
+        public void setReplies(List<Reply> replies) {
+            mReplies = replies;
         }
     }
 }

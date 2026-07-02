@@ -24,23 +24,24 @@ import database.ContactCursorWrapper;
 import database.DBOpenHelper;
 import database.Schema;
 
-public class ContactLabHelper<T extends Contact> {
+public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.QueryHandler> {
 
     private Class<T> clazz;
+    private Class<U> qClazz;
     public static final int TOKEN_CONTACT = 0;
     public static final int TOKEN_PHONE = 1;
     public static final int TOKEN_SEARCH_CONTACT = 2;
     public static final int TOKEN_LAST_PHONE = 3;
-    private final int DISPLAY_NAME_INDEX = 1;
-    private final int PHONE_INDEX = 1;
-    private final int CONTACT_ID_INDEX = 0;
+    public final int DISPLAY_NAME_INDEX = 1;
+    public final int PHONE_INDEX = 1;
+    public final int CONTACT_ID_INDEX = 0;
     private SQLiteDatabase mDatabase;
     private WeakReference<Callbacks> mCallbacks;
     private final String[] CONTACT_PROJECTION = new String [] {
             ContactsContract.Contacts._ID,
             ContactsContract.Contacts.DISPLAY_NAME,
     };
-    private final String[] PHONE_PROJECTION = new String [] {
+    protected final String[] PHONE_PROJECTION = new String [] {
             ContactsContract.CommonDataKinds.Phone._ID,
             ContactsContract.CommonDataKinds.Phone.NUMBER
     };
@@ -48,25 +49,36 @@ public class ContactLabHelper<T extends Contact> {
     private List<T> mContacts;
     private List<T> mSearchResults;
 
-    public ContactLabHelper(Context context, Class<T> clazz) {
+    public ContactLabHelper(Context context, Class<T> clazz, Class<U> qClazz) {
         mContext = context.getApplicationContext();
         mDatabase = new DBOpenHelper(mContext).getWritableDatabase();
         mContacts = new ArrayList<>();
         mSearchResults = new ArrayList<>();
         this.clazz = clazz;
+        this.qClazz = qClazz;
     }
 
     public void startQuery(Callbacks callbacks) {
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        new QueryHandler(mContext, callbacks).startQuery(TOKEN_CONTACT,
-                null,
-                ContactsContract.Contacts.CONTENT_URI,
-                CONTACT_PROJECTION,
-                ContactsContract.Contacts.HAS_PHONE_NUMBER,
-                null,
-                ContactsContract.Contacts.DISPLAY_NAME + " ASC");
+
+
+        try {
+            U handler = qClazz.getDeclaredConstructor(Context.class, Callbacks.class).newInstance(mContext, callbacks);
+            handler.startQuery(TOKEN_CONTACT,
+                    null,
+                    ContactsContract.Contacts.CONTENT_URI,
+                    CONTACT_PROJECTION,
+                    ContactsContract.Contacts.HAS_PHONE_NUMBER,
+                    null,
+                    ContactsContract.Contacts.DISPLAY_NAME + " ASC");
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException |
+                 InstantiationException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
     public void startSearchQuery(String searchQuery, Callbacks callbacks) {
@@ -178,7 +190,7 @@ public class ContactLabHelper<T extends Contact> {
     }
 
 
-    private class QueryHandler extends AsyncQueryHandler {
+    public class QueryHandler extends AsyncQueryHandler {
 
 
 
@@ -229,6 +241,7 @@ public class ContactLabHelper<T extends Contact> {
                     T contact = clazz.getDeclaredConstructor().newInstance();
                     contact.setName(name);
                     contact.setId(id);
+
                     Uri.Builder builder = ContactsContract.Contacts.CONTENT_URI.buildUpon();
                     ContentUris.appendId(builder, cursor.getLong(CONTACT_ID_INDEX));
                     builder.appendEncodedPath(ContactsContract.Contacts.Data.CONTENT_DIRECTORY);

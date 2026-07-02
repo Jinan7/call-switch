@@ -30,8 +30,16 @@ public class Reply {
         return mUuid;
     }
 
+    public void setId(UUID uuid) {
+        mUuid = uuid;
+    }
+
     public Priority getPriority() {
         return mPriority;
+    }
+
+    public void setPriority(int priority) {
+        mPriority = Priority.values() [priority];
     }
 
     public void setPriority(Priority priority) {
