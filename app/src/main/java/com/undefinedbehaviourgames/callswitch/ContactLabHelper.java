@@ -30,6 +30,7 @@ public class ContactLabHelper<T extends Contact> {
     public static final int TOKEN_CONTACT = 0;
     public static final int TOKEN_PHONE = 1;
     public static final int TOKEN_SEARCH_CONTACT = 2;
+    public static final int TOKEN_LAST_PHONE = 3;
     private final int DISPLAY_NAME_INDEX = 1;
     private final int PHONE_INDEX = 1;
     private final int CONTACT_ID_INDEX = 0;
@@ -103,7 +104,7 @@ public class ContactLabHelper<T extends Contact> {
     public List<T> getContacts() {
 
         List<T> contacts = new ArrayList<>();
-        ContactCursorWrapper cursor = queryDatabase(null, null, Schema.Contact.name + " ASC");
+        ContactCursorWrapper cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
 
         try {
             cursor.moveToFirst();
@@ -143,7 +144,7 @@ public class ContactLabHelper<T extends Contact> {
                 queryArgs,
                 null,
                 null,
-                null,
+                orderBy,
                 null
         );
 
@@ -193,13 +194,16 @@ public class ContactLabHelper<T extends Contact> {
                     break;
 
                 case TOKEN_PHONE:
-                    onPhoneQueryComplete(cursor, (T) cookie);
+                    onPhoneQueryComplete(cursor, (T) cookie, false);
                     break;
                 case TOKEN_SEARCH_CONTACT:
                     mSearchResults.clear();
                     Callbacks _callbacks = mCallbacks.get();
                     if (_callbacks != null) _callbacks.onSearchComplete();
                     onContactSearchQueryComplete(cursor);
+                    break;
+                case TOKEN_LAST_PHONE:
+                    onPhoneQueryComplete(cursor, (T) cookie, true);
                     break;
                 default:
                     break;
@@ -222,7 +226,8 @@ public class ContactLabHelper<T extends Contact> {
                     builder.appendEncodedPath(ContactsContract.Contacts.Data.CONTENT_DIRECTORY);
                     Uri phoneNumbersUri = builder.build();
 
-                    startQuery(TOKEN_PHONE,
+                    int token = cursor.isLast() ? TOKEN_LAST_PHONE : TOKEN_PHONE;
+                    startQuery(token,
                             contact,
                             phoneNumbersUri,
                             PHONE_PROJECTION,
@@ -263,7 +268,7 @@ public class ContactLabHelper<T extends Contact> {
                 if (cursor != null) cursor.close();
             }
         }
-        public void onPhoneQueryComplete(Cursor cursor, T contact) {
+        public void onPhoneQueryComplete(Cursor cursor, T contact, boolean last) {
             try {
                 if (cursor.getCount() == 0) return;
                 cursor.moveToFirst();
@@ -272,7 +277,7 @@ public class ContactLabHelper<T extends Contact> {
                 add(contact);
                 Callbacks callbacks = mCallbacks.get();
 
-                if (callbacks != null) {
+                if (last && callbacks != null) {
                     callbacks.onQueryComplete();
                 }
             } finally {
