@@ -124,6 +124,7 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
 
     @Override
     public void onQueryComplete() {
+        ((SelectContactAdapter) mRecyclerView.getAdapter()).setContacts(mSelectContactLab.getContacts());
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -213,6 +214,10 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
         @Override
         public int getItemCount() {
             return mContacts.size();
+        }
+
+        public void setContacts(List<SelectContact> contacts) {
+            mContacts = contacts;
         }
     }
 }
