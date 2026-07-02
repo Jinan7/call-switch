@@ -44,6 +44,11 @@ public class SelectContactLab extends ContactLabHelper<SelectContact, SelectCont
     @Override
     public List<SelectContact> getContacts() {
         mContacts = super.getContacts();
+
+        for (SelectContact contact : mContacts) {
+            contact.setChecked(isPreviousSelected(contact.getId()));
+        }
+
         return mContacts;
     }
 
@@ -67,39 +72,6 @@ public class SelectContactLab extends ContactLabHelper<SelectContact, SelectCont
             super(context, callbacks);
         }
 
-
-        @Override
-        public void onContactQueryComplete(Cursor cursor) {
-            try {
-                if (cursor.getCount() == 0) return;
-                cursor.moveToFirst();
-
-                while (!cursor.isAfterLast()) {
-                    String name = cursor.getString(DISPLAY_NAME_INDEX);
-                    Long id = cursor.getLong(CONTACT_ID_INDEX);
-                    SelectContact contact = new SelectContact();
-                    contact.setName(name);
-                    contact.setId(id);
-                    contact.setChecked(isPreviousSelected(id));
-                    Uri.Builder builder = ContactsContract.Contacts.CONTENT_URI.buildUpon();
-                    ContentUris.appendId(builder, cursor.getLong(CONTACT_ID_INDEX));
-                    builder.appendEncodedPath(ContactsContract.Contacts.Data.CONTENT_DIRECTORY);
-                    Uri phoneNumbersUri = builder.build();
-
-                    startQuery(TOKEN_PHONE,
-                            contact,
-                            phoneNumbersUri,
-                            PHONE_PROJECTION,
-                            ContactsContract.CommonDataKinds.Phone.MIMETYPE + "=?",
-                            new String[] {ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE},
-                            null);
-
-                    cursor.moveToNext();
-                }
-            } finally {
-                if (cursor != null) cursor.close();
-            }
-        }
 
 
     }

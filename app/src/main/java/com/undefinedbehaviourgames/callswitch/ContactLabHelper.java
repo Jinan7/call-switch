@@ -65,7 +65,8 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
 
 
         try {
-            U handler = qClazz.getDeclaredConstructor(Context.class, Callbacks.class).newInstance(mContext, callbacks);
+
+            U handler = qClazz.getDeclaredConstructor(qClazz.getDeclaringClass() , Context.class, Callbacks.class).newInstance(this, mContext, callbacks);
             handler.startQuery(TOKEN_CONTACT,
                     null,
                     ContactsContract.Contacts.CONTENT_URI,
@@ -75,6 +76,14 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
                     ContactsContract.Contacts.DISPLAY_NAME + " ASC");
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException |
                  InstantiationException e) {
+
+            // Replace YourClass.class with qClazz or any class token you want to inspect
+            java.lang.reflect.Constructor<?>[] constructors = qClazz.getDeclaredConstructors();
+
+            for (java.lang.reflect.Constructor<?> constructor : constructors) {
+                System.out.println("Constructor found: " + constructor.toGenericString());
+            }
+
             throw new RuntimeException(e);
         }
 
@@ -197,7 +206,7 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
         private WeakReference<Callbacks> mCallbacks;
         public QueryHandler(Context context, Callbacks callbacks) {
             super(context.getContentResolver());
-            mCallbacks = new WeakReference(callbacks);
+            mCallbacks = new WeakReference<Callbacks>(callbacks);
         }
         @Override
         @SuppressWarnings("unchecked")

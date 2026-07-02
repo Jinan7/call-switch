@@ -43,7 +43,7 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
     private FrameLayout mOptionsLayout;
     private Button mFinishButton;
     private SearchView mSearchView;
-    private Reply mReply;
+//    private Reply mReply;
     private List<Contact> mPrevSelectedContacts;
     public static SelectContactsFragment newInstance(UUID id, ArrayList<Contact> selectedContacts ) {
         SelectContactsFragment fragment = new SelectContactsFragment();
@@ -60,7 +60,7 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
         super.onCreate(savedInstanceState);
         UUID id = (UUID) getArguments().getSerializable(ARGS_ID);
         mPrevSelectedContacts = (ArrayList<Contact>) getArguments().getSerializable(ARGS_SELECTED_CONTACTS);
-        mReply = ReplyLab.getInstance(getContext()).get(id);
+//        mReply = ReplyLab.getInstance(getContext()).get(id);
         mSelectContactLab = new SelectContactLab(getContext(), this);
         mSelectContactLab.setPreviousSelectedContacts(mPrevSelectedContacts);
         mSelectContactLab.startQuery(SelectContactsFragment.this);

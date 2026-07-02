@@ -34,7 +34,8 @@ public class ReplyLab {
 
     public Reply get(UUID id) {
 
-        ReplyCursorWrapper cursor = queryDatabase( Cols.uuid + " = ?", new String []  { id.toString() });
+//        ReplyCursorWrapper cursor = queryDatabase( Cols.uuid + " = ?", new String []  { id.toString() });
+        ReplyCursorWrapper cursor = queryDatabase(null, null) ;
         Reply reply;
         try {
 
