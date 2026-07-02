@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
@@ -21,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import database.ContactCursorWrapperHelper;
+import database.ContactCursorWrapper;
 import database.DBOpenHelper;
 import database.Schema;
 
@@ -104,7 +103,7 @@ public class ContactLabHelper<T extends Contact> {
     public List<T> getContacts() {
 
         List<T> contacts = new ArrayList<>();
-        ContactCursorWrapperHelper cursor = queryDatabase(null, null, Schema.Contact.name + " ASC");
+        ContactCursorWrapper cursor = queryDatabase(null, null, Schema.Contact.name + " ASC");
 
         try {
             cursor.moveToFirst();
@@ -135,7 +134,7 @@ public class ContactLabHelper<T extends Contact> {
 
     }
 
-    public ContactCursorWrapperHelper queryDatabase(String queryString, String [] queryArgs, String orderBy ) {
+    public ContactCursorWrapper queryDatabase(String queryString, String [] queryArgs, String orderBy ) {
 
         Cursor cursor = mDatabase.query(
                 Schema.Contact.name,
@@ -148,7 +147,7 @@ public class ContactLabHelper<T extends Contact> {
                 null
         );
 
-        return new ContactCursorWrapperHelper(cursor, clazz);
+        return new ContactCursorWrapper(cursor, clazz);
     }
 
     public ContentValues getContentValues(Contact contact) {
