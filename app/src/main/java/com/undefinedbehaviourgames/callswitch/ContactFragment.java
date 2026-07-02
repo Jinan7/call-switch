@@ -16,6 +16,7 @@ public class ContactFragment extends Fragment {
     private static final String ARG_ID = "contact_id";
     private TextView mContactIconTextView;
     private TextView mContactNameTextView;
+    private TextView mContactPhoneTextView;
     private Contact mContact;
 
     public static ContactFragment newInstance(Long id) {
@@ -39,6 +40,7 @@ public class ContactFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_contact, container, false);
         mContactIconTextView = v.findViewById(R.id.contact_contact_icon);
         mContactNameTextView = v.findViewById(R.id.contact_contact_name);
+        mContactPhoneTextView = v.findViewById(R.id.contact_contact_phone);
         updateUI();
         return v;
     }
@@ -46,5 +48,6 @@ public class ContactFragment extends Fragment {
     private void updateUI() {
         mContactNameTextView.setText(mContact.getName());
         mContactIconTextView.setText(mContact.getIcon());
+        mContactPhoneTextView.setText(mContact.getPhone());
     }
 }

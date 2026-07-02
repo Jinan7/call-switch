@@ -35,10 +35,35 @@
                     android:textSize="30sp"
                     android:textStyle="bold"/>
             </LinearLayout>
+            <LinearLayout
+                android:background="@drawable/rounded_rectangle_background_16"
+                android:gravity="center_vertical"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginVertical="16dp"
+                    android:src="@drawable/ic_action_phone"/>
+                <TextView
+                    android:id="@+id/contact_contact_phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="9999999999"
+                    android:layout_marginLeft="16dp"/>
+
+
+            </LinearLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="8dp"
                 android:textAllCaps="true"
                 android:layout_marginHorizontal="16dp"
                 android:textStyle="bold"
