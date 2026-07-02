@@ -3,28 +3,38 @@ package com.undefinedbehaviourgames.callswitch;
 import android.Manifest;
 import android.content.AsyncQueryHandler;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.telecom.Call;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
+import com.google.gson.Gson;
+
 import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import database.ContactCursorWrapperHelper;
+import database.DBOpenHelper;
+import database.Schema;
+
 public class ContactLabHelper<T extends Contact> {
 
+    private Class<T> clazz;
     public static final int TOKEN_CONTACT = 0;
     public static final int TOKEN_PHONE = 1;
     public static final int TOKEN_SEARCH_CONTACT = 2;
     private final int DISPLAY_NAME_INDEX = 1;
     private final int PHONE_INDEX = 1;
     private final int CONTACT_ID_INDEX = 0;
+    private SQLiteDatabase mDatabase;
     private WeakReference<Callbacks> mCallbacks;
     private final String[] CONTACT_PROJECTION = new String [] {
             ContactsContract.Contacts._ID,
@@ -38,10 +48,12 @@ public class ContactLabHelper<T extends Contact> {
     private List<T> mContacts;
     private List<T> mSearchResults;
 
-    public ContactLabHelper(Context context) {
+    public ContactLabHelper(Context context, Class<T> clazz) {
         mContext = context.getApplicationContext();
+        mDatabase = new DBOpenHelper(mContext).getWritableDatabase();
         mContacts = new ArrayList<>();
         mSearchResults = new ArrayList<>();
+        this.clazz = clazz;
     }
 
     public void startQuery(Callbacks callbacks) {
@@ -87,9 +99,71 @@ public class ContactLabHelper<T extends Contact> {
 
         return null;
     }
+
+    @SuppressWarnings("unchecked")
     public List<T> getContacts() {
-        return mContacts;
+
+        List<T> contacts = new ArrayList<>();
+        ContactCursorWrapperHelper cursor = queryDatabase(null, null, Schema.Contact.name + " ASC");
+
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                contacts.add((T) cursor.getContact());
+                cursor.moveToNext();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            cursor.close();
+        }
+
+        return contacts;
     }
+
+    public void add(Contact contact) {
+
+        ContentValues values = getContentValues(contact);
+
+        mDatabase.insert(
+                Schema.Contact.name,
+                null,
+                values
+        );
+
+    }
+
+    public ContactCursorWrapperHelper queryDatabase(String queryString, String [] queryArgs, String orderBy ) {
+
+        Cursor cursor = mDatabase.query(
+                Schema.Contact.name,
+                null,
+                queryString,
+                queryArgs,
+                null,
+                null,
+                null,
+                null
+        );
+
+        return new ContactCursorWrapperHelper(cursor, clazz);
+    }
+
+    public ContentValues getContentValues(Contact contact) {
+
+        ContentValues values = new ContentValues();
+        values.put(Schema.Contact.Cols.id, contact.getId());
+        values.put(Schema.Contact.Cols.name, contact.getName());
+        values.put(Schema.Contact.Cols.phone, contact.getPhone());
+        if (contact.getActiveReplyId() != null)  values.put(Schema.Contact.Cols.active_reply, contact.getActiveReplyId().toString());
+        else values.put(Schema.Contact.Cols.active_reply, "");
+        values.put(Schema.Contact.Cols.replies, new Gson().toJson(contact.getReplies()));
+        return values;
+    }
+
+
 
     public List<T> getSearchResults() {
         return mSearchResults;
@@ -141,7 +215,7 @@ public class ContactLabHelper<T extends Contact> {
                 while (!cursor.isAfterLast()) {
                     String name = cursor.getString(DISPLAY_NAME_INDEX);
                     Long id = cursor.getLong(CONTACT_ID_INDEX);
-                    Contact contact = new Contact();
+                    T contact = clazz.getDeclaredConstructor().newInstance();
                     contact.setName(name);
                     contact.setId(id);
                     Uri.Builder builder = ContactsContract.Contacts.CONTENT_URI.buildUpon();
@@ -159,6 +233,9 @@ public class ContactLabHelper<T extends Contact> {
 
                     cursor.moveToNext();
                 }
+            } catch (InvocationTargetException | InstantiationException | NoSuchMethodException |
+                     IllegalAccessException e) {
+                throw new RuntimeException(e);
             } finally {
                 if (cursor != null) cursor.close();
             }
@@ -193,12 +270,10 @@ public class ContactLabHelper<T extends Contact> {
                 cursor.moveToFirst();
                 String phone = cursor.getString(PHONE_INDEX);
                 contact.setPhone(phone);
-                mContacts.add(contact);
+                add(contact);
                 Callbacks callbacks = mCallbacks.get();
 
                 if (callbacks != null) {
-                    Log.d("Debug", contact.getName());
-                    Log.d("Debug", String.valueOf(mContacts.size()));
                     callbacks.onQueryComplete();
                 }
             } finally {

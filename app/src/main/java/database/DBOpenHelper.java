@@ -22,8 +22,9 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                 "create table " + Schema.Contact.name +
                         "(" +
                         "_id integer primary key autoincrement, " +
-                        Schema.Contact.Cols.id + ", " +
+                        Schema.Contact.Cols.id + " UNIQUE, " +
                         Schema.Contact.Cols.name + ", " +
+                        Schema.Contact.Cols.phone + ", " +
                         Schema.Contact.Cols.active_reply + ", " +
                         Schema.Contact.Cols.replies +
                         ")"
@@ -35,7 +36,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                         "replies" +
                         "(" +
                         "_id integer primary key autoincrement, " +
-                        Schema.Reply.Cols.uuid + ", " +
+                        Schema.Reply.Cols.uuid + " UNIQUE, " +
                         Schema.Reply.Cols.priority + ", " +
                         Schema.Reply.Cols.message + ", " +
                         Schema.Reply.Cols.enabled + ", " +

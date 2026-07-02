@@ -1,6 +1,9 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import static com.undefinedbehaviourgames.callswitch.SelectContactsActivity.READ_CONTACT_REQUEST_CODE;
+
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,12 +50,28 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
 
     @Override
     public void onQueryComplete() {
+        ((ContactAdapter) mRecyclerView.getAdapter()).setContacts(ContactLab.getInstance(getContext()).getContacts());
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
     public void onSearchComplete() {
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+
+            case  READ_CONTACT_REQUEST_CODE:
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    getActivity().finish();
+                }else{
+                    ContactLab.getInstance(getContext()).startQuery(ContactsFragment.this);
+                }
+        }
     }
 
     private class ContactHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -108,6 +127,10 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
         @Override
         public int getItemCount() {
             return mContacts.size();
+        }
+
+        public void setContacts(List<Contact> contacts) {
+            mContacts = contacts;
         }
     }
 }

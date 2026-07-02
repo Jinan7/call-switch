@@ -11,7 +11,7 @@ public class ContactLab extends ContactLabHelper<Contact> {
 //    private List<Contact> mContacts;
 
     private ContactLab(Context context) {
-        super(context);
+        super(context, Contact.class);
 //        mContacts = new ArrayList<>();
     }
 

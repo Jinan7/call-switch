@@ -1,19 +1,22 @@
 package com.undefinedbehaviourgames.callswitch;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Contact implements Serializable {
 
     private String mName;
     private String mPhone;
     private Long mId;
-    private List<Reply> mReplies;
-    private Reply mActiveReply;
+    private ArrayList<UUID> mReplies;
+    private UUID mActiveReplyId;
 
     public Contact() {
         mName = "";
         mPhone = "";
+        mReplies = new ArrayList<>();
     }
 
     public Long getId() {
@@ -49,5 +52,21 @@ public class Contact implements Serializable {
         }
 
         return result;
+    }
+
+    public UUID getActiveReplyId() {
+        return mActiveReplyId;
+    }
+
+    public void setActiveReplyId(UUID id) {
+        mActiveReplyId = id;
+    }
+
+    public ArrayList<UUID> getReplies() {
+        return mReplies;
+    }
+
+    public void setReplies(ArrayList<UUID> replies) {
+        mReplies = replies;
     }
 }
