@@ -88,23 +88,31 @@ public class ContactLabHelper<T extends Contact> {
                 ContactsContract.Contacts.DISPLAY_NAME + " ASC");
     }
 
+    @SuppressWarnings("unchecked")
     public T get(Long id) {
 
         //make asynchronous
-        for (T contact : mContacts) {
-            if (contact.getId().equals(id)) {
-                return contact;
-            }
+        String _id = id.toString();
+        ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.id + " = ?", new String [] {id.toString()}, null);
+        T contact;
+        try {
+            cursor.moveToFirst();
+            contact = (T) cursor.getContact();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            cursor.close();
         }
 
-        return null;
+        return contact;
     }
 
     @SuppressWarnings("unchecked")
     public List<T> getContacts() {
 
         List<T> contacts = new ArrayList<>();
-        ContactCursorWrapper cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
+        ContactCursorWrapper<T> cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
 
         try {
             cursor.moveToFirst();
@@ -154,7 +162,7 @@ public class ContactLabHelper<T extends Contact> {
     public ContentValues getContentValues(Contact contact) {
 
         ContentValues values = new ContentValues();
-        values.put(Schema.Contact.Cols.id, contact.getId());
+        values.put(Schema.Contact.Cols.id, contact.getId().toString());
         values.put(Schema.Contact.Cols.name, contact.getName());
         values.put(Schema.Contact.Cols.phone, contact.getPhone());
         if (contact.getActiveReplyId() != null)  values.put(Schema.Contact.Cols.active_reply, contact.getActiveReplyId().toString());
