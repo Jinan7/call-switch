@@ -101,10 +101,10 @@ public class EditReplyFragment extends Fragment {
 
                 if (data != null) {
                     @SuppressWarnings("unchecked")
-                    ArrayList<Contact> selectedContacts = (ArrayList<Contact>) data.getSerializableExtra(EXTRA_SELECTED_CONTACTS);
+                    ArrayList<Long> selectedContacts = (ArrayList<Long>) data.getSerializableExtra(EXTRA_SELECTED_CONTACTS);
                     mReply.setReplyToList(selectedContacts);
                     ContactAdapter adapter = (ContactAdapter) mRecyclerView.getAdapter();
-                    adapter.setContacts(mReply.getReplyToList());
+                    adapter.setContacts(mReply.getReplyToList(getContext()));
                     adapter.notifyDataSetChanged();
                 }
 
@@ -148,13 +148,13 @@ public class EditReplyFragment extends Fragment {
         mAddContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = SelectContactsActivity.newIntent(getContext(), mReply.getId(), mReply.getReplyToList());
+                Intent intent = SelectContactsActivity.newIntent(getContext(), mReply.getId(), mReply.getReplyToList(getContext()));
                 mLauncher.launch(intent);
             }
         });
         mRecyclerView = v.findViewById(R.id.selected_contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(new ContactAdapter(mReply.getReplyToList()));
+        mRecyclerView.setAdapter(new ContactAdapter(mReply.getReplyToList(getContext())));
         mReplyTextField = v.findViewById(R.id.reply_text_field);
         mReplyTextField.addTextChangedListener(new TextWatcher() {
             @Override

@@ -19,7 +19,7 @@ public class Reply {
     private String mReply;
     private boolean mEnabled;
     private boolean mReplyUnknown;
-    private List<Contact> mReplyToList;
+    private List<Long> mReplyToList;
     public Reply() {
         mUuid = UUID.randomUUID();
         mPriority = Priority.NORMAL;
@@ -56,11 +56,23 @@ public class Reply {
         mReply = reply;
     }
 
-    public List<Contact> getReplyToList() {
+    public List<Long> getReplyToList() {
         return mReplyToList;
     }
 
-    public void setReplyToList(List<Contact> replyToList) {
+    public List<Contact> getReplyToList(Context context) {
+        //make asynchronous
+        ArrayList<Contact> replyToList = new ArrayList<>();
+
+        for (Long id : mReplyToList) {
+            Contact contact = ContactLab.getInstance(context).get(id);
+            if (contact != null) replyToList.add(contact);
+        }
+
+        return replyToList;
+    }
+
+    public void setReplyToList(List<Long> replyToList) {
         mReplyToList = replyToList;
     }
 

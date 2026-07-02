@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
@@ -78,11 +79,10 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException |
                  InstantiationException e) {
 
-            // Replace YourClass.class with qClazz or any class token you want to inspect
             java.lang.reflect.Constructor<?>[] constructors = qClazz.getDeclaredConstructors();
 
             for (java.lang.reflect.Constructor<?> constructor : constructors) {
-                System.out.println("Constructor found: " + constructor.toGenericString());
+                Log.d("Constructor found", constructor.toGenericString());
             }
 
             throw new RuntimeException(e);

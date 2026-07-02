@@ -78,7 +78,7 @@ public class ReplyLab {
 
         //if null, reply was not added successfully
         if (newReply != null) {
-            List<Contact> replyToList = newReply.getReplyToList();
+            List<Contact> replyToList = newReply.getReplyToList(context);
 
             for (Contact contact : replyToList) {
                 //add the new reply to the list of contact replies

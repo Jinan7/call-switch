@@ -4,17 +4,25 @@ import static com.undefinedbehaviourgames.callswitch.Priority.HIGH;
 import static com.undefinedbehaviourgames.callswitch.Priority.LOW;
 import static com.undefinedbehaviourgames.callswitch.Priority.NORMAL;
 
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.switchmaterial.SwitchMaterial;
+
+import java.util.List;
 
 public class ContactFragment extends Fragment {
     private static final String ARG_ID = "contact_id";
@@ -23,6 +31,7 @@ public class ContactFragment extends Fragment {
     private TextView mContactPhoneTextView;
     private TextView mContactActiveReplyTextView;
     private FrameLayout mPriorityIcon;
+    private RecyclerView mRecyclerView;
     private Contact mContact;
 
     public static ContactFragment newInstance(Long id) {
@@ -49,6 +58,10 @@ public class ContactFragment extends Fragment {
         mContactPhoneTextView = v.findViewById(R.id.contact_contact_phone);
         mContactActiveReplyTextView = v.findViewById(R.id.contact_active_reply);
         mPriorityIcon = v.findViewById(R.id.contact_reply_priority_button);
+        mRecyclerView = v.findViewById(R.id.contact_replies_recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setAdapter(new RepliesAdapter(mContact.getReplies(getContext())));
+
         updateUI();
         return v;
     }
@@ -79,6 +92,89 @@ public class ContactFragment extends Fragment {
             default:
                 break;
 
+        }
+    }
+
+
+
+    private class RepliesHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+
+        private Reply mReply;
+        private FrameLayout mReplyPriorityButton;
+        private TextView mReplyTextView;
+        public RepliesHolder(@NonNull View itemView) {
+            super(itemView);
+            mReplyPriorityButton = (FrameLayout) itemView.findViewById(R.id.contact_reply_priority_button);
+            mReplyTextView = (TextView) itemView.findViewById(R.id.contact_reply_text_view);
+//            mReplyPriorityButton.setOnClickListener(this);
+//            mReplyTextView.setOnClickListener(this);
+
+        }
+
+        public void bind(Reply reply) {
+            mReply = reply;
+            mReplyTextView.setText(reply.getReply());
+            GradientDrawable background = (GradientDrawable) mReplyPriorityButton.getBackground();
+            background.mutate();
+            int stroke_width = (int)getResources().getDimension(R.dimen.circle_stroke_2);
+            switch (mReply.getPriority()) {
+
+                case LOW:
+
+                    background.setColor(getResources().getColor(R.color.priority_green_2, getContext().getTheme()));
+                    background.setStroke(stroke_width, getResources().getColor(R.color.priority_green_3, getContext().getTheme()));
+                    break;
+                case NORMAL:
+                    background.setColor(getResources().getColor(R.color.priority_blue_1, getContext().getTheme()));
+                    background.setStroke(stroke_width, getResources().getColor(R.color.priority_blue_2, getContext().getTheme()));
+                    break;
+                case HIGH:
+                    background.setColor(getResources().getColor(R.color.priority_red_1, getContext().getTheme()));
+                    background.setStroke(stroke_width, getResources().getColor(R.color.priority_red_2, getContext().getTheme()));
+                    break;
+
+            }
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mReply.getId());
+            startActivity(intent);
+        }
+
+        @Override
+        public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+            mReply.setEnabled(isChecked);
+        }
+    }
+
+    private class RepliesAdapter extends RecyclerView.Adapter<RepliesHolder> {
+
+        List<Reply> mReplies;
+
+        public RepliesAdapter(List<Reply> replies) {
+            mReplies = replies;
+        }
+        @NonNull
+        @Override
+        public RepliesHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(getContext()).inflate(R.layout.component_contact_reply, parent, false);
+
+            return new RepliesHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RepliesHolder holder, int position) {
+            holder.bind(mReplies.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return mReplies.size();
+        }
+
+        public void setReplies(List<Reply> replies) {
+            mReplies = replies;
         }
     }
 }

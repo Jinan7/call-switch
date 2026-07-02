@@ -133,7 +133,7 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
     }
 
     public void onFinish() {
-        ArrayList<Contact> selectedContacts = new ArrayList<>();
+        ArrayList<Long> selectedContacts = new ArrayList<>();
         selectedContacts = mSelectContactLab.getSelectedContacts();
         Intent result = new Intent();
         result.putExtra(EXTRA_SELECTED_CONTACTS, selectedContacts);

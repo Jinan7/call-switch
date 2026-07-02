@@ -31,11 +31,11 @@ public class SelectContactLab extends ContactLabHelper<SelectContact, SelectCont
     }
 
 
-    public ArrayList<Contact> getSelectedContacts() {
-        ArrayList<Contact> selectedContacts = new ArrayList<>();
+    public ArrayList<Long> getSelectedContacts() {
+        ArrayList<Long> selectedContacts = new ArrayList<>();
         for (SelectContact contact : mContacts) {
             if (contact.isChecked()) {
-                selectedContacts.add((Contact) contact);
+                selectedContacts.add(contact.getId());
             }
         }
         return selectedContacts;

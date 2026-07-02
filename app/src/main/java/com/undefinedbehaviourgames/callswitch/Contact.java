@@ -1,5 +1,7 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import static database.Schema.Contact.Cols.id;
+
 import android.content.Context;
 
 import java.io.Serializable;
@@ -101,6 +103,17 @@ public class Contact implements Serializable {
 
     public ArrayList<UUID> getReplies() {
         return mReplies;
+    }
+
+    public ArrayList<Reply> getReplies(Context context) {
+        //make asynchronous
+        ArrayList<Reply> replies = new ArrayList<>();
+
+        for (UUID replyUuid : mReplies) {
+            Reply reply = ReplyLab.getInstance(context).get(replyUuid);
+            if (reply != null) replies.add(reply);
+        }
+        return replies;
     }
 
     public void setReplies(ArrayList<UUID> replies) {

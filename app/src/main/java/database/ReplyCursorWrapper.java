@@ -34,7 +34,7 @@ public class ReplyCursorWrapper extends CursorWrapper {
         int replyUnknown = getInt(getColumnIndex(Cols.reply_unknown));
         int priorityOrdinal = getInt(getColumnIndex(Cols.priority));
 
-        ArrayList<Contact> replyToList = new Gson().fromJson(replyToListString, new TypeToken<ArrayList<Contact>>() {}.getType());
+        ArrayList<Long> replyToList = new Gson().fromJson(replyToListString, new TypeToken<ArrayList<Long>>() {}.getType());
 
         reply.setId(UUID.fromString(uuidString));
         reply.setReply(message);

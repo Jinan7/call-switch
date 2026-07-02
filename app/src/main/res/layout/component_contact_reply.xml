@@ -36,7 +36,6 @@
             android:layout_marginEnd="8dp"
             android:text="@string/empty_reply"
             android:textSize="16sp"
-            android:textStyle="bold"
             android:maxLines="1"
             android:ellipsize="end" />
 
