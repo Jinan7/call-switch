@@ -99,13 +99,19 @@ public class ContactFragment extends Fragment {
                 break;
             case HIGH:
                 background.setColor(getColor(R.color.priority_red_1));
-                background.setStroke(stroke_width, getColor(R.color.priority_red_2));
+                background.setStroke(stroke_width, getColor(R.color.priority_red_3));
                 break;
             default:
                 state.setVisible(false, false);
                 break;
 
         }
+
+
+        GradientDrawable contactIconBackground = (GradientDrawable) mContactIconTextView.getBackground();
+        contactIconBackground.mutate();
+        contactIconBackground.setColor(mContact.getColor());
+        mContactIconTextView.setTextColor(mContact.getSecondaryColor());
 
 
     }
@@ -148,7 +154,7 @@ public class ContactFragment extends Fragment {
                     break;
                 case HIGH:
                     background.setColor(getColor(R.color.priority_red_1));
-                    background.setStroke(stroke_width, getColor(R.color.priority_red_2));
+                    background.setStroke(stroke_width, getColor(R.color.priority_red_3));
                     break;
 
             }

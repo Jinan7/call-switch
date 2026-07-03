@@ -15,6 +15,8 @@ public class Contact implements Serializable {
     private Long mId;
     private ArrayList<UUID> mReplies;
     private UUID mActiveReplyId;
+    private int mColor;
+    private int mSecondaryColor;
 
     public Contact() {
         mName = "";
@@ -100,6 +102,22 @@ public class Contact implements Serializable {
 
     public void setPhone(String phone) {
         mPhone = phone;
+    }
+
+    public int getColor() {
+        return mColor;
+    }
+
+    public void setColor(int color) {
+        mColor = color;
+    }
+
+    public int getSecondaryColor() {
+        return mSecondaryColor;
+    }
+
+    public void setSecondaryColor(int secondaryColor) {
+        mSecondaryColor = secondaryColor;
     }
 
     public String getIcon() {

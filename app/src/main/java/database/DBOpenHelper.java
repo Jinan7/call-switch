@@ -26,7 +26,9 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                         Schema.Contact.Cols.name + " COLLATE NOCASE, " +
                         Schema.Contact.Cols.phone + ", " +
                         Schema.Contact.Cols.active_reply + ", " +
-                        Schema.Contact.Cols.replies +
+                        Schema.Contact.Cols.replies + ", " +
+                        Schema.Contact.Cols.color + ", " +
+                        Schema.Contact.Cols.secondary_color +
                         ")"
         );
 

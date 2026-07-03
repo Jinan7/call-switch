@@ -4,6 +4,7 @@ import static com.undefinedbehaviourgames.callswitch.SelectContactsActivity.READ
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,6 +95,11 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
             mContactName.setText(contact.getName());
             mContactPhone.setText(contact.getPhone());
             mContactIcon.setText(contact.getIcon());
+
+            GradientDrawable background = (GradientDrawable) mContactIcon.getBackground();
+            background.mutate();
+            background.setColor(contact.getColor());
+            mContactIcon.setTextColor(contact.getSecondaryColor());
         }
 
         @Override

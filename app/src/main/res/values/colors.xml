@@ -21,6 +21,8 @@
     <color name="grey_13">#2a2a2a</color>
     <color name="grey_14">#2a2a2a</color>
     <color name="grey_15">#080808</color>
+    <color name="priority_red_4">#721010</color>
+    <color name="priority_red_3">#851212</color>
     <color name="priority_red_2">#BE1A1A</color>
     <color name="priority_red_1">#D0311E</color>
     <color name="priority_blue_2">#293681</color>
@@ -43,5 +45,23 @@
     <color name="purple_2">#410b85</color>
     <color name="blue_1">#5fd5f3</color>
     <color name="blue_2">#003642</color>
+
+    <integer-array name="contact_colors">
+        <item name="pink">@color/pink_1</item>
+        <item name="green">@color/green_1</item>
+        <item name="yellow">@color/yellow_1</item>
+        <item name="red">@color/red_1</item>
+        <item name="purple">@color/purple_1</item>
+        <item name="blue">@color/blue_1</item>
+    </integer-array>
+
+    <integer-array name="contact_colors_dark">
+        <item name="pink">@color/pink_2</item>
+        <item name="green">@color/green_2</item>
+        <item name="yellow">@color/yellow_2</item>
+        <item name="red">@color/red_2</item>
+        <item name="purple">@color/purple_2</item>
+        <item name="blue">@color/blue_2</item>
+    </integer-array>
 
 </resources>

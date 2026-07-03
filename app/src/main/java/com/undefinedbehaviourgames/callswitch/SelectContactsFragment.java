@@ -6,6 +6,7 @@ import static com.undefinedbehaviourgames.callswitch.SelectContactsActivity.READ
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -181,6 +182,11 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
             mSelectContactPhone.setText(contact.getPhone());
             mSelectContactIcon.setText(contact.getIcon());
             mSelectContactCheckBox.setChecked(contact.isChecked());
+
+            GradientDrawable background = (GradientDrawable) mSelectContactIcon.getBackground();
+            background.mutate();
+            background.setColor(contact.getColor());
+            mSelectContactIcon.setTextColor(contact.getSecondaryColor());
         }
 
 

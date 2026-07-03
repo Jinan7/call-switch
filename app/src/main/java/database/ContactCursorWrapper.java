@@ -11,6 +11,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import database.Schema.Contact.Cols;
+
 public class ContactCursorWrapper<T extends Contact> extends CursorWrapper {
     /**
      * Creates a cursor wrapper.
@@ -28,11 +30,13 @@ public class ContactCursorWrapper<T extends Contact> extends CursorWrapper {
 
         T contact = clazz.getDeclaredConstructor().newInstance();
 
-        Long id = getLong(getColumnIndex(Schema.Contact.Cols.id));
-        String name = getString(getColumnIndex(Schema.Contact.Cols.name));
-        String phone = getString(getColumnIndex(Schema.Contact.Cols.phone));
-        String activeReplyId = getString(getColumnIndex(Schema.Contact.Cols.active_reply));
-        String repliesString = getString(getColumnIndex(Schema.Contact.Cols.replies));
+        Long id = getLong(getColumnIndex(Cols.id));
+        String name = getString(getColumnIndex(Cols.name));
+        String phone = getString(getColumnIndex(Cols.phone));
+        String activeReplyId = getString(getColumnIndex(Cols.active_reply));
+        String repliesString = getString(getColumnIndex(Cols.replies));
+        int color = getInt(getColumnIndex(Cols.color));
+        int secondaryColor = getInt(getColumnIndex(Cols.secondary_color));
 
         ArrayList<UUID> replies = new Gson().fromJson(repliesString, new TypeToken<ArrayList<UUID>>(){}.getType());
         contact.setId(id);
@@ -44,6 +48,8 @@ public class ContactCursorWrapper<T extends Contact> extends CursorWrapper {
             contact.setActiveReplyId(null);
         }
         contact.setReplies(replies);
+        contact.setColor(color);
+        contact.setSecondaryColor(secondaryColor);
         return contact;
     }
 }

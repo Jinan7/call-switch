@@ -21,6 +21,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import database.ContactCursorWrapper;
 import database.DBOpenHelper;
@@ -51,11 +52,16 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
     private List<T> mContacts;
     private List<T> mSearchResults;
 
+    private int [] colors;
+    private int [] colorsSecondary;
+
     public ContactLabHelper(Context context, Class<T> clazz, Class<U> qClazz) {
         mContext = context.getApplicationContext();
         mDatabase = new DBOpenHelper(mContext).getWritableDatabase();
         mContacts = new ArrayList<>();
         mSearchResults = new ArrayList<>();
+        colors = context.getResources().getIntArray(R.array.contact_colors);
+        colorsSecondary = context.getResources().getIntArray(R.array.contact_colors_dark);
         this.clazz = clazz;
         this.qClazz = qClazz;
     }
@@ -202,6 +208,8 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
         if (contact.getActiveReplyId() != null)  values.put(Schema.Contact.Cols.active_reply, contact.getActiveReplyId().toString());
         else values.put(Schema.Contact.Cols.active_reply, "");
         values.put(Schema.Contact.Cols.replies, new Gson().toJson(contact.getReplies()));
+        values.put(Schema.Contact.Cols.color, contact.getColor());
+        values.put(Schema.Contact.Cols.secondary_color, contact.getSecondaryColor());
         return values;
     }
 
@@ -261,9 +269,13 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
                     String name = cursor.getString(DISPLAY_NAME_INDEX);
                     Long id = cursor.getLong(CONTACT_ID_INDEX);
                     T contact = clazz.getDeclaredConstructor().newInstance();
+
+                    Random random = new Random();
+                    int colorIndex = random.nextInt(colors.length);
                     contact.setName(name);
                     contact.setId(id);
-
+                    contact.setColor(colors[colorIndex]);
+                    contact.setSecondaryColor(colorsSecondary[colorIndex]);
                     Uri.Builder builder = ContactsContract.Contacts.CONTENT_URI.buildUpon();
                     ContentUris.appendId(builder, cursor.getLong(CONTACT_ID_INDEX));
                     builder.appendEncodedPath(ContactsContract.Contacts.Data.CONTENT_DIRECTORY);

@@ -27,6 +27,8 @@ public class Schema {
             public static String phone = "phone";
             public static String active_reply = "active_reply";
             public static String replies = "replies";
+            public static String color = "color";
+            public static String secondary_color = "secondary_color";
         }
 
     }
