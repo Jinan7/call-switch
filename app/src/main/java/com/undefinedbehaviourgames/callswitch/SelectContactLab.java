@@ -52,6 +52,16 @@ public class SelectContactLab extends ContactLabHelper<SelectContact, SelectCont
         return mContacts;
     }
 
+    public List<SelectContact> getContacts(String queryString) {
+        List<SelectContact> contacts = super.getContacts(queryString);
+
+        for (SelectContact contact : contacts) {
+            contact.setChecked(isSelected(contact.getId()));
+        }
+
+        return contacts;
+    }
+
     public void setPreviousSelectedContacts(List<Contact> selectedContacts) {
         mPreviousSelectedContacts = selectedContacts;
     }
@@ -61,6 +71,17 @@ public class SelectContactLab extends ContactLabHelper<SelectContact, SelectCont
         for (Contact contact : mPreviousSelectedContacts) {
             if (contact.getId().equals(id)) {
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isSelected(Long id) {
+        //make asynchronous
+        for (SelectContact contact : mContacts) {
+            if (contact.getId().equals(id)) {
+                return contact.isChecked();
             }
         }
 

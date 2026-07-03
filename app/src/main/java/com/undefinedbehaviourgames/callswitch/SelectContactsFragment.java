@@ -77,7 +77,7 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
         mRecyclerView.setAdapter(new SelectContactAdapter(mSelectContactLab.getContacts()));
         mSearchResultRecyclerView = (RecyclerView) v.findViewById(R.id.search_results);
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mSearchResultRecyclerView.setAdapter(new SelectContactAdapter(mSelectContactLab.getSearchResults()));
+        mSearchResultRecyclerView.setAdapter(new SelectContactAdapter(mSelectContactLab.getContacts("")));
         mOptionsLayout =(FrameLayout) v.findViewById(R.id.options);
         ViewCompat.setOnApplyWindowInsetsListener(mOptionsLayout, new OnApplyWindowInsetsListener() {
             @Override
@@ -107,7 +107,10 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mSelectContactLab.startSearchQuery(s.toString(), SelectContactsFragment.this);
+                List<SelectContact> searchResults = mSelectContactLab.getContacts(s.toString());
+                ((SelectContactAdapter) mSearchResultRecyclerView.getAdapter()).setContacts(searchResults);
+                mSearchResultRecyclerView.getAdapter().notifyDataSetChanged();
+
             }
         });
         mSearchView.addTransitionListener(new SearchView.TransitionListener() {
