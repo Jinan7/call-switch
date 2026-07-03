@@ -141,7 +141,27 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
 
         List<T> contacts = new ArrayList<>();
         ContactCursorWrapper<T> cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
+        contacts = getContacts(cursor);
+        return contacts;
+    }
 
+    @SuppressWarnings("unchecked")
+    public List<T> getContacts(String searchQuery) {
+
+        List<T> contacts = new ArrayList<>();
+
+        if (searchQuery.isEmpty()) {
+            return contacts;
+        }
+        String query = "%" + searchQuery + "%";
+        ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.name + " LIKE ?", new String[] { query }, Schema.Contact.Cols.name + " ASC");
+        contacts = getContacts(cursor);
+        return contacts;
+    }
+
+    public List<T> getContacts(ContactCursorWrapper<T> cursor) {
+
+        List<T> contacts = new ArrayList<>();
         try {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
