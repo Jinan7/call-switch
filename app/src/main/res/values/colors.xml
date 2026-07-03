@@ -29,6 +29,19 @@
     <color name="priority_green_2">#2FA084</color>
     <color name="priority_green_1">#849E00</color>
     <color name="online_green">#89FF01</color>
+    <color name="online_green_2">#42C501</color>
 
+    <color name="pink_1">#feaee3</color>
+    <color name="pink_2">#620438</color>
+    <color name="green_1">#81da88</color>
+    <color name="green_2">#003720</color>
+    <color name="yellow_1">#fcbd00</color>
+    <color name="yellow_2">#4c2500</color>
+    <color name="red_1">#feb3ae</color>
+    <color name="red_2">#60150f</color>
+    <color name="purple_1">#d9bafd</color>
+    <color name="purple_2">#410b85</color>
+    <color name="blue_1">#5fd5f3</color>
+    <color name="blue_2">#003642</color>
 
 </resources>
