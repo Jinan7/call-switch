@@ -29,6 +29,14 @@ public class RepliesFragment extends BottomNavBarFragment {
     private static final String TAG = "RepliesFragmentLogger";
     private RecyclerView mRecyclerView;
     private MaterialToolbar mToolbar;
+    private SwitchMaterial mToggleAllReplies;
+    private final CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+            setEnabledAllReplies(isChecked);
+
+        }
+    };
 
     public static RepliesFragment newInstance() {
         RepliesFragment fragment = new RepliesFragment();
@@ -59,7 +67,8 @@ public class RepliesFragment extends BottomNavBarFragment {
             }
         });
 
-
+        mToggleAllReplies = v.findViewById(R.id.toggle_all);
+        mToggleAllReplies.setOnCheckedChangeListener(mOnCheckedChangeListener);
         return v;
     }
 
@@ -76,6 +85,13 @@ public class RepliesFragment extends BottomNavBarFragment {
         return super.onContextItemSelected(item);
     }
 
+    private void setEnabledAllReplies(boolean isChecked) {
+        ReplyLab.getInstance(getContext()).setEnabledAllReplies(getContext(), isChecked);
+        List<Reply> replies = ReplyLab.getInstance(getContext()).getReplies();
+        ((RepliesAdapter) mRecyclerView.getAdapter()).setReplies(replies);
+        mRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
     private class RepliesHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
         private Reply mReply;
@@ -87,6 +103,7 @@ public class RepliesFragment extends BottomNavBarFragment {
             mReplyPriorityButton = (FrameLayout) itemView.findViewById(R.id.reply_priority_button);
             mReplyTextView = (TextView) itemView.findViewById(R.id.reply_text_view);
             mSwitch = (SwitchMaterial) itemView.findViewById(R.id.toggle_reply);
+            mSwitch.setOnCheckedChangeListener(this);
             mReplyPriorityButton.setOnClickListener(this);
             mReplyTextView.setOnClickListener(this);
 
@@ -95,6 +112,7 @@ public class RepliesFragment extends BottomNavBarFragment {
         public void bind(Reply reply) {
             mReply = reply;
             mReplyTextView.setText(reply.getReply());
+            mSwitch.setChecked(mReply.isEnabled());
             GradientDrawable background = (GradientDrawable) mReplyPriorityButton.getBackground();
             background.mutate();
             int stroke_width = (int)getResources().getDimension(R.dimen.circle_stroke_2);
@@ -126,6 +144,15 @@ public class RepliesFragment extends BottomNavBarFragment {
         @Override
         public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
             mReply.setEnabled(isChecked);
+            ReplyLab.getInstance(getContext()).update(getContext(), mReply);
+
+            if (!isChecked) {
+
+                mToggleAllReplies.setOnCheckedChangeListener(null);
+                mToggleAllReplies.setChecked(isChecked);
+                mToggleAllReplies.setOnCheckedChangeListener(mOnCheckedChangeListener);
+
+            }
         }
     }
 

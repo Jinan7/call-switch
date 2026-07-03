@@ -173,4 +173,14 @@ public class ReplyLab {
 
         return new ReplyCursorWrapper(cursor);
     }
+
+    public void setEnabledAllReplies(Context context, boolean isChecked) {
+
+        List<Reply> replies = getReplies();
+
+        for (Reply reply : replies) {
+            reply.setEnabled(isChecked);
+            update(context, reply);
+        }
+    }
 }
