@@ -8,6 +8,7 @@ import static com.undefinedbehaviourgames.callswitch.PriorityModalBottomSheetDia
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -252,6 +253,8 @@ public class EditReplyFragment extends Fragment {
             mContactName = (TextView) itemView.findViewById(R.id.contact_name);
             mContactPhone = (TextView) itemView.findViewById(R.id.contact_phone);
             mContactIcon = (TextView) itemView.findViewById(R.id.contact_icon);
+
+
         }
 
         public void bind(Contact contact) {
@@ -259,6 +262,11 @@ public class EditReplyFragment extends Fragment {
             mContactName.setText(contact.getName());
             mContactPhone.setText(contact.getPhone());
             mContactIcon.setText(contact.getIcon());
+
+            GradientDrawable background = (GradientDrawable) mContactIcon.getBackground();
+            background.mutate();
+            background.setColor(contact.getColor());
+            mContactIcon.setTextColor(contact.getSecondaryColor());
         }
     }
 

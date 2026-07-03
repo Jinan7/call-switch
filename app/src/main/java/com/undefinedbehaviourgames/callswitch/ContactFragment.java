@@ -7,12 +7,14 @@ import static com.undefinedbehaviourgames.callswitch.Priority.NORMAL;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,6 +36,7 @@ public class ContactFragment extends Fragment {
     private TextView mContactActiveReplyTextView;
     private FrameLayout mPriorityIcon;
     private RecyclerView mRecyclerView;
+    private ImageButton mEditActiveReply;
     private Contact mContact;
 
     public static ContactFragment newInstance(Long id) {
@@ -63,6 +66,17 @@ public class ContactFragment extends Fragment {
         mRecyclerView = v.findViewById(R.id.contact_replies_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new RepliesAdapter(mContact.getReplies(getContext())));
+        mEditActiveReply = v.findViewById(R.id.contact_edit_active_reply);
+        mEditActiveReply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (mContact.getActiveReplyId() == null) return;
+                Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mContact.getActiveReplyId());
+                startActivity(intent);
+            }
+        });
+
 
         updateUI();
         return v;
@@ -78,10 +92,9 @@ public class ContactFragment extends Fragment {
 //        LayerDrawable stateBackground = (LayerDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.circle_background_with_state, getContext().getTheme());
         GradientDrawable background = (GradientDrawable) stateBackground.findDrawableByLayerId(R.id.circle_background);
         GradientDrawable state = (GradientDrawable) stateBackground.findDrawableByLayerId(R.id.state_circle_background);
-
+        GradientDrawable altBackground = (GradientDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.circle_background_stroke_2, getContext().getTheme());
         background.mutate();
         state.mutate();
-
         int stroke_width = (int)getResources().getDimension(R.dimen.circle_stroke_2);
 
         if (mContact.isActiveReplyEnabled(getContext())) {
@@ -102,7 +115,9 @@ public class ContactFragment extends Fragment {
                 background.setStroke(stroke_width, getColor(R.color.priority_red_3));
                 break;
             default:
-                state.setVisible(false, false);
+                //default case occurs when there is no active reply
+                //in that case use alternative background without state
+                mPriorityIcon.setBackground(altBackground);
                 break;
 
         }

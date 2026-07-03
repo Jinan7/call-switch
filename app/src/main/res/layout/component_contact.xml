@@ -15,7 +15,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:background="@drawable/circle_background"
-        android:textSize="34sp"
+        android:textSize="34dp"
         android:textColor="@color/white"
         android:text="A"/>
     <LinearLayout
