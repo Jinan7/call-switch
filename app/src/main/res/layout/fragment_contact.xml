@@ -78,7 +78,7 @@
                 android:orientation="horizontal">
                 <FrameLayout
                     android:id="@+id/contact_reply_priority_button"
-                    android:background="@drawable/circle_background_stroke_2"
+                    android:background="@drawable/circle_background_with_state"
                     android:layout_marginStart="12dp"
                     android:layout_width="50dp"
                     android:layout_height="50dp"

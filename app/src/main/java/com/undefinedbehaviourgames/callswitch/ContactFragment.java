@@ -6,6 +6,7 @@ import static com.undefinedbehaviourgames.callswitch.Priority.NORMAL;
 
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -72,29 +74,45 @@ public class ContactFragment extends Fragment {
         mContactPhoneTextView.setText(mContact.getPhone());
         mContactActiveReplyTextView.setText(mContact.getActiveReplyText(getContext()));
 
-        GradientDrawable background = (GradientDrawable) mPriorityIcon.getBackground();
+        LayerDrawable stateBackground = (LayerDrawable) mPriorityIcon.getBackground();
+//        LayerDrawable stateBackground = (LayerDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.circle_background_with_state, getContext().getTheme());
+        GradientDrawable background = (GradientDrawable) stateBackground.findDrawableByLayerId(R.id.circle_background);
+        GradientDrawable state = (GradientDrawable) stateBackground.findDrawableByLayerId(R.id.state_circle_background);
+
         background.mutate();
+        state.mutate();
+
         int stroke_width = (int)getResources().getDimension(R.dimen.circle_stroke_2);
+
+        if (mContact.isActiveReplyEnabled(getContext())) {
+            state.setColor(getColor(R.color.online_green));
+        }
         switch (mContact.getActiveReplyPriority(getContext())) {
 
             case LOW:
-                background.setColor(getResources().getColor(R.color.priority_green_2, getContext().getTheme()));
-                background.setStroke(stroke_width, getResources().getColor(R.color.priority_green_3, getContext().getTheme()));
+                background.setColor(getColor(R.color.priority_green_2));
+                background.setStroke(stroke_width, getColor(R.color.priority_green_3));
                 break;
             case NORMAL:
-                background.setColor(getResources().getColor(R.color.priority_blue_1, getContext().getTheme()));
-                background.setStroke(stroke_width, getResources().getColor(R.color.priority_blue_2, getContext().getTheme()));
+                background.setColor(getColor(R.color.priority_blue_1));
+                background.setStroke(stroke_width, getColor(R.color.priority_blue_2));
                 break;
             case HIGH:
-                background.setColor(getResources().getColor(R.color.priority_red_1, getContext().getTheme()));
-                background.setStroke(stroke_width, getResources().getColor(R.color.priority_red_2, getContext().getTheme()));
+                background.setColor(getColor(R.color.priority_red_1));
+                background.setStroke(stroke_width, getColor(R.color.priority_red_2));
                 break;
             default:
+                state.setVisible(false, false);
                 break;
 
         }
+
+
     }
 
+    private int getColor(int id) {
+        return getResources().getColor(id, getContext().getTheme());
+    }
 
 
     private class RepliesHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -121,16 +139,16 @@ public class ContactFragment extends Fragment {
 
                 case LOW:
 
-                    background.setColor(getResources().getColor(R.color.priority_green_2, getContext().getTheme()));
-                    background.setStroke(stroke_width, getResources().getColor(R.color.priority_green_3, getContext().getTheme()));
+                    background.setColor(getColor(R.color.priority_green_2));
+                    background.setStroke(stroke_width, getColor(R.color.priority_green_3));
                     break;
                 case NORMAL:
-                    background.setColor(getResources().getColor(R.color.priority_blue_1, getContext().getTheme()));
-                    background.setStroke(stroke_width, getResources().getColor(R.color.priority_blue_2, getContext().getTheme()));
+                    background.setColor(getColor(R.color.priority_blue_1));
+                    background.setStroke(stroke_width, getColor(R.color.priority_blue_2));
                     break;
                 case HIGH:
-                    background.setColor(getResources().getColor(R.color.priority_red_1, getContext().getTheme()));
-                    background.setStroke(stroke_width, getResources().getColor(R.color.priority_red_2, getContext().getTheme()));
+                    background.setColor(getColor(R.color.priority_red_1));
+                    background.setStroke(stroke_width, getColor(R.color.priority_red_2));
                     break;
 
             }

@@ -137,6 +137,14 @@ public class Contact implements Serializable {
         return reply.getPriority();
     }
 
+    public boolean isActiveReplyEnabled(Context context) {
+        Reply reply = ReplyLab.getInstance(context).get(mActiveReplyId);
+
+        if (reply == null ) return false;
+
+        return reply.isEnabled();
+    }
+
     public ArrayList<UUID> getReplies() {
         return mReplies;
     }

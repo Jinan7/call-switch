@@ -28,6 +28,7 @@
     <color name="priority_green_3">#1F6F5F</color>
     <color name="priority_green_2">#2FA084</color>
     <color name="priority_green_1">#849E00</color>
+    <color name="online_green">#89FF01</color>
 
 
 </resources>
