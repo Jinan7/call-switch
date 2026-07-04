@@ -171,10 +171,18 @@ public class Contact implements Serializable {
         //make asynchronous
         ArrayList<Reply> replies = new ArrayList<>();
 
-        for (UUID replyUuid : mReplies) {
-            Reply reply = ReplyLab.getInstance(context).get(replyUuid);
+        for (int i = 0; i< mReplies.size(); i++) {
+            Reply reply = ReplyLab.getInstance(context).get(mReplies.get(i));
             if (reply != null) replies.add(reply);
+            else {
+                //if reply is null, then it has probably been deleted,
+                //remove the reply from reply list
+                mReplies.remove(i);
+            }
         }
+
+        //update contact since some replies may have been null
+        ContactLab.getInstance(context).update(this);
         return replies;
     }
 

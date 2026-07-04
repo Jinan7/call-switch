@@ -39,9 +39,14 @@ public class ReplyLab {
         ReplyCursorWrapper cursor = queryDatabase( Cols.uuid + " = ?", new String []  { id.toString() });
         Reply reply;
         try {
+            if (cursor.getCount() != 0)
+            {
+                cursor.moveToFirst();
+                reply = cursor.getReply();
+            } else {
+                reply = null;
+            }
 
-            cursor.moveToFirst();
-            reply = cursor.getReply();
         } finally {
             cursor.close();
         }
@@ -145,6 +150,9 @@ public class ReplyLab {
         }
     }
 
+    public void delete(Context context, Reply reply) {
+        mDatabase.delete(Schema.Reply.name, Cols.uuid + " = ?", new String[] { reply.getId().toString()});
+    }
 
     public ContentValues getContentValues(Reply reply) {
         ContentValues values = new ContentValues();

@@ -147,6 +147,9 @@ public class EditReplyFragment extends Fragment {
 
                     getActivity().finish();
                     return true;
+                } else if (item.getItemId() == R.id.menu_delete_reply) {
+                    ReplyLab.getInstance(getContext()).delete(getContext(), mReply);
+                    getActivity().finish();
                 }
                 return false;
             }
