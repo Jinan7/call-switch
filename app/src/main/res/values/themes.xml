@@ -24,6 +24,22 @@
         <item name="textAppearanceTitleMedium">@style/TextAppearance.App.TitleMedium</item>
     </style>
 
+    <!--    Toolbar styles -->
+    <style name="Widget.App.LightToolbar" parent="Widget.Material3.Toolbar">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.LightToolbar</item>
+    </style>
+
+    <style name="ThemeOverlay.App.LightToolbar" parent="">
+        <item name="colorSurface">@color/grey_2</item>
+        <item name="colorOnSurface">@color/grey_2</item>
+        <item name="colorSurfaceContainer">@color/grey_2</item>
+        <item name="colorOnSurfaceVariant">@color/white</item>
+<!--        <item name="titleTextColor">@color/white</item>-->
+        <item name="iconTint">@color/white</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.App.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.App.TitleMedium</item>
+    </style>
+
     <style name="TextAppearance.App.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
 <!--        <item name="fontFamily">@font/rubik</item>-->
 <!--        <item name="android:fontFamily">@font/rubik</item>-->
@@ -50,6 +66,24 @@
         <item name="colorSecondaryContainer">@color/white</item>
         <!--        icon color for selected item -->
         <item name="colorOnSecondaryContainer">@color/blue</item>
+    </style>
+
+    <!--    Light Bottom nav bar style    -->
+    <style name="Widget.App.LightBottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.LightBottomNavigationView</item>
+    </style>
+
+    <style name="ThemeOverlay.App.LightBottomNavigationView" parent="">
+        <!--        icon and text color for unselected item -->
+        <item name="colorOnSurfaceVariant">@color/blue</item>
+        <!--        background color -->
+        <item name="colorSurfaceContainer">@color/grey_2</item>
+        <!--        text color for selected item -->
+        <item name="colorSecondary">@color/white</item>
+        <!--        background color for selected item -->
+        <item name="colorSecondaryContainer">@color/blue</item>
+        <!--        icon color for selected item -->
+        <item name="colorOnSecondaryContainer">@color/white</item>
     </style>
 
     <style name="Theme.CallSwitch" parent="Base.Theme.CallSwitch" />
