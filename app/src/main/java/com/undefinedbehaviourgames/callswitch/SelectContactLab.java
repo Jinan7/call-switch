@@ -52,6 +52,12 @@ public class SelectContactLab extends ContactLabHelper<SelectContact, SelectCont
         return mContacts;
     }
 
+    public List<SelectContact> getContacts(boolean _new) {
+
+        if (_new) return getContacts();
+        return mContacts;
+    }
+
     public List<SelectContact> getContacts(String queryString) {
         List<SelectContact> contacts = super.getContacts(queryString);
 
@@ -87,6 +93,15 @@ public class SelectContactLab extends ContactLabHelper<SelectContact, SelectCont
 
         return false;
     }
+
+    public void setSelectAllContacts(boolean isChecked) {
+
+        for (SelectContact contact : mContacts) {
+            contact.setChecked(isChecked);
+        }
+
+    }
+
     public class SelectContactQueryHandler extends QueryHandler {
 
         public SelectContactQueryHandler(Context context, Callbacks callbacks) {

@@ -118,4 +118,16 @@ public class Reply {
 
         return result;
     }
+
+    public void deleteContact(Contact contact) {
+        //make asynchronous
+
+        for (int i = 0; i < mReplyToList.size(); i++) {
+
+            if (contact.getId().equals(mReplyToList.get(i))) {
+                mReplyToList.remove(i);
+                break;
+            }
+        }
+    }
 }

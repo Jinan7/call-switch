@@ -44,7 +44,15 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
     private FrameLayout mOptionsLayout;
     private Button mFinishButton;
     private SearchView mSearchView;
-//    private Reply mReply;
+    private CheckBox mSelectAllCheckBox;
+    private final CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+            setSelectAllContacts(isChecked);
+        }
+    };
+
+
     private List<Contact> mPrevSelectedContacts;
     public static SelectContactsFragment newInstance(UUID id, ArrayList<Contact> selectedContacts ) {
         SelectContactsFragment fragment = new SelectContactsFragment();
@@ -123,6 +131,8 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
 
             }
         });
+        mSelectAllCheckBox = v.findViewById(R.id.select_all);
+        mSelectAllCheckBox.setOnCheckedChangeListener(mOnCheckedChangeListener);
         return v;
     }
 
@@ -146,6 +156,14 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
         getActivity().finish();
 
     }
+
+    private void setSelectAllContacts(boolean isChecked) {
+        mSelectContactLab.setSelectAllContacts(isChecked);
+        ((SelectContactAdapter) mRecyclerView.getAdapter()).setContacts(mSelectContactLab.getContacts(false));
+        mRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+
 
 
     @Override
@@ -196,6 +214,12 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
         @Override
         public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
             mSelectContact.setChecked(isChecked);
+
+            if (!isChecked) {
+                mSelectAllCheckBox.setOnCheckedChangeListener(null);
+                mSelectAllCheckBox.setChecked(false);
+                mSelectAllCheckBox.setOnCheckedChangeListener(mOnCheckedChangeListener);
+            }
         }
     }
 

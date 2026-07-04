@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -242,18 +243,19 @@ public class EditReplyFragment extends Fragment {
         mPriorityTextView.setText(mReply.getPriorityText(getContext()));
     }
 
-    private class ContactHolder extends RecyclerView.ViewHolder {
+    private class ContactHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private Contact mContact;
         private TextView mContactName;
         private TextView mContactPhone;
         private TextView mContactIcon;
+        private ImageButton mRemoveContactButton;
         public ContactHolder(@NonNull View itemView) {
             super(itemView);
-            mContactName = (TextView) itemView.findViewById(R.id.contact_name);
-            mContactPhone = (TextView) itemView.findViewById(R.id.contact_phone);
-            mContactIcon = (TextView) itemView.findViewById(R.id.contact_icon);
-
+            mContactName = (TextView) itemView.findViewById(R.id.reply_contact_name);
+            mContactPhone = (TextView) itemView.findViewById(R.id.reply_contact_phone);
+            mContactIcon = (TextView) itemView.findViewById(R.id.reply_contact_icon);
+            mRemoveContactButton = (ImageButton) itemView.findViewById(R.id.reply_contact_remove_button);
 
         }
 
@@ -267,6 +269,14 @@ public class EditReplyFragment extends Fragment {
             background.mutate();
             background.setColor(contact.getColor());
             mContactIcon.setTextColor(contact.getSecondaryColor());
+            mRemoveContactButton.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mReply.deleteContact(mContact);
+            ((ContactAdapter) mRecyclerView.getAdapter()).setContacts(mReply.getReplyToList(getContext()));
+            mRecyclerView.getAdapter().notifyDataSetChanged();
         }
     }
 
@@ -279,7 +289,7 @@ public class EditReplyFragment extends Fragment {
         @NonNull
         @Override
         public ContactHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View v= LayoutInflater.from(getContext()).inflate(R.layout.component_contact, parent, false);
+            View v= LayoutInflater.from(getContext()).inflate(R.layout.component_reply_contact, parent, false);
             return new ContactHolder(v);
         }
 

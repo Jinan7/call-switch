@@ -19,15 +19,28 @@
             android:id="@+id/toggle_all_frame_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                app:thumbIconSize="2dp"
-                android:scrollbarSize="2dp"
+            <LinearLayout
                 android:layout_gravity="end"
-                android:id="@+id/toggle_all"
+                android:gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                />
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_marginEnd="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/enable_all"
+                    android:textStyle="bold"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    app:thumbIconSize="2dp"
+                    android:scrollbarSize="2dp"
+                    android:id="@+id/toggle_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    />
+            </LinearLayout>
+
             <View
                 android:layout_gravity="bottom"
                 android:layout_width="match_parent"
