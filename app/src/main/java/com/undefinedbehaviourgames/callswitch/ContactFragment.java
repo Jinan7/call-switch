@@ -71,8 +71,8 @@ public class ContactFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if (mContact.getActiveReplyId() == null) return;
-                Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mContact.getActiveReplyId());
+                if (mContact.getActiveReplyId(getContext()) == null) return;
+                Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mContact.getActiveReplyId(getContext()));
                 startActivity(intent);
             }
         });
