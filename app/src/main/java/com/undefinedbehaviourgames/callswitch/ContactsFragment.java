@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +22,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.search.SearchView;
+
 import java.util.List;
 
 public class ContactsFragment extends BottomNavBarFragment implements ContactLabHelper.Callbacks {
 
     private RecyclerView mRecyclerView;
+    private RecyclerView mSearchResultRecyclerView;
+    private SearchView mSearchView;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +53,29 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
         mRecyclerView = v.findViewById(R.id.contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts()));
+        mSearchResultRecyclerView = v.findViewById(R.id.contact_search_results);
+        mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mSearchResultRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts("")));
+
+        mSearchView = v.findViewById(R.id.contact_search_view);
+        mSearchView.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<Contact> searchResults = ContactLab.getInstance(getContext()).getContacts(s.toString());
+                ((ContactAdapter) mSearchResultRecyclerView.getAdapter()).setContacts(searchResults);
+                mSearchResultRecyclerView.getAdapter().notifyDataSetChanged();
+            }
+        });
         return v;
     }
 

@@ -24,6 +24,7 @@
     <string name="if_reply_is_set_to_enabled_all_recipients_active_reply_will_be_replaced_with_they_have_equal_or_less_priority">If Reply is set to Enabled, all Recipients\' active reply will be replaced with they have equal or less priority</string>
     <string name="enable_all">Enable All</string>
     <string name="search">Search</string>
+    <string name="search_contacts">Search Contacts</string>
     <string-array name="priority_array">
         <item>High</item>
         <item>Normal</item>

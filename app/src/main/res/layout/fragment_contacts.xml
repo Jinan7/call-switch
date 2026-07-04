@@ -33,11 +33,13 @@
         android:id="@+id/contact_search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:hint="Search">
+        app:layout_anchor="@id/contact_search_bar"
+        android:hint="@string/search_contacts">
         <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginHorizontal="8dp"
             android:fitsSystemWindows="true"
             android:clipToPadding="false"
-            android:id="@+id/search_results"
+            android:id="@+id/contact_search_results"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </com.google.android.material.search.SearchView>

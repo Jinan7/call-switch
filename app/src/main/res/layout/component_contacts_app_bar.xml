@@ -8,17 +8,15 @@
     app:liftOnScrollColor="@color/blue"
     app:liftOnScroll="true">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/select_contacts_toolbar"
+<!--    <com.google.android.material.appbar.MaterialToolbar-->
+<!--        android:id="@+id/select_contacts_toolbar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:minHeight="?attr/actionBarSize"-->
+<!--        app:title="Contacts"/>-->
+    <com.google.android.material.search.SearchBar
+        android:id="@+id/contact_search_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
-        app:title="Contacts"/>
-<!--    <com.google.android.material.search.SearchBar-->
-<!--        android:backgroundTint="@color/white"-->
-<!--        android:id="@+id/contact_search_bar"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="30dp"-->
-<!--        android:layout_weight="1"-->
-<!--        android:hint="Search Contacts" />-->
+        android:layout_height="match_parent"
+        android:hint="@string/search_contacts" />
 </com.google.android.material.appbar.AppBarLayout>
