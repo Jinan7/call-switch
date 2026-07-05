@@ -65,11 +65,17 @@ public class Reply {
         //make asynchronous
         ArrayList<Contact> replyToList = new ArrayList<>();
 
-        for (Long id : mReplyToList) {
-            Contact contact = ContactLab.getInstance(context).get(id);
+        for (int i = 0; i<mReplyToList.size(); i++) {
+            Contact contact = ContactLab.getInstance(context).get(mReplyToList.get(i));
+            //if contact is null, then it has probably been deleted,
+            //remove the contact from reply to list
             if (contact != null) replyToList.add(contact);
+            else {
+                mReplyToList.remove(i);
+            }
         }
-
+        //update replies since some contacts may have been null
+        ReplyLab.getInstance(context).update(this);
         return replyToList;
     }
 

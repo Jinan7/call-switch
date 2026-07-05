@@ -66,6 +66,7 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
         this.qClazz = qClazz;
     }
 
+
     public void startQuery(Callbacks callbacks) {
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -201,6 +202,17 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
                 Schema.Contact.Cols.id + " = ?",
                 new String [] { contact.getId().toString()}
         );
+    }
+
+    public void delete(Context context, Contact contact) {
+        mDatabase.delete(Schema.Contact.name, Schema.Contact.Cols.id + " = ?", new String [] { contact.getId().toString()});
+
+        List<Reply> replies = new ArrayList<>();
+
+        for (Reply reply : replies) {
+            reply.deleteContact(contact);
+            ReplyLab.getInstance(context).update(context, reply);
+        }
     }
 
     public ContactCursorWrapper queryDatabase(String queryString, String [] queryArgs, String orderBy ) {

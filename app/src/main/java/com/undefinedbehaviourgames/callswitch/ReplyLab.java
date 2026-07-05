@@ -96,6 +96,11 @@ public class ReplyLab {
             }
         }
     }
+
+    public void update(Reply reply) {
+        ContentValues values = getContentValues(reply);
+        mDatabase.update(Schema.Reply.name, values, Cols.uuid + " = ?", new String[] {reply.getId().toString()});
+    }
     public void update(Context context, Reply reply) {
 
         //this is a very brute force solution
@@ -152,6 +157,12 @@ public class ReplyLab {
 
     public void delete(Context context, Reply reply) {
         mDatabase.delete(Schema.Reply.name, Cols.uuid + " = ?", new String[] { reply.getId().toString()});
+        List<Contact> replyToList = new ArrayList<>();
+
+        for (Contact contact : replyToList) {
+            contact.removeReply(context, reply);
+            ContactLab.getInstance(context).update(contact);
+        }
     }
 
     public ContentValues getContentValues(Reply reply) {

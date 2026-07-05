@@ -25,6 +25,7 @@
     <string name="enable_all">Enable All</string>
     <string name="search">Search</string>
     <string name="search_contacts">Search Contacts</string>
+    <string name="delete">delete</string>
     <string-array name="priority_array">
         <item>High</item>
         <item>Normal</item>

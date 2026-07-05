@@ -23,6 +23,7 @@
 
     <com.google.android.material.search.SearchBar
         style="@style/Widget.App.SearchBar"
+        android:textAppearance="@style/TextAppearance.App.SearchBar"
         android:id="@+id/contact_search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

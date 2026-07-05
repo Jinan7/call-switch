@@ -5,13 +5,16 @@ import static com.undefinedbehaviourgames.callswitch.Priority.LOW;
 import static com.undefinedbehaviourgames.callswitch.Priority.NORMAL;
 
 import android.content.Intent;
+import android.graphics.Insets;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -19,17 +22,23 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.List;
 
 public class ContactFragment extends Fragment {
     private static final String ARG_ID = "contact_id";
+    private MaterialToolbar mToolbar;
     private TextView mContactIconTextView;
     private TextView mContactNameTextView;
     private TextView mContactPhoneTextView;
@@ -58,6 +67,17 @@ public class ContactFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_contact, container, false);
+        mToolbar = (MaterialToolbar) v.findViewById(R.id.contact_toolbar);
+        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.contact_menu_delete) {
+                    ContactLab.getInstance(getContext()).delete(getContext(), mContact);
+                    getActivity().finish();
+                }
+                return false;
+            }
+        });
         mContactIconTextView = v.findViewById(R.id.contact_contact_icon);
         mContactNameTextView = v.findViewById(R.id.contact_contact_name);
         mContactPhoneTextView = v.findViewById(R.id.contact_contact_phone);
@@ -66,6 +86,13 @@ public class ContactFragment extends Fragment {
         mRecyclerView = v.findViewById(R.id.contact_replies_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new RepliesAdapter(mContact.getReplies(getContext())));
+        ViewCompat.setOnApplyWindowInsetsListener(mRecyclerView, new OnApplyWindowInsetsListener() {
+            @Override
+            public @org.jspecify.annotations.NonNull WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat insets) {
+                v.setPadding(v.getLeft(), v.getPaddingTop(), v.getPaddingRight(), insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom);
+                return insets;
+            }
+        });
         mEditActiveReply = v.findViewById(R.id.contact_edit_active_reply);
         mEditActiveReply.setOnClickListener(new View.OnClickListener() {
             @Override

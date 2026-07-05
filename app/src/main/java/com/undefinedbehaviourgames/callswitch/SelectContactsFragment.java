@@ -72,7 +72,6 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
 //        mReply = ReplyLab.getInstance(getContext()).get(id);
         mSelectContactLab = new SelectContactLab(getContext(), this);
         mSelectContactLab.setPreviousSelectedContacts(mPrevSelectedContacts);
-        mSelectContactLab.startQuery(SelectContactsFragment.this);
     }
 
     @Nullable

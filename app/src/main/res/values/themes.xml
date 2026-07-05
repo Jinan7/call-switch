@@ -34,8 +34,8 @@
         <item name="colorOnSurface">@color/grey_2</item>
         <item name="colorSurfaceContainer">@color/grey_2</item>
         <item name="navigationIconTint">@color/grey_15</item>
-        <item name="colorOnSurfaceVariant">@color/grey_10</item>
-        <item name="titleTextColor">@color/grey_10</item>
+        <item name="colorOnSurfaceVariant">@color/grey_15</item>
+        <item name="titleTextColor">@color/grey_15</item>
         <item name="textAppearanceTitleLarge">@style/TextAppearance.App.TitleLarge</item>
         <item name="textAppearanceTitleMedium">@style/TextAppearance.App.TitleMedium</item>
     </style>
@@ -67,7 +67,8 @@
     </style>
 
     <style name="TextAppearance.App.SearchBar" parent="TextAppearance.Material3.SearchBar">
-        <item name="android:textColor">@color/green_1</item>
+        <item name="android:textColor">@color/white</item>
+
         <!--        <item name="fontFamily">@font/rubik</item>-->
         <!--        <item name="android:fontFamily">@font/rubik</item>-->
     </style>

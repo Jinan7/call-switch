@@ -34,7 +34,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ContactLab.getInstance(getContext()).startQuery(ContactsFragment.this);
+        ContactLab.getInstance(getContext());
     }
 
     public static ContactsFragment newInstance() {
