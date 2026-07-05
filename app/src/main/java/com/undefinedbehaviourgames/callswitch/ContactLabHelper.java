@@ -169,7 +169,7 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 T contact = (T) cursor.getContact();
-//                contact.setDeleted(isDeleted(contact));
+                contact.setDeleted(isDeleted(contact));
                 contacts.add(contact);
                 cursor.moveToNext();
             }
@@ -284,9 +284,6 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
             switch (token) {
 
                 case TOKEN_CONTACT:
-                    mContacts.clear();
-                    Callbacks callbacks = mCallbacks.get();
-                    if (callbacks != null) callbacks.onQueryComplete();
                     onContactQueryComplete(cursor);
                     break;
 
@@ -294,9 +291,6 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
                     onPhoneQueryComplete(cursor, (T) cookie, false);
                     break;
                 case TOKEN_SEARCH_CONTACT:
-                    mSearchResults.clear();
-                    Callbacks _callbacks = mCallbacks.get();
-                    if (_callbacks != null) _callbacks.onSearchComplete();
                     onContactSearchQueryComplete(cursor);
                     break;
                 case TOKEN_LAST_PHONE:

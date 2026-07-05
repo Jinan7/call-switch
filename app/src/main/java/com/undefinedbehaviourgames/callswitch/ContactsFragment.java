@@ -145,6 +145,8 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
 
             if (contact.isDeleted()) {
                 cardBackground.setColor(getColor(R.color.grey_1));
+            } else {
+                cardBackground.setColor(getColor(R.color.white));
             }
         }
 
