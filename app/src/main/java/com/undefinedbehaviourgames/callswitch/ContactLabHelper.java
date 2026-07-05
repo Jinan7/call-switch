@@ -51,6 +51,7 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
     private Context mContext;
     private List<T> mContacts;
     private List<T> mSearchResults;
+    private List<T> mPhoneBookImage;
 
     private int [] colors;
     private int [] colorsSecondary;
@@ -60,6 +61,7 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
         mDatabase = new DBOpenHelper(mContext).getWritableDatabase();
         mContacts = new ArrayList<>();
         mSearchResults = new ArrayList<>();
+        mPhoneBookImage = new ArrayList<>();
         colors = context.getResources().getIntArray(R.array.contact_colors);
         colorsSecondary = context.getResources().getIntArray(R.array.contact_colors_dark);
         this.clazz = clazz;
@@ -166,7 +168,9 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
         try {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                contacts.add((T) cursor.getContact());
+                T contact = (T) cursor.getContact();
+//                contact.setDeleted(isDeleted(contact));
+                contacts.add(contact);
                 cursor.moveToNext();
             }
 
@@ -178,6 +182,17 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
         }
 
         return contacts;
+    }
+
+    public boolean isDeleted(Contact contact) {
+
+        for (T _contact : mPhoneBookImage) {
+            if (_contact.getId().equals(contact.getId())) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void add(Contact contact) {
@@ -361,6 +376,7 @@ public class ContactLabHelper<T extends Contact, U extends ContactLabHelper.Quer
                 cursor.moveToFirst();
                 String phone = cursor.getString(PHONE_INDEX);
                 contact.setPhone(phone);
+                mPhoneBookImage.add(contact);
                 add(contact);
                 Callbacks callbacks = mCallbacks.get();
 

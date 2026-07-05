@@ -14,10 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,7 +37,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ContactLab.getInstance(getContext());
+        ContactLab.getInstance(getContext()).startQuery(ContactsFragment.this);
     }
 
     public static ContactsFragment newInstance() {
@@ -105,17 +108,23 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
         }
     }
 
+    private int getColor(int id) {
+        return ResourcesCompat.getColor(getResources(), id, getActivity().getTheme());
+    }
+
     private class ContactHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private Contact mContact;
         private TextView mContactName;
         private TextView mContactPhone;
         private TextView mContactIcon;
+        private LinearLayout mContactView;
         public ContactHolder(@NonNull View itemView) {
             super(itemView);
             mContactName = (TextView) itemView.findViewById(R.id.contact_name);
             mContactPhone = (TextView) itemView.findViewById(R.id.contact_phone);
             mContactIcon = (TextView) itemView.findViewById(R.id.contact_icon);
+            mContactView = (LinearLayout) itemView;
             itemView.setOnClickListener(this);
 
         }
@@ -130,6 +139,13 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
             background.mutate();
             background.setColor(contact.getColor());
             mContactIcon.setTextColor(contact.getSecondaryColor());
+
+            GradientDrawable cardBackground = (GradientDrawable) itemView.getBackground();
+            cardBackground.mutate();
+
+            if (contact.isDeleted()) {
+                cardBackground.setColor(getColor(R.color.grey_1));
+            }
         }
 
         @Override

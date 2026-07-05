@@ -22,6 +22,16 @@ public class ContactLab extends ContactLabHelper<Contact, ContactLabHelper.Query
         return sContactLab;
     }
 
+    public static ContactLab getInstance(Context context, Callbacks callbacks) {
+
+        if (sContactLab == null) {
+            sContactLab = new ContactLab(context);
+            sContactLab.startQuery(callbacks);
+        }
+
+        return sContactLab;
+    }
+
 
 
 

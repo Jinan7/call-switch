@@ -13,6 +13,7 @@ public class Contact implements Serializable {
     private String mName;
     private String mPhone;
     private Long mId;
+    private boolean deleted;
     private ArrayList<UUID> mReplies;
     private UUID mActiveReplyId;
     private int mColor;
@@ -86,6 +87,14 @@ public class Contact implements Serializable {
 
     public void setId(Long id) {
         mId = id;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public String getName() {
