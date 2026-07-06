@@ -133,6 +133,8 @@ public class ContactFragment extends Fragment {
 
         if (mContact.isActiveReplyEnabled(getContext())) {
             state.setColor(getColor(R.color.online_green));
+        } else {
+            state.setColor(getColor(R.color.grey_7));
         }
         switch (mContact.getActiveReplyPriority(getContext())) {
 
