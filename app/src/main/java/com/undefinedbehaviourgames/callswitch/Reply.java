@@ -70,12 +70,9 @@ public class Reply {
             //if contact is null, then it has probably been deleted,
             //remove the contact from reply to list
             if (contact != null) replyToList.add(contact);
-            else {
-                mReplyToList.remove(i);
-            }
+
         }
-        //update replies since some contacts may have been null
-        ReplyLab.getInstance(context).update(this);
+
         return replyToList;
     }
 

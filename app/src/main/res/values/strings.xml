@@ -26,6 +26,8 @@
     <string name="search">Search</string>
     <string name="search_contacts">Search Contacts</string>
     <string name="delete">delete</string>
+    <string name="edit">Edit</string>
+    <string name="set_active">Make Active</string>
     <string-array name="priority_array">
         <item>High</item>
         <item>Normal</item>

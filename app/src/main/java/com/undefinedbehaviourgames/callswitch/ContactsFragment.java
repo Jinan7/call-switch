@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.search.SearchView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactsFragment extends BottomNavBarFragment implements ContactLabHelper.Callbacks {
@@ -56,6 +57,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
         mRecyclerView = v.findViewById(R.id.contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts()));
+        mRecyclerView.setAdapter(new ContactAdapter(new ArrayList<>()));
         mSearchResultRecyclerView = v.findViewById(R.id.contact_search_results);
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mSearchResultRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts("")));
@@ -144,7 +146,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
             cardBackground.mutate();
 
             if (contact.isDeleted()) {
-                cardBackground.setColor(getColor(R.color.grey_1));
+                cardBackground.setColor(getColor(R.color.grey_4));
             } else {
                 cardBackground.setColor(getColor(R.color.white));
             }

@@ -10,7 +10,10 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +25,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
@@ -37,6 +41,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.util.List;
 
 public class ContactFragment extends Fragment {
+    private static final String TAG = "ContactFragmentLogger";
     private static final String ARG_ID = "contact_id";
     private MaterialToolbar mToolbar;
     private TextView mContactIconTextView;
@@ -109,6 +114,8 @@ public class ContactFragment extends Fragment {
         return v;
     }
 
+
+
     private void updateUI() {
         mContactNameTextView.setText(mContact.getName());
         mContactIconTextView.setText(mContact.getIcon());
@@ -163,15 +170,18 @@ public class ContactFragment extends Fragment {
     }
 
 
-    private class RepliesHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+    private class RepliesHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, PopupMenu.OnMenuItemClickListener {
 
         private Reply mReply;
         private FrameLayout mReplyPriorityButton;
         private TextView mReplyTextView;
+        private ImageButton mMenuOptionsButton;
         public RepliesHolder(@NonNull View itemView) {
             super(itemView);
             mReplyPriorityButton = (FrameLayout) itemView.findViewById(R.id.contact_reply_priority_button);
             mReplyTextView = (TextView) itemView.findViewById(R.id.contact_reply_text_view);
+            mMenuOptionsButton = (ImageButton) itemView.findViewById(R.id.contact_reply_menu_options);
+            mMenuOptionsButton.setOnClickListener(this);
 //            mReplyPriorityButton.setOnClickListener(this);
 //            mReplyTextView.setOnClickListener(this);
 
@@ -204,8 +214,27 @@ public class ContactFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mReply.getId());
-            startActivity(intent);
+            PopupMenu popup = new PopupMenu(getContext(), v);
+            popup.getMenuInflater().inflate(R.menu.contact_reply_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(this);
+            popup.show();
+
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+
+            if (item.getItemId() ==R.id.contact_menu_make_active) {
+                mContact.setActiveReplyId(mReply.getId());
+                ContactLab.getInstance(getContext()).update(mContact);
+                updateUI();
+                return true;
+            } else if (item.getItemId() == R.id.contact_menu_edit_reply) {
+                Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mReply.getId());
+                startActivity(intent);
+                return true;
+            }
+            return false;
         }
 
         @Override
