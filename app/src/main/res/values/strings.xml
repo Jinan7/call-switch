@@ -41,6 +41,9 @@
     <string name="notification">Notification</string>
     <string name="allow_calls_ring">Allow Calls ring</string>
     <string name="notifications">Notifications</string>
+    <string name="default_do_nothing">Default (Do Nothing)</string>
+    <string name="highlight">Highlight</string>
+    <string name="delete_in_app">Delete in App</string>
     <string-array name="priority_array">
         <item>High</item>
         <item>Normal</item>
