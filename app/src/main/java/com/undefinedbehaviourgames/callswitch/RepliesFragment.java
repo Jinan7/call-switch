@@ -62,6 +62,9 @@ public class RepliesFragment extends BottomNavBarFragment {
                     Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.NEW_REPLY);
                     startActivity(intent);
                     return true;
+                } else if (item.getItemId() == R.id.settings) {
+                    Intent intent = SettingsActivity.newIntent(getContext());
+                    startActivity(intent);
                 }
                 return false;
             }

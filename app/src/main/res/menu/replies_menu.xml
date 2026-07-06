@@ -2,7 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/add_reply"
-        android:title="Add reply"
+        android:title="@string/add_reply"
         android:icon="@drawable/ic_action_add"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/settings"
+        android:title="@string/settings"
+        app:showAsAction="never"/>
 </menu>
