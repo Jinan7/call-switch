@@ -41,10 +41,12 @@
     <string name="notification">Notification</string>
     <string name="allow_calls_ring">Allow Calls ring</string>
     <string name="notifications">Notifications</string>
-    <string name="default_do_nothing">Default (Do Nothing)</string>
+    <string name="do_nothing">Do Nothing</string>
     <string name="highlight">Highlight</string>
     <string name="delete_in_app">Delete in App</string>
     <string name="sim">SIM</string>
+    <string name="use_phone_settings">Use phone settings</string>
+    <string name="sim_receiving_call">SIM receiving call</string>
     <string-array name="priority_array">
         <item>High</item>
         <item>Normal</item>

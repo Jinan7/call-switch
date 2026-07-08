@@ -1,6 +1,7 @@
 package com.undefinedbehaviourgames.callswitch;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -57,7 +58,17 @@ public class PreferredSimSettingsDialog extends BottomSheetDialogFragment {
         mPreferredSimSettingsRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(@NonNull RadioGroup group, int checkedId) {
-                Log.d(TAG, String.valueOf(checkedId));
+
+                //make asynchronous
+                if (checkedId == R.id.preferred_sim_use_phone) {
+                   SettingsPreferences.setPrefPreferredSimSettings(getContext(), PreferredSimSettings.PHONE_SETTINGS, -1);
+                } else if (checkedId == R.id.preferred_sim_receiving_sim) {
+                    SettingsPreferences.setPrefPreferredSimSettings(getContext(), PreferredSimSettings.RECEIVING_SIM, -1);
+                } else {
+                    SettingsPreferences.setPrefPreferredSimSettings(getContext(), PreferredSimSettings.SIM, checkedId);
+                }
+
+                finish(Activity.RESULT_OK);
             }
         });
         return dialog;
@@ -90,7 +101,9 @@ public class PreferredSimSettingsDialog extends BottomSheetDialogFragment {
         for (int i = 0; i < mMaxSimSlots; i++ ) {
             RadioButton settingsButton = (RadioButton) LayoutInflater.from(getContext()).inflate(R.layout.componet_sim_settings_radio_button, null, false);
             String sim = getString(R.string.sim) + " " + (i+1);
+            String simId = String.valueOf(i);
             settingsButton.setText(sim);
+            settingsButton.setId(i);
             ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.topMargin = (int) getResources().getDimension(R.dimen.dp_16);
             params.leftMargin = (int) getResources().getDimension(R.dimen.dp_16);
@@ -124,6 +137,9 @@ public class PreferredSimSettingsDialog extends BottomSheetDialogFragment {
 
                 if (simIndex >= 0 && simIndex < mSettingsRadioButtons.size()) {
                     mSettingsRadioButtons.get(simIndex).setChecked(true);
+                } else {
+                    //if sim cannot be found, change to "use phone settings"
+                    mPreferredSimSettingsRadioGroup.check(R.id.preferred_sim_use_phone);
                 }
                 break;
             case PHONE_SETTINGS:
@@ -133,5 +149,10 @@ public class PreferredSimSettingsDialog extends BottomSheetDialogFragment {
         }
     }
 
+    public void finish(int resultCode) {
+
+        getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, null);
+        dismiss();
+    }
 
 }

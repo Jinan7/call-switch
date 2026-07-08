@@ -6,10 +6,8 @@ import android.preference.PreferenceManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.util.ArrayList;
-
 enum DeletedContactSettings {
-    DO_NOTHING, HIGHTLIGHT, DELETE
+    DO_NOTHING, HIGHLIGHT, DELETE
 }
 
 enum PreferredSimSettings {
