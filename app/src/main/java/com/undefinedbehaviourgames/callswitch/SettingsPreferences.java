@@ -17,11 +17,25 @@ enum PreferredSimSettings {
 
 public class SettingsPreferences {
 
+    public static final String PREF_SYSTEM_SETTINGS = "system settings";
     public static final String  PREF_DELETED_CONTACTS_SETTINGS = "deleted contacts settings";
     public static final String  PREF_NOTIFICATION_SETTINGS = "notification settings";
     public static final String  PREF_ALLOW_CALL_RING_SETTINGS = "allow call ring settings";
     public static final String PREF_PREFERRED_SIM_SETTINGS = "preferred sim settings";
     private static final String defaultPreferredSimSettingsString = new Gson().toJson(new SimSettings(PreferredSimSettings.PHONE_SETTINGS, -1));
+
+    public static boolean getSystemSettings(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(PREF_SYSTEM_SETTINGS, true);
+    }
+
+
+    public static void setSystemSettings(Context context, boolean settings) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putBoolean(PREF_SYSTEM_SETTINGS, settings)
+                .apply();
+    }
     public static DeletedContactSettings getDeletedContactSettings(Context context) {
         int defaultValue = DeletedContactSettings.DO_NOTHING.ordinal();
         int settingsOrdinal = PreferenceManager.getDefaultSharedPreferences(context)

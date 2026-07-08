@@ -9,12 +9,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class SettingsFragment extends Fragment {
 
@@ -28,6 +31,9 @@ public class SettingsFragment extends Fragment {
     private TextView mPreferredSimTextView;
     private TextView mDeletedContactsTextView;
     private PreferredSimSettingsDialog mPreferredSimSettingsDialog;
+    private SwitchMaterial mSystemSwitch;
+    private SwitchMaterial mNotificationSwitch;
+    private SwitchMaterial mAllowCallRingSwitch;
 
     public static SettingsFragment newInstance() {
         SettingsFragment fragment = new SettingsFragment();
@@ -67,10 +73,130 @@ public class SettingsFragment extends Fragment {
         });
         mPreferredSimTextView = v.findViewById(R.id.settings_preferred_sim_text);
         mDeletedContactsTextView = v.findViewById(R.id.settings_deleted_contacts_text);
+        mSystemSwitch = v.findViewById(R.id.settings_system_switch);
+        mNotificationSwitch = v.findViewById(R.id.settings_reply_notification_switch);
+        mAllowCallRingSwitch = v.findViewById(R.id.settings_let_call_ring_switch);
         updatePreferredSimUI();
         updateDeletedContactsUI();
+        setUpSystemSwitch();
+        setUpNotificationSwitch();
+        setUpAllowCallRingSwitch();
         return v;
     }
+
+    @SuppressLint("StaticFieldLeak")
+    private void setUpSystemSwitch() {
+       if (mSystemSwitch == null) return;
+
+       new AsyncTask<Void, Void, Boolean>() {
+           @Override
+           protected Boolean doInBackground(Void... voids) {
+               Boolean settings = SettingsPreferences.getSystemSettings(getContext());
+               return settings;
+           }
+
+           @Override
+           protected void onPostExecute(Boolean systemIsOn) {
+               super.onPostExecute(systemIsOn);
+
+               mSystemSwitch.setChecked(systemIsOn);
+               mSystemSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                   @Override
+                   public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                       updateSystemSettings(isChecked);
+                   }
+               });
+           }
+       }.execute();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void updateSystemSettings(boolean isChecked) {
+        new AsyncTask<Void, Void, Void> () {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                SettingsPreferences.setSystemSettings(getContext(), isChecked);
+                return null;
+            }
+        }.execute();
+    }
+
+
+    @SuppressLint("StaticFieldLeak")
+    private void setUpNotificationSwitch() {
+        if (mNotificationSwitch == null) return;
+
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                Boolean settings = SettingsPreferences.getNotificationSettings(getContext());
+                return settings;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean IsOn) {
+                super.onPostExecute(IsOn);
+
+                mNotificationSwitch.setChecked(IsOn);
+                mNotificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                        updateNotificationSettings(isChecked);
+                    }
+                });
+            }
+        }.execute();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void updateNotificationSettings(boolean isChecked) {
+        new AsyncTask<Void, Void, Void> () {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                SettingsPreferences.setNotificationSettings(getContext(), isChecked);
+                return null;
+            }
+        }.execute();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void setUpAllowCallRingSwitch() {
+        if (mAllowCallRingSwitch == null) return;
+
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                Boolean settings = SettingsPreferences.getAllowCallRingSettings(getContext());
+                return settings;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean IsOn) {
+                super.onPostExecute(IsOn);
+
+                mSystemSwitch.setChecked(IsOn);
+                mSystemSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                        updateAllowCallRingSettings(isChecked);
+                    }
+                });
+            }
+        }.execute();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void updateAllowCallRingSettings(boolean isChecked) {
+        new AsyncTask<Void, Void, Void> () {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                SettingsPreferences.setAllowCallRingSettings(getContext(), isChecked);
+                return null;
+            }
+        }.execute();
+    }
+
+
 
     private void updatePreferredSimUI() {
         //make asynchronous
