@@ -47,6 +47,7 @@
     <string name="sim">SIM</string>
     <string name="use_phone_settings">Use phone settings</string>
     <string name="sim_receiving_call">SIM receiving call</string>
+    <string name="off">Off</string>
     <string-array name="priority_array">
         <item>High</item>
         <item>Normal</item>

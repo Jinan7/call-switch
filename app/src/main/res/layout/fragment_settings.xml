@@ -28,6 +28,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginHorizontal="8dp">
                 <LinearLayout
+
                     android:layout_marginTop="16dp"
                     android:layout_marginHorizontal="16dp"
                     android:layout_width="match_parent"
@@ -41,14 +42,16 @@
                         android:text="@string/system"
                         android:textStyle="bold"
                         android:textSize="18sp"/>
+
                     <TextView
+                        android:id="@+id/settings_system_switch_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:text="@string/on"
                         android:textColor="@color/blue"
-                        android:textStyle="bold"
-                        android:textSize="18sp"/>
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/settings_system_switch"
                         android:layout_width="wrap_content"

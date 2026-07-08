@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -34,6 +35,7 @@ public class SettingsFragment extends Fragment {
     private SwitchMaterial mSystemSwitch;
     private SwitchMaterial mNotificationSwitch;
     private SwitchMaterial mAllowCallRingSwitch;
+    private TextView mSystemSwitchText;
 
     public static SettingsFragment newInstance() {
         SettingsFragment fragment = new SettingsFragment();
@@ -76,6 +78,7 @@ public class SettingsFragment extends Fragment {
         mSystemSwitch = v.findViewById(R.id.settings_system_switch);
         mNotificationSwitch = v.findViewById(R.id.settings_reply_notification_switch);
         mAllowCallRingSwitch = v.findViewById(R.id.settings_let_call_ring_switch);
+        mSystemSwitchText = (TextView) v.findViewById(R.id.settings_system_switch_text);
         updatePreferredSimUI();
         updateDeletedContactsUI();
         setUpSystemSwitch();
@@ -84,9 +87,12 @@ public class SettingsFragment extends Fragment {
         return v;
     }
 
+    private int getColor(int id) {
+        return ResourcesCompat.getColor(getResources(), id, getActivity().getTheme());
+    }
     @SuppressLint("StaticFieldLeak")
     private void setUpSystemSwitch() {
-       if (mSystemSwitch == null) return;
+       if (mSystemSwitch == null || mSystemSwitchText == null ) return;
 
        new AsyncTask<Void, Void, Boolean>() {
            @Override
@@ -99,10 +105,25 @@ public class SettingsFragment extends Fragment {
            protected void onPostExecute(Boolean systemIsOn) {
                super.onPostExecute(systemIsOn);
 
+               if (systemIsOn) {
+                   mSystemSwitchText.setTextColor(getColor(R.color.blue));
+                   mSystemSwitchText.setText(R.string.on);
+               } else {
+                   mSystemSwitchText.setTextColor(getColor(R.color.grey_10));
+                   mSystemSwitchText.setText(R.string.off);
+
+               }
                mSystemSwitch.setChecked(systemIsOn);
                mSystemSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                    @Override
                    public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                       if (isChecked) {
+                           mSystemSwitchText.setTextColor(getColor(R.color.blue));
+                           mSystemSwitchText.setText(R.string.on);
+                       } else {
+                           mSystemSwitchText.setTextColor(getColor(R.color.grey_10));
+                           mSystemSwitchText.setText(R.string.off);
+                       }
                        updateSystemSettings(isChecked);
                    }
                });
@@ -174,8 +195,8 @@ public class SettingsFragment extends Fragment {
             protected void onPostExecute(Boolean IsOn) {
                 super.onPostExecute(IsOn);
 
-                mSystemSwitch.setChecked(IsOn);
-                mSystemSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                mAllowCallRingSwitch.setChecked(IsOn);
+                mAllowCallRingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
                         updateAllowCallRingSettings(isChecked);
