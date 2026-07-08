@@ -2,7 +2,6 @@ package com.undefinedbehaviourgames.callswitch;
 
 import static android.app.Activity.RESULT_OK;
 import static com.undefinedbehaviourgames.callswitch.EditReplyFragment.EXTRA_SELECTED_CONTACTS;
-import static com.undefinedbehaviourgames.callswitch.SelectContactsActivity.READ_CONTACT_REQUEST_CODE;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -171,7 +170,7 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
 
         switch (requestCode) {
 
-            case  READ_CONTACT_REQUEST_CODE:
+            case  PermissionManager.REQUEST_CODE_READ_CONTACTS:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     getActivity().finish();
                 }else{

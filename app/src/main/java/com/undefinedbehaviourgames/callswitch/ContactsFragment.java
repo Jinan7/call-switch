@@ -1,6 +1,5 @@
 package com.undefinedbehaviourgames.callswitch;
 
-import static com.undefinedbehaviourgames.callswitch.SelectContactsActivity.READ_CONTACT_REQUEST_CODE;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -101,7 +100,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
 
         switch (requestCode) {
 
-            case  READ_CONTACT_REQUEST_CODE:
+            case  PermissionManager.REQUEST_CODE_READ_CONTACTS:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     getActivity().finish();
                 }else{

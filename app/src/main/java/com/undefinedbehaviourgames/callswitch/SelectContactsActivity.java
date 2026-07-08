@@ -24,7 +24,6 @@ import java.util.UUID;
 
 public class SelectContactsActivity extends SingleFragmentActivity {
 
-    public static final int READ_CONTACT_REQUEST_CODE = 0;
     private static final String EXTRA_ID = "com.undefinedbehaviourgames.callswitch.extra_reply_id";
     private static final String EXTRA_SELECTED_CONTACTS = "com.undefinedbehaviourgames.callswitch.extra_selected_contacts";
     public static Intent newIntent(Context context, UUID id, List<Contact> selectedContacts) {
@@ -40,7 +39,7 @@ public class SelectContactsActivity extends SingleFragmentActivity {
         super.onCreate(savedInstanceState);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String [] {Manifest.permission.READ_CONTACTS}, READ_CONTACT_REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String [] {Manifest.permission.READ_CONTACTS}, PermissionManager.REQUEST_CODE_READ_CONTACTS);
         }
 
         //make nav system bar transparent or make is same color
@@ -68,7 +67,7 @@ public class SelectContactsActivity extends SingleFragmentActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId);
 
         switch (requestCode) {
-            case  READ_CONTACT_REQUEST_CODE:
+            case  PermissionManager.REQUEST_CODE_READ_CONTACTS:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     finish();
                 }
@@ -78,7 +77,7 @@ public class SelectContactsActivity extends SingleFragmentActivity {
                 SelectContactsFragment fragment = (SelectContactsFragment) fm.findFragmentById(R.id.main);
 
                 if (fragment != null) {
-                    fragment.onRequestPermissionsResult(READ_CONTACT_REQUEST_CODE, permissions, grantResults);
+                    fragment.onRequestPermissionsResult(PermissionManager.REQUEST_CODE_READ_CONTACTS, permissions, grantResults);
                 }
         }
     }

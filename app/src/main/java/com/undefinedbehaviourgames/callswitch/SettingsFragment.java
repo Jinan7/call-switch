@@ -18,9 +18,19 @@ public class SettingsFragment extends Fragment {
     private static final int PREFERRED_SIM_SETTINGS_REQUEST_CODE = 2;
     LinearLayout mDeletedContactsSettings;
     LinearLayout mPreferredSimSettings;
+    private PreferredSimSettingsDialog mPreferredSimSettingsDialog;
+
     public static SettingsFragment newInstance() {
         SettingsFragment fragment = new SettingsFragment();
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mPreferredSimSettingsDialog = PreferredSimSettingsDialog.newInstance();
+        mPreferredSimSettingsDialog.setTargetFragment(SettingsFragment.this, PREFERRED_SIM_SETTINGS_REQUEST_CODE);
+
     }
 
     @Nullable
@@ -42,11 +52,20 @@ public class SettingsFragment extends Fragment {
         mPreferredSimSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PreferredSimSettingsDialog dialog = PreferredSimSettingsDialog.newInstance();
-                dialog.setTargetFragment(SettingsFragment.this, PREFERRED_SIM_SETTINGS_REQUEST_CODE);
-                dialog.show(getParentFragmentManager(), PREFERRED_SIM_SETTINGS_DIALOG);
+                mPreferredSimSettingsDialog.show(getParentFragmentManager(), PREFERRED_SIM_SETTINGS_DIALOG);
             }
         });
         return v;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+
+            case PermissionManager.REQUEST_CODE_READ_PHONE_STATE:
+                if (mPreferredSimSettingsDialog != null) mPreferredSimSettingsDialog.logSubscriptionInfo();
+        }
     }
 }

@@ -44,6 +44,7 @@
     <string name="default_do_nothing">Default (Do Nothing)</string>
     <string name="highlight">Highlight</string>
     <string name="delete_in_app">Delete in App</string>
+    <string name="sim">SIM</string>
     <string-array name="priority_array">
         <item>High</item>
         <item>Normal</item>

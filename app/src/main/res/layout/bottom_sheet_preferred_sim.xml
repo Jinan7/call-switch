@@ -13,24 +13,14 @@
         android:textStyle="bold"
         />
     <RadioGroup
+        android:id="@+id/preferred_sim_settings_radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp">
+
         <RadioButton
-            android:textSize="16sp"
-            android:layout_marginHorizontal="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SIM 1"/>
-        <RadioButton
-            android:textSize="16sp"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SIM 2"/>
-        <RadioButton
+            android:id="@+id/preferred_sim_use_phone"
             android:textSize="16sp"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="16dp"
@@ -38,6 +28,7 @@
             android:layout_height="wrap_content"
             android:text="Use phone settings"/>
         <RadioButton
+            android:id="@+id/preferred_sim_receiving_sim"
             android:textSize="16sp"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="16dp"
