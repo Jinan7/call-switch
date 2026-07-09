@@ -90,131 +90,79 @@ public class SettingsFragment extends Fragment {
     private int getColor(int id) {
         return ResourcesCompat.getColor(getResources(), id, getActivity().getTheme());
     }
-    @SuppressLint("StaticFieldLeak")
+
     private void setUpSystemSwitch() {
        if (mSystemSwitch == null || mSystemSwitchText == null ) return;
+       boolean systemIsOn = SettingsPreferences.getSystemSettings(getContext());
+        if (systemIsOn) {
+            mSystemSwitchText.setTextColor(getColor(R.color.blue));
+            mSystemSwitchText.setText(R.string.on);
+        } else {
+            mSystemSwitchText.setTextColor(getColor(R.color.grey_10));
+            mSystemSwitchText.setText(R.string.off);
 
-       new AsyncTask<Void, Void, Boolean>() {
-           @Override
-           protected Boolean doInBackground(Void... voids) {
-               Boolean settings = SettingsPreferences.getSystemSettings(getContext());
-               return settings;
-           }
-
-           @Override
-           protected void onPostExecute(Boolean systemIsOn) {
-               super.onPostExecute(systemIsOn);
-
-               if (systemIsOn) {
-                   mSystemSwitchText.setTextColor(getColor(R.color.blue));
-                   mSystemSwitchText.setText(R.string.on);
-               } else {
-                   mSystemSwitchText.setTextColor(getColor(R.color.grey_10));
-                   mSystemSwitchText.setText(R.string.off);
-
-               }
-               mSystemSwitch.setChecked(systemIsOn);
-               mSystemSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                   @Override
-                   public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
-                       if (isChecked) {
-                           mSystemSwitchText.setTextColor(getColor(R.color.blue));
-                           mSystemSwitchText.setText(R.string.on);
-                       } else {
-                           mSystemSwitchText.setTextColor(getColor(R.color.grey_10));
-                           mSystemSwitchText.setText(R.string.off);
-                       }
-                       updateSystemSettings(isChecked);
-                   }
-               });
-           }
-       }.execute();
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private void updateSystemSettings(boolean isChecked) {
-        new AsyncTask<Void, Void, Void> () {
+        }
+        mSystemSwitch.setChecked(systemIsOn);
+        mSystemSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            protected Void doInBackground(Void... voids) {
-                SettingsPreferences.setSystemSettings(getContext(), isChecked);
-                return null;
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mSystemSwitchText.setTextColor(getColor(R.color.blue));
+                    mSystemSwitchText.setText(R.string.on);
+                } else {
+                    mSystemSwitchText.setTextColor(getColor(R.color.grey_10));
+                    mSystemSwitchText.setText(R.string.off);
+                }
+                updateSystemSettings(isChecked);
             }
-        }.execute();
+        });
+
+
+    }
+
+    private void updateSystemSettings(boolean isChecked) {
+
+        SettingsPreferences.setSystemSettings(getContext(), isChecked);
     }
 
 
-    @SuppressLint("StaticFieldLeak")
     private void setUpNotificationSwitch() {
         if (mNotificationSwitch == null) return;
-
-        new AsyncTask<Void, Void, Boolean>() {
+        boolean IsOn = SettingsPreferences.getNotificationSettings(getContext());
+        mNotificationSwitch.setChecked(IsOn);
+        mNotificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            protected Boolean doInBackground(Void... voids) {
-                Boolean settings = SettingsPreferences.getNotificationSettings(getContext());
-                return settings;
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                updateNotificationSettings(isChecked);
             }
+        });
 
-            @Override
-            protected void onPostExecute(Boolean IsOn) {
-                super.onPostExecute(IsOn);
-
-                mNotificationSwitch.setChecked(IsOn);
-                mNotificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
-                        updateNotificationSettings(isChecked);
-                    }
-                });
-            }
-        }.execute();
     }
 
-    @SuppressLint("StaticFieldLeak")
     private void updateNotificationSettings(boolean isChecked) {
-        new AsyncTask<Void, Void, Void> () {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                SettingsPreferences.setNotificationSettings(getContext(), isChecked);
-                return null;
-            }
-        }.execute();
+
+        SettingsPreferences.setNotificationSettings(getContext(), isChecked);
     }
 
-    @SuppressLint("StaticFieldLeak")
+
     private void setUpAllowCallRingSwitch() {
         if (mAllowCallRingSwitch == null) return;
 
-        new AsyncTask<Void, Void, Boolean>() {
+        Boolean IsOn = SettingsPreferences.getAllowCallRingSettings(getContext());
+        mAllowCallRingSwitch.setChecked(IsOn);
+        mAllowCallRingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            protected Boolean doInBackground(Void... voids) {
-                Boolean settings = SettingsPreferences.getAllowCallRingSettings(getContext());
-                return settings;
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                updateAllowCallRingSettings(isChecked);
             }
+        });
 
-            @Override
-            protected void onPostExecute(Boolean IsOn) {
-                super.onPostExecute(IsOn);
-
-                mAllowCallRingSwitch.setChecked(IsOn);
-                mAllowCallRingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
-                        updateAllowCallRingSettings(isChecked);
-                    }
-                });
-            }
-        }.execute();
     }
 
-    @SuppressLint("StaticFieldLeak")
+
     private void updateAllowCallRingSettings(boolean isChecked) {
-        new AsyncTask<Void, Void, Void> () {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                SettingsPreferences.setAllowCallRingSettings(getContext(), isChecked);
-                return null;
-            }
-        }.execute();
+
+        SettingsPreferences.setAllowCallRingSettings(getContext(), isChecked);
     }
 
 
@@ -243,44 +191,26 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    @SuppressLint("StaticFieldLeak")
     private void updateDeletedContactsUI() {
         DeletedContactSettings settings = SettingsPreferences.getDeletedContactSettings(getContext());
+        switch (settings) {
+            case DO_NOTHING:
+                mDeletedContactsTextView.setText(R.string.do_nothing);
+                break;
+            case HIGHLIGHT:
+                mDeletedContactsTextView.setText(R.string.highlight);
+                break;
+            case DELETE:
+                mDeletedContactsTextView.setText(R.string.delete_in_app);
+                break;
+        }
 
-        new AsyncTask<Void, Void, DeletedContactSettings> () {
-            @Override
-            protected DeletedContactSettings doInBackground(Void... voids) {
-                DeletedContactSettings settings = SettingsPreferences.getDeletedContactSettings(getContext());
-                return settings;
-            }
-
-            @Override
-            protected void onPostExecute(DeletedContactSettings settings) {
-                super.onPostExecute(settings);
-                switch (settings) {
-                    case DO_NOTHING:
-                        mDeletedContactsTextView.setText(R.string.do_nothing);
-                        break;
-                    case HIGHLIGHT:
-                        mDeletedContactsTextView.setText(R.string.highlight);
-                        break;
-                    case DELETE:
-                        mDeletedContactsTextView.setText(R.string.delete_in_app);
-                        break;
-                }
-            }
-        }.execute();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-
-            case PermissionManager.REQUEST_CODE_READ_PHONE_STATE:
-                if (mPreferredSimSettingsDialog != null) mPreferredSimSettingsDialog.logSubscriptionInfo();
-        }
     }
 
     @Override

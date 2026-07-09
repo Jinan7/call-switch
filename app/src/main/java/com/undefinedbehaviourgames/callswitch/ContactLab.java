@@ -2,15 +2,12 @@ package com.undefinedbehaviourgames.callswitch;
 
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class ContactLab extends ContactLabHelper<Contact, ContactLabHelper.QueryHandler> {
+public class ContactLab extends ContactLabHelper<Contact> {
 
     private static ContactLab sContactLab;
 
     private ContactLab(Context context) {
-        super(context, Contact.class, QueryHandler.class);
+        super(context, Contact.class);
     }
 
     public static ContactLab getInstance(Context context) {
@@ -22,15 +19,6 @@ public class ContactLab extends ContactLabHelper<Contact, ContactLabHelper.Query
         return sContactLab;
     }
 
-    public static ContactLab getInstance(Context context, Callbacks callbacks) {
-
-        if (sContactLab == null) {
-            sContactLab = new ContactLab(context);
-            sContactLab.startQuery(callbacks);
-        }
-
-        return sContactLab;
-    }
 
 
 

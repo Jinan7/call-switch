@@ -9,6 +9,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,8 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SelectContactsFragment extends Fragment implements ContactLabHelper.Callbacks {
+public class SelectContactsFragment extends Fragment implements ContactQueryHandler.Callbacks {
 
+    public static final String TAG = "SelectContactsFragmentLogger";
     private static final String ARGS_ID = "reply_id";
     private static final String ARGS_SELECTED_CONTACTS = "selected_contacts";
     private RecyclerView mRecyclerView;
@@ -68,15 +70,22 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
         super.onCreate(savedInstanceState);
         UUID id = (UUID) getArguments().getSerializable(ARGS_ID);
         mPrevSelectedContacts = (ArrayList<Contact>) getArguments().getSerializable(ARGS_SELECTED_CONTACTS);
-//        mReply = ReplyLab.getInstance(getContext()).get(id);
-        mSelectContactLab = new SelectContactLab(getContext(), this);
+        mSelectContactLab = new SelectContactLab(getContext());
         mSelectContactLab.setPreviousSelectedContacts(mPrevSelectedContacts);
+        Log.d(TAG, "on create called");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "on resume called");
+        ContactQueryHandler.getInstance(getContext()).startQuery(SelectContactsFragment.this);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
+        Log.d(TAG, "on create view called");
         View v = inflater.inflate(R.layout.fragment_select_contacts, container, false);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.select_contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -174,7 +183,7 @@ public class SelectContactsFragment extends Fragment implements ContactLabHelper
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     getActivity().finish();
                 }else{
-                    if (mSelectContactLab != null) mSelectContactLab.startQuery(SelectContactsFragment.this);
+
                 }
         }
     }

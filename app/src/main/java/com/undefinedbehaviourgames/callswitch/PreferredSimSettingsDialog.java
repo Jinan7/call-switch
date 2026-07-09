@@ -101,8 +101,8 @@ public class PreferredSimSettingsDialog extends BottomSheetDialogFragment {
         for (int i = 0; i < mMaxSimSlots; i++ ) {
             RadioButton settingsButton = (RadioButton) LayoutInflater.from(getContext()).inflate(R.layout.componet_sim_settings_radio_button, null, false);
             String sim = getString(R.string.sim) + " " + (i+1);
-            String simId = String.valueOf(i);
             settingsButton.setText(sim);
+            //what if the id being set has already been set for one of the radio buttons not created programmatically
             settingsButton.setId(i);
             ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.topMargin = (int) getResources().getDimension(R.dimen.dp_16);

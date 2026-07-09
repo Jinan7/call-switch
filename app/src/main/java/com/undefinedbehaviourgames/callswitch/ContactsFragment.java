@@ -29,15 +29,17 @@ import com.google.android.material.search.SearchView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactsFragment extends BottomNavBarFragment implements ContactLabHelper.Callbacks {
+public class ContactsFragment extends BottomNavBarFragment implements ContactQueryHandler.Callbacks {
 
     private RecyclerView mRecyclerView;
     private RecyclerView mSearchResultRecyclerView;
     private SearchView mSearchView;
+    private boolean contactsReady;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ContactLab.getInstance(getContext()).startQuery(ContactsFragment.this);
+        contactsReady = false;
+
     }
 
     public static ContactsFragment newInstance() {
@@ -45,6 +47,8 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
 
         return fragment;
     }
+
+
 
     @Nullable
     @Override
@@ -56,11 +60,9 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
         mRecyclerView = v.findViewById(R.id.contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts()));
-        mRecyclerView.setAdapter(new ContactAdapter(new ArrayList<>()));
         mSearchResultRecyclerView = v.findViewById(R.id.contact_search_results);
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mSearchResultRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts("")));
-
+        mSearchResultRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts()));
         mSearchView = v.findViewById(R.id.contact_search_view);
         mSearchView.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
@@ -84,9 +86,18 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        ContactQueryHandler.getInstance(getContext()).startQuery(ContactsFragment.this);
+    }
+
+    @Override
     public void onQueryComplete() {
+
         ((ContactAdapter) mRecyclerView.getAdapter()).setContacts(ContactLab.getInstance(getContext()).getContacts());
         mRecyclerView.getAdapter().notifyDataSetChanged();
+
+
     }
 
     @Override
@@ -104,7 +115,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactLab
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     getActivity().finish();
                 }else{
-                    ContactLab.getInstance(getContext()).startQuery(ContactsFragment.this);
+
                 }
         }
     }

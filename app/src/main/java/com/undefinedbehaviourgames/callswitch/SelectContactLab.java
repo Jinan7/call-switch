@@ -1,31 +1,17 @@
 package com.undefinedbehaviourgames.callswitch;
 
-import android.Manifest;
-import android.app.appsearch.SearchResults;
-import android.content.AsyncQueryHandler;
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.ContactsContract;
-import android.util.Log;
 
-import androidx.core.app.ActivityCompat;
-
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class SelectContactLab extends ContactLabHelper<SelectContact, SelectContactLab.SelectContactQueryHandler> {
+public class SelectContactLab extends ContactLabHelper<SelectContact> {
 
 
     private List<Contact> mPreviousSelectedContacts;
     private List<SelectContact> mContacts;
-    public SelectContactLab(Context context, Callbacks callbacks) {
-        super(context, SelectContact.class, SelectContactQueryHandler.class);
+    public SelectContactLab(Context context) {
+        super(context, SelectContact.class);
         mPreviousSelectedContacts = new ArrayList<>();
         mContacts = new ArrayList<>();
     }
@@ -102,14 +88,10 @@ public class SelectContactLab extends ContactLabHelper<SelectContact, SelectCont
 
     }
 
-    public class SelectContactQueryHandler extends QueryHandler {
-
-        public SelectContactQueryHandler(Context context, Callbacks callbacks) {
-            super(context, callbacks);
-        }
 
 
 
-    }
+
+
 
 }
