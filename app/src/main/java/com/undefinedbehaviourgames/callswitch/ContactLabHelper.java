@@ -1,20 +1,11 @@
 package com.undefinedbehaviourgames.callswitch;
 
-import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.provider.ContactsContract;
-import android.util.Log;
-
-import androidx.core.app.ActivityCompat;
 
 import com.google.gson.Gson;
-
-import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,6 +120,17 @@ public class ContactLabHelper<T extends Contact> {
         return true;
     }
 
+    public void removeDeleted() {
+        if (ContactQueryHandler.getInstance(mContext).getQueryState() != State.FETCHED) return;
+        List<T> contacts = getContacts();
+
+        for (T contact : contacts) {
+            if (isDeleted(contact)) {
+                delete(mContext, contact);
+            }
+        }
+
+    }
     public void add(Contact contact) {
 
         ContentValues values = getContentValues(contact);

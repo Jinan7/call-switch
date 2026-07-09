@@ -157,12 +157,19 @@ public class ContactQueryHandler extends AsyncQueryHandler {
 
             if (last) {
                 queryState = State.FETCHED;
+
+                DeletedContactSettings settings = SettingsPreferences.getDeletedContactSettings(mContext);
+                //make asynchronous
+                //deleted all contacts that have been deleted from phone book if settings say so
+                if (settings == DeletedContactSettings.DELETE) ContactLab.getInstance(mContext).removeDeleted();
+
+                if (callbacks != null) {
+
+                    callbacks.onQueryComplete();
+                }
             }
 
-            if (last && callbacks != null) {
 
-                callbacks.onQueryComplete();
-            }
         } finally {
             if (cursor != null) cursor.close();
         }
