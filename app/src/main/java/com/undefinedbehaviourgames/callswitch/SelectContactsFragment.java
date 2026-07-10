@@ -3,6 +3,7 @@ package com.undefinedbehaviourgames.callswitch;
 import static android.app.Activity.RESULT_OK;
 import static com.undefinedbehaviourgames.callswitch.EditReplyFragment.EXTRA_SELECTED_CONTACTS;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.GradientDrawable;
@@ -33,6 +34,8 @@ import com.google.android.material.search.SearchView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SelectContactsFragment extends Fragment implements ContactQueryHandler.Callbacks {
 
@@ -78,8 +81,14 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "on resume called");
-        ContactQueryHandler.getInstance(getContext()).startQuery(SelectContactsFragment.this);
+        ExecutorService executor =  Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ContactQueryHandler.getInstance(getContext()).startQuery(SelectContactsFragment.this);
+            }
+        });
+
     }
 
     @Nullable
@@ -145,8 +154,19 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
 
     @Override
     public void onQueryComplete() {
-        ((SelectContactAdapter) mRecyclerView.getAdapter()).setContacts(mSelectContactLab.getContacts());
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((SelectContactAdapter) mRecyclerView.getAdapter()).setContacts(mSelectContactLab.getContacts());
+                mRecyclerView.getAdapter().notifyDataSetChanged();
+            }
+        });
+
+    }
+
+    @Override
+    public void onContactsAlreadyQueried() {
+
     }
 
     @Override

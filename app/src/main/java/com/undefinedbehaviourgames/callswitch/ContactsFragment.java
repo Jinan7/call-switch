@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -28,8 +29,11 @@ import com.google.android.material.search.SearchView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class ContactsFragment extends BottomNavBarFragment implements ContactQueryHandler.Callbacks {
+public class ContactsFragment extends BottomNavBarFragment implements ContactQueryHandler.Callbacks, ContactLabHelper.Callbacks, ContactLabHelper.SearchCallbacks<Contact>{
 
     private RecyclerView mRecyclerView;
     private RecyclerView mSearchResultRecyclerView;
@@ -38,8 +42,6 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        contactsReady = false;
-
     }
 
     public static ContactsFragment newInstance() {
@@ -59,10 +61,18 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
 
         mRecyclerView = v.findViewById(R.id.contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts()));
+        if (ContactQueryHandler.getInstance(getContext()).getQueryState() == State.FETCHED) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts(ContactsFragment.this)));
+                }
+            });
+
+        }
         mSearchResultRecyclerView = v.findViewById(R.id.contact_search_results);
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mSearchResultRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts()));
+        mSearchResultRecyclerView.setAdapter(new ContactAdapter(new ArrayList<>()));
         mSearchView = v.findViewById(R.id.contact_search_view);
         mSearchView.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
@@ -77,9 +87,15 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                List<Contact> searchResults = ContactLab.getInstance(getContext()).getContacts(s.toString());
-                ((ContactAdapter) mSearchResultRecyclerView.getAdapter()).setContacts(searchResults);
-                mSearchResultRecyclerView.getAdapter().notifyDataSetChanged();
+
+                Executors.newSingleThreadExecutor().execute(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                ContactLab.getInstance(getContext()).getContacts(s.toString(), ContactsFragment.this);
+                            }
+                        }
+                );
             }
         });
         return v;
@@ -88,17 +104,67 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     @Override
     public void onResume() {
         super.onResume();
-        ContactQueryHandler.getInstance(getContext()).startQuery(ContactsFragment.this);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        ContactQueryHandler contactQueryHandler = ContactQueryHandler.getInstance(getContext());
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                contactQueryHandler.startQuery(ContactsFragment.this);
+            }
+        });
+
     }
 
     @Override
     public void onQueryComplete() {
 
-        ((ContactAdapter) mRecyclerView.getAdapter()).setContacts(ContactLab.getInstance(getContext()).getContacts());
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts(ContactsFragment.this)));
+            }
+        });
 
 
     }
+
+    @Override
+    public void onContactsAlreadyQueried() {
+
+    }
+
+    @Override
+    public void onGetSingleContact() {
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() - 1);
+            }
+        });
+    }
+
+    @Override
+    public void onGetSingleSearchContact() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mSearchResultRecyclerView.getAdapter().notifyItemInserted(mSearchResultRecyclerView.getAdapter().getItemCount() - 1);
+            }
+        });
+    }
+
+    @Override
+    public void onSearchResults(List<Contact> contacts) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((ContactAdapter)mSearchResultRecyclerView.getAdapter()).setContacts(contacts);
+                mSearchResultRecyclerView.getAdapter().notifyDataSetChanged();
+            }
+        });
+    }
+
 
     @Override
     public void onSearchComplete() {

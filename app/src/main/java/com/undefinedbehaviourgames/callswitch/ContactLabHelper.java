@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import database.ContactCursorWrapper;
 import database.DBOpenHelper;
@@ -70,6 +71,13 @@ public class ContactLabHelper<T extends Contact> {
         return contacts;
     }
 
+    public List<T> getContacts(Callbacks callbacks) {
+        List<T> contacts = new ArrayList<>();
+        ContactCursorWrapper<T> cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
+        contacts = getContacts(cursor, callbacks);
+        return contacts;
+    }
+
     @SuppressWarnings("unchecked")
     public List<T> getContacts(String searchQuery) {
 
@@ -84,6 +92,90 @@ public class ContactLabHelper<T extends Contact> {
         return contacts;
     }
 
+    public List<T> getContacts(String searchQuery, SearchCallbacks callbacks) {
+        List<T> contacts = new ArrayList<>();
+
+        if (searchQuery.isEmpty()) {
+            if (callbacks != null) {
+                callbacks.onSearchResults(contacts);
+            }
+            return contacts;
+        }
+        String query = "%" + searchQuery + "%";
+        ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.name + " LIKE ?", new String[] { query }, Schema.Contact.Cols.name + " ASC");
+        contacts = getContacts(cursor, callbacks);
+        return contacts;
+    }
+
+    public List<T> getContacts(ContactCursorWrapper<T> cursor, SearchCallbacks callbacks) {
+
+        List<T> contacts = new ArrayList<>();
+
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    cursor.moveToFirst();
+                    while (!cursor.isAfterLast()) {
+                        T contact = (T) cursor.getContact();
+                        //only check if contact has been deleted once contact query handler fetches all contacts
+                        //if not any contact that has not yet been fetched will be marked as deleted temporarily since
+                        //it will not be in the list of contacts
+                        if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
+                        contacts.add(contact);
+
+                        cursor.moveToNext();
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    cursor.close();
+                }
+            }
+        });
+
+        if (callbacks != null) {
+            callbacks.onSearchResults(contacts);
+        }
+        return contacts;
+    }
+    public List<T> getContacts(ContactCursorWrapper<T> cursor, Callbacks callbacks) {
+
+        List<T> contacts = new ArrayList<>();
+
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    cursor.moveToFirst();
+                    while (!cursor.isAfterLast()) {
+                        T contact = (T) cursor.getContact();
+                        //only check if contact has been deleted once contact query handler fetches all contacts
+                        //if not any contact that has not yet been fetched will be marked as deleted temporarily since
+                        //it will not be in the list of contacts
+                        if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
+                        contacts.add(contact);
+
+                        if (callbacks != null) {
+                            callbacks.onGetSingleContact();
+                        }
+                        cursor.moveToNext();
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    cursor.close();
+                }
+            }
+        });
+
+
+        return contacts;
+    }
     public List<T> getContacts(ContactCursorWrapper<T> cursor) {
 
         List<T> contacts = new ArrayList<>();
@@ -207,5 +299,13 @@ public class ContactLabHelper<T extends Contact> {
         mPhoneBookImage.add(contact);
     }
 
+    public interface Callbacks {
+        void onGetSingleContact();
+    }
+
+    public interface SearchCallbacks<T extends Contact> {
+        void onGetSingleSearchContact();
+        void onSearchResults(List<T> contacts);
+    }
 
 }

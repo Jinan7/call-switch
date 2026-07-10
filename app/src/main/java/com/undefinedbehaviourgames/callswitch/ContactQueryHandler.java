@@ -177,6 +177,8 @@ public class ContactQueryHandler extends AsyncQueryHandler {
 
     public interface Callbacks {
         void onQueryComplete();
+        void onContactsAlreadyQueried();
+
         void onSearchComplete();
     }
 
