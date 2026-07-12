@@ -304,7 +304,6 @@ public class ContactLabHelper<T extends Contact> {
     }
 
     public interface SearchCallbacks<T extends Contact> {
-        void onGetSingleSearchContact();
         void onSearchResults(List<T> contacts);
     }
 

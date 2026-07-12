@@ -164,15 +164,8 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
 
     }
 
-    @Override
-    public void onContactsAlreadyQueried() {
 
-    }
 
-    @Override
-    public void onSearchComplete() {
-        mSearchResultRecyclerView.getAdapter().notifyDataSetChanged();
-    }
 
     public void onFinish() {
         ArrayList<Long> selectedContacts = new ArrayList<>();

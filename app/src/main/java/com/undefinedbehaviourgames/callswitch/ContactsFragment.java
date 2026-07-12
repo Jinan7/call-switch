@@ -121,10 +121,6 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
         });
     }
 
-    @Override
-    public void onContactsAlreadyQueried() {
-
-    }
 
     @Override
     public void onGetSingleContact(Contact contact) {
@@ -134,16 +130,6 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
             public void run() {
                 ((ContactAdapter)mRecyclerView.getAdapter()).add(contact);
                 mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() - 1);
-            }
-        });
-    }
-
-    @Override
-    public void onGetSingleSearchContact() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mSearchResultRecyclerView.getAdapter().notifyItemInserted(mSearchResultRecyclerView.getAdapter().getItemCount() - 1);
             }
         });
     }
@@ -170,10 +156,6 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
                     }
                 }
         );
-    }
-    @Override
-    public void onSearchComplete() {
-
     }
 
     @Override
