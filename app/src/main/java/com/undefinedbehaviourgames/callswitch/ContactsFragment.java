@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,7 +34,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ContactsFragment extends BottomNavBarFragment implements ContactQueryHandler.Callbacks, ContactLabHelper.Callbacks, ContactLabHelper.SearchCallbacks<Contact>{
+public class ContactsFragment extends BottomNavBarFragment implements ContactQueryHandler.Callbacks, ContactLabHelper.Callbacks<Contact>, ContactLabHelper.SearchCallbacks<Contact>{
 
     private RecyclerView mRecyclerView;
     private RecyclerView mSearchResultRecyclerView;
@@ -62,13 +63,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
         mRecyclerView = v.findViewById(R.id.contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         if (ContactQueryHandler.getInstance(getContext()).getQueryState() == State.FETCHED) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts(ContactsFragment.this)));
-                }
-            });
-
+            getContactsAsync();
         }
         mSearchResultRecyclerView = v.findViewById(R.id.contact_search_results);
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -104,28 +99,26 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     @Override
     public void onResume() {
         super.onResume();
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        ContactQueryHandler contactQueryHandler = ContactQueryHandler.getInstance(getContext());
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                contactQueryHandler.startQuery(ContactsFragment.this);
-            }
-        });
-
+        if (ContactQueryHandler.getInstance(getContext()).getQueryState() != State.FETCHED) {
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            ContactQueryHandler contactQueryHandler = ContactQueryHandler.getInstance(getContext());
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    contactQueryHandler.startQuery(ContactsFragment.this);
+                }
+            });
+        }
     }
 
     @Override
     public void onQueryComplete() {
-
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mRecyclerView.setAdapter(new ContactAdapter(ContactLab.getInstance(getContext()).getContacts(ContactsFragment.this)));
+                getContactsAsync();
             }
         });
-
-
     }
 
     @Override
@@ -134,11 +127,12 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     }
 
     @Override
-    public void onGetSingleContact() {
+    public void onGetSingleContact(Contact contact) {
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                ((ContactAdapter)mRecyclerView.getAdapter()).add(contact);
                 mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() - 1);
             }
         });
@@ -166,6 +160,17 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     }
 
 
+    public void getContactsAsync() {
+        mRecyclerView.setAdapter(new ContactAdapter(new ArrayList<>()));
+        Executors.newSingleThreadExecutor().execute(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        ContactLab.getInstance(getContext()).getContacts(ContactsFragment.this);
+                    }
+                }
+        );
+    }
     @Override
     public void onSearchComplete() {
 
@@ -263,6 +268,9 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
 
         public void setContacts(List<Contact> contacts) {
             mContacts = contacts;
+        }
+        public void add(Contact contact) {
+            if (mContacts != null) mContacts.add(contact);
         }
     }
 }

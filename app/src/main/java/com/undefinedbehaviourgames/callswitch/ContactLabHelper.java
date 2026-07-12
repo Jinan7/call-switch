@@ -159,7 +159,7 @@ public class ContactLabHelper<T extends Contact> {
                         contacts.add(contact);
 
                         if (callbacks != null) {
-                            callbacks.onGetSingleContact();
+                            callbacks.onGetSingleContact(contact);
                         }
                         cursor.moveToNext();
                     }
@@ -299,8 +299,8 @@ public class ContactLabHelper<T extends Contact> {
         mPhoneBookImage.add(contact);
     }
 
-    public interface Callbacks {
-        void onGetSingleContact();
+    public interface Callbacks<T extends Contact> {
+        void onGetSingleContact(T contact);
     }
 
     public interface SearchCallbacks<T extends Contact> {
