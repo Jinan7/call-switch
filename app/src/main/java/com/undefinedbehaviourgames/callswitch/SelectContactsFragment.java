@@ -38,7 +38,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class SelectContactsFragment extends Fragment implements ContactQueryHandler.Callbacks {
+public class SelectContactsFragment extends Fragment implements ContactQueryHandler.Callbacks, ContactLabHelper.Callbacks<SelectContact>, ContactLabHelper.SearchCallbacks<SelectContact> {
 
     public static final String TAG = "SelectContactsFragmentLogger";
     private static final String ARGS_ID = "reply_id";
@@ -50,6 +50,7 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
     private Button mFinishButton;
     private SearchView mSearchView;
     private CheckBox mSelectAllCheckBox;
+    private ExecutorService mExecutorService;
     private final CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
@@ -76,6 +77,13 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
         mPrevSelectedContacts = (ArrayList<Contact>) getArguments().getSerializable(ARGS_SELECTED_CONTACTS);
         mSelectContactLab = new SelectContactLab(getContext());
         mSelectContactLab.setPreviousSelectedContacts(mPrevSelectedContacts);
+        mExecutorService = Executors.newSingleThreadExecutor();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mExecutorService.shutdownNow();
     }
 
     @Override
@@ -98,10 +106,12 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
         View v = inflater.inflate(R.layout.fragment_select_contacts, container, false);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.select_contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(new SelectContactAdapter(mSelectContactLab.getContacts()));
         mSearchResultRecyclerView = (RecyclerView) v.findViewById(R.id.search_results);
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mSearchResultRecyclerView.setAdapter(new SelectContactAdapter(mSelectContactLab.getContacts("")));
+        mSearchResultRecyclerView.setAdapter(new SelectContactAdapter(new ArrayList<>()));
+        if (ContactQueryHandler.getInstance(getContext()).getQueryState() == State.FETCHED) {
+            getContactsAsync();
+        }
         mOptionsLayout =(FrameLayout) v.findViewById(R.id.options);
         ViewCompat.setOnApplyWindowInsetsListener(mOptionsLayout, new OnApplyWindowInsetsListener() {
             @Override
@@ -131,9 +141,19 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                List<SelectContact> searchResults = mSelectContactLab.getContacts(s.toString());
-                ((SelectContactAdapter) mSearchResultRecyclerView.getAdapter()).setContacts(searchResults);
-                mSearchResultRecyclerView.getAdapter().notifyDataSetChanged();
+//                List<SelectContact> searchResults = mSelectContactLab.getContacts(s.toString());
+//                ((SelectContactAdapter) mSearchResultRecyclerView.getAdapter()).setContacts(searchResults);
+//                mSearchResultRecyclerView.getAdapter().notifyDataSetChanged();
+
+                WeakReference<ContactLabHelper.SearchCallbacks<SelectContact>> callbacksWeakReference = new WeakReference<>(SelectContactsFragment.this);
+                mExecutorService.execute(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mSelectContactLab.getContacts(s.toString(), callbacksWeakReference);
+                            }
+                        }
+                );
 
             }
         });
@@ -157,14 +177,25 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((SelectContactAdapter) mRecyclerView.getAdapter()).setContacts(mSelectContactLab.getContacts());
-                mRecyclerView.getAdapter().notifyDataSetChanged();
+                getContactsAsync();
             }
         });
 
     }
 
+    public void getContactsAsync() {
 
+        mRecyclerView.setAdapter(new SelectContactAdapter(new ArrayList<>()));
+        WeakReference<ContactLabHelper.Callbacks<SelectContact>> callbacksWeakReference = new WeakReference<>(SelectContactsFragment.this);
+        mExecutorService.execute(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mSelectContactLab.getContacts(callbacksWeakReference);
+                    }
+                }
+        );
+    }
 
 
     public void onFinish() {
@@ -199,6 +230,38 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
 
                 }
         }
+    }
+
+    @Override
+    public void onGetSingleContact(SelectContact contact) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((SelectContactAdapter)mRecyclerView.getAdapter()).add(contact);
+                mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() - 1);
+            }
+        });
+    }
+
+    @Override
+    public void onGetAllContacts(List<SelectContact> contacts) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mSelectContactLab.setContacts(contacts);
+            }
+        });
+    }
+
+    @Override
+    public void onSearchResults(List<SelectContact> contacts) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((SelectContactAdapter)mSearchResultRecyclerView.getAdapter()).setContacts(contacts);
+                mSearchResultRecyclerView.getAdapter().notifyDataSetChanged();
+            }
+        });
     }
 
     private class SelectContactHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
@@ -271,6 +334,10 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
 
         public void setContacts(List<SelectContact> contacts) {
             mContacts = contacts;
+        }
+
+        public void add(SelectContact contact) {
+            if (mContacts != null) mContacts.add(contact);
         }
     }
 }

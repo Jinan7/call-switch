@@ -158,6 +158,13 @@ public class ContactLabHelper<T extends Contact> {
                 cursor.moveToNext();
             }
 
+            final List<T> immutableContactSnapshot = new ArrayList<>(contacts);
+
+            Callbacks liveCallbacks = callbacksWeakReference.get();
+            if (callbacksWeakReference != null) {
+                callbacksWeakReference.get().onGetAllContacts(immutableContactSnapshot);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -291,6 +298,7 @@ public class ContactLabHelper<T extends Contact> {
 
     public interface Callbacks<T extends Contact> {
         void onGetSingleContact(T contact);
+        void onGetAllContacts(List<T> contacts);
     }
 
     public interface SearchCallbacks<T extends Contact> {

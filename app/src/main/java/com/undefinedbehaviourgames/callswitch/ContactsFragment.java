@@ -130,6 +130,11 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     }
 
     @Override
+    public void onGetAllContacts(List<Contact> contacts) {
+
+    }
+
+    @Override
     public void onSearchResults(List<Contact> contacts) {
         getActivity().runOnUiThread(new Runnable() {
             @Override

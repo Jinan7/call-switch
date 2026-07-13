@@ -2,6 +2,7 @@ package com.undefinedbehaviourgames.callswitch;
 
 import android.content.Context;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,14 +29,13 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
     }
 
     @Override
-    public List<SelectContact> getContacts() {
-        mContacts = super.getContacts();
+    public List<SelectContact> getContacts(WeakReference<Callbacks<SelectContact>> callbacksWeakReference) {
+        super.getContacts(callbacksWeakReference);
 
         for (SelectContact contact : mContacts) {
             contact.setChecked(isPreviousSelected(contact.getId()));
         }
-
-        return mContacts;
+        return new ArrayList<>();
     }
 
     public List<SelectContact> getContacts(boolean _new) {
@@ -44,8 +44,20 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
         return mContacts;
     }
 
+    @Override
     public List<SelectContact> getContacts(String queryString) {
         List<SelectContact> contacts = super.getContacts(queryString);
+
+        for (SelectContact contact : contacts) {
+            contact.setChecked(isSelected(contact.getId()));
+        }
+
+        return contacts;
+    }
+
+    @Override
+    public List<SelectContact> getContacts(String queryString, WeakReference<SearchCallbacks<SelectContact>> callbacksWeakReference) {
+        List<SelectContact> contacts = super.getContacts(queryString, callbacksWeakReference);
 
         for (SelectContact contact : contacts) {
             contact.setChecked(isSelected(contact.getId()));
@@ -89,7 +101,9 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
     }
 
 
-
+    public  void setContacts(List<SelectContact> contacts) {
+        mContacts = contacts;
+    }
 
 
 
