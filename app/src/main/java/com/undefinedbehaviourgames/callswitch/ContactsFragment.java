@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.search.SearchView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -31,10 +32,11 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     private RecyclerView mRecyclerView;
     private RecyclerView mSearchResultRecyclerView;
     private SearchView mSearchView;
-    private boolean contactsReady;
+    private ExecutorService mExecutorService;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mExecutorService = Executors.newSingleThreadExecutor();
     }
 
     public static ContactsFragment newInstance() {
@@ -75,11 +77,12 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                Executors.newSingleThreadExecutor().execute(
+                WeakReference<ContactLabHelper.SearchCallbacks<Contact  >> callbacksWeakReference = new WeakReference<>(ContactsFragment.this);
+                mExecutorService.execute(
                         new Runnable() {
                             @Override
                             public void run() {
-                                ContactLab.getInstance(getContext()).getContacts(s.toString(), ContactsFragment.this);
+                                ContactLab.getInstance(getContext()).getContacts(s.toString(), callbacksWeakReference);
                             }
                         }
                 );
@@ -92,12 +95,12 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     public void onResume() {
         super.onResume();
         if (ContactQueryHandler.getInstance(getContext()).getQueryState() != State.FETCHED) {
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
             ContactQueryHandler contactQueryHandler = ContactQueryHandler.getInstance(getContext());
-            executorService.execute(new Runnable() {
+            WeakReference<ContactQueryHandler.Callbacks> callbacksWeakReference = new WeakReference<>(ContactsFragment.this);
+            Executors.newSingleThreadExecutor().execute(new Runnable() {
                 @Override
                 public void run() {
-                    contactQueryHandler.startQuery(ContactsFragment.this);
+                    contactQueryHandler.startQuery(callbacksWeakReference);
                 }
             });
         }
@@ -139,15 +142,23 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
 
 
     public void getContactsAsync() {
+
         mRecyclerView.setAdapter(new ContactAdapter(new ArrayList<>()));
-        Executors.newSingleThreadExecutor().execute(
+        WeakReference<ContactLabHelper.Callbacks<Contact>> callbacksWeakReference = new WeakReference<>(ContactsFragment.this);
+        mExecutorService.execute(
                 new Runnable() {
                     @Override
                     public void run() {
-                        ContactLab.getInstance(getContext()).getContacts(ContactsFragment.this);
+                        ContactLab.getInstance(getContext()).getContacts(callbacksWeakReference);
                     }
                 }
         );
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mExecutorService.shutdownNow();
     }
 
     @Override

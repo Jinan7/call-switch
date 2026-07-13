@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.google.gson.Gson;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -71,10 +73,10 @@ public class ContactLabHelper<T extends Contact> {
         return contacts;
     }
 
-    public List<T> getContacts(Callbacks callbacks) {
+    public List<T> getContacts(WeakReference<Callbacks<T>> callbacksWeakReference) {
         List<T> contacts = new ArrayList<>();
         ContactCursorWrapper<T> cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
-        contacts = getContacts(cursor, callbacks);
+        contacts = getContacts(cursor, callbacksWeakReference);
         return contacts;
     }
 
@@ -92,88 +94,76 @@ public class ContactLabHelper<T extends Contact> {
         return contacts;
     }
 
-    public List<T> getContacts(String searchQuery, SearchCallbacks callbacks) {
+    public List<T> getContacts(String searchQuery, WeakReference<SearchCallbacks<T>> callbacksWeakReference) {
         List<T> contacts = new ArrayList<>();
 
         if (searchQuery.isEmpty()) {
-            if (callbacks != null) {
-                callbacks.onSearchResults(contacts);
+            if (callbacksWeakReference.get() != null) {
+                callbacksWeakReference.get().onSearchResults(contacts);
             }
             return contacts;
         }
         String query = "%" + searchQuery + "%";
         ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.name + " LIKE ?", new String[] { query }, Schema.Contact.Cols.name + " ASC");
-        contacts = getContacts(cursor, callbacks);
+        contacts = getContacts(cursor, callbacksWeakReference, null);
         return contacts;
     }
 
-    public List<T> getContacts(ContactCursorWrapper<T> cursor, SearchCallbacks callbacks) {
+    public List<T> getContacts(ContactCursorWrapper<T> cursor, WeakReference<SearchCallbacks<T>> callbacksWeakReference, SearchCallbacks callbacks) {
 
         List<T> contacts = new ArrayList<>();
 
-        Executors.newSingleThreadExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    cursor.moveToFirst();
-                    while (!cursor.isAfterLast()) {
-                        T contact = (T) cursor.getContact();
-                        //only check if contact has been deleted once contact query handler fetches all contacts
-                        //if not any contact that has not yet been fetched will be marked as deleted temporarily since
-                        //it will not be in the list of contacts
-                        if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
-                        contacts.add(contact);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                T contact = (T) cursor.getContact();
+                //only check if contact has been deleted once contact query handler fetches all contacts
+                //if not any contact that has not yet been fetched will be marked as deleted temporarily since
+                //it will not be in the list of contacts
+                if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
+                contacts.add(contact);
 
-                        cursor.moveToNext();
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    cursor.close();
-                }
+                cursor.moveToNext();
             }
-        });
 
-        if (callbacks != null) {
-            callbacks.onSearchResults(contacts);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            cursor.close();
+        }
+
+        if (callbacksWeakReference.get() != null) {
+            callbacksWeakReference.get().onSearchResults(contacts);
         }
         return contacts;
     }
-    public List<T> getContacts(ContactCursorWrapper<T> cursor, Callbacks callbacks) {
+    public List<T> getContacts(ContactCursorWrapper<T> cursor, WeakReference<Callbacks<T>> callbacksWeakReference) {
 
         List<T> contacts = new ArrayList<>();
 
-        Executors.newSingleThreadExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    cursor.moveToFirst();
-                    while (!cursor.isAfterLast()) {
-                        T contact = (T) cursor.getContact();
-                        //only check if contact has been deleted once contact query handler fetches all contacts
-                        //if not any contact that has not yet been fetched will be marked as deleted temporarily since
-                        //it will not be in the list of contacts
-                        if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
-                        contacts.add(contact);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                T contact = (T) cursor.getContact();
+                //only check if contact has been deleted once contact query handler fetches all contacts
+                //if not any contact that has not yet been fetched will be marked as deleted temporarily since
+                //it will not be in the list of contacts
+                if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
+                contacts.add(contact);
 
-                        if (callbacks != null) {
-                            callbacks.onGetSingleContact(contact);
-                        }
-                        cursor.moveToNext();
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (callbacksWeakReference.get() != null) {
+                    callbacksWeakReference.get().onGetSingleContact(contact);
                 }
-                finally {
-                    cursor.close();
-                }
+                cursor.moveToNext();
             }
-        });
 
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            cursor.close();
+        }
         return contacts;
     }
     public List<T> getContacts(ContactCursorWrapper<T> cursor) {

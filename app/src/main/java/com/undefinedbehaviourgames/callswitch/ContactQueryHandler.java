@@ -63,13 +63,13 @@ public class ContactQueryHandler extends AsyncQueryHandler {
         this.queryState = queryState;
     }
 
-    public void startQuery(Callbacks callbacks) {
+    public void startQuery(WeakReference<Callbacks> callbacks) {
 
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
-        mCallbacks = new WeakReference<Callbacks>(callbacks);
+        mCallbacks = callbacks;
 
         if (queryState != State.IDLE) return;
 

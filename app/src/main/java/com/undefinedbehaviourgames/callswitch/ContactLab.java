@@ -4,7 +4,7 @@ import android.content.Context;
 
 public class ContactLab extends ContactLabHelper<Contact> {
 
-    private static ContactLab sContactLab;
+    private static volatile ContactLab sContactLab;
 
     private ContactLab(Context context) {
         super(context, Contact.class);
@@ -13,7 +13,13 @@ public class ContactLab extends ContactLabHelper<Contact> {
     public static ContactLab getInstance(Context context) {
 
         if (sContactLab == null) {
-            sContactLab = new ContactLab(context);
+
+            synchronized (ContactLab.class) {
+                if (sContactLab == null) {
+                    sContactLab = new ContactLab(context);
+                }
+            }
+
         }
 
         return sContactLab;

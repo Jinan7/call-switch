@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.search.SearchView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -75,17 +76,17 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
         mPrevSelectedContacts = (ArrayList<Contact>) getArguments().getSerializable(ARGS_SELECTED_CONTACTS);
         mSelectContactLab = new SelectContactLab(getContext());
         mSelectContactLab.setPreviousSelectedContacts(mPrevSelectedContacts);
-        Log.d(TAG, "on create called");
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        WeakReference<ContactQueryHandler.Callbacks> callbacksWeakReference = new WeakReference<>(SelectContactsFragment.this);
         ExecutorService executor =  Executors.newSingleThreadExecutor();
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                ContactQueryHandler.getInstance(getContext()).startQuery(SelectContactsFragment.this);
+                ContactQueryHandler.getInstance(getContext()).startQuery(callbacksWeakReference);
             }
         });
 
@@ -94,7 +95,6 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "on create view called");
         View v = inflater.inflate(R.layout.fragment_select_contacts, container, false);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.select_contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
