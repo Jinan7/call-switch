@@ -22,14 +22,20 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class RepliesFragment extends BottomNavBarFragment {
+public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Callbacks {
 
     private static final String TAG = "RepliesFragmentLogger";
     private RecyclerView mRecyclerView;
     private MaterialToolbar mToolbar;
     private SwitchMaterial mToggleAllReplies;
+    private ExecutorService mExecutorService;
+    private ExecutorService mReplyExecutorService;
     private final CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
@@ -43,6 +49,14 @@ public class RepliesFragment extends BottomNavBarFragment {
 
         return fragment;
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mExecutorService = Executors.newSingleThreadExecutor();
+        mReplyExecutorService = Executors.newSingleThreadExecutor();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -51,7 +65,7 @@ public class RepliesFragment extends BottomNavBarFragment {
         setUpNavBar(v, R.id.menu_replies);
         mRecyclerView = v.findViewById(R.id.replies_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(new RepliesAdapter(ReplyLab.getInstance(getContext()).getReplies()));
+        mRecyclerView.setAdapter(new RepliesAdapter(new ArrayList<>()));
         mToolbar = v.findViewById(R.id.replies_toolbar);
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -79,21 +93,76 @@ public class RepliesFragment extends BottomNavBarFragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((RepliesAdapter)mRecyclerView.getAdapter()).setReplies(ReplyLab.getInstance(getContext()).getReplies());
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        getRepliesAsync();
+    }
+
+    private void getRepliesAsync() {
+        mRecyclerView.setAdapter(new RepliesAdapter(new ArrayList<>()));
+        WeakReference<ReplyLab.Callbacks> callbacksWeakReference = new WeakReference<>(RepliesFragment.this);
+        mExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                ReplyLab.getInstance(getContext()).getReplies(callbacksWeakReference);
+            }
+        });
     }
 
     @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        return super.onContextItemSelected(item);
+    public void ongetSingleReply(Reply reply) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((RepliesAdapter) mRecyclerView.getAdapter()).add(reply);
+                mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() - 1);
+            }
+        });
+    }
+
+    @Override
+    public void onUpdateReplies(List<Reply> replies) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((RepliesAdapter) mRecyclerView.getAdapter()).setReplies(replies);
+                mRecyclerView.getAdapter().notifyDataSetChanged();
+            }
+        });
+
+    }
+
+    @Override
+    public void onUpdateReply(int index) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (index < mRecyclerView.getAdapter().getItemCount())
+                mRecyclerView.getAdapter().notifyItemChanged(index);
+            }
+        });
     }
 
     private void setEnabledAllReplies(boolean isChecked) {
-        ReplyLab.getInstance(getContext()).setEnabledAllReplies(getContext(), isChecked);
-        List<Reply> replies = ReplyLab.getInstance(getContext()).getReplies();
-        ((RepliesAdapter) mRecyclerView.getAdapter()).setReplies(replies);
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        setEnableAllRepliesAsync(isChecked);
+
     }
+
+    private void setEnableAllRepliesAsync(boolean isChecked) {
+        WeakReference<ReplyLab.Callbacks> callbacksWeakReference = new WeakReference<>(RepliesFragment.this);
+        mReplyExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                ReplyLab.getInstance(getContext()).setEnabledAllReplies(getContext(), isChecked, callbacksWeakReference);
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mExecutorService.shutdownNow();
+    }
+
+
 
     private class RepliesHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
@@ -147,8 +216,7 @@ public class RepliesFragment extends BottomNavBarFragment {
         @Override
         public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
             mReply.setEnabled(isChecked);
-            ReplyLab.getInstance(getContext()).update(getContext(), mReply);
-
+            updateReplyAsync();
             if (!isChecked) {
 
                 mToggleAllReplies.setOnCheckedChangeListener(null);
@@ -156,6 +224,15 @@ public class RepliesFragment extends BottomNavBarFragment {
                 mToggleAllReplies.setOnCheckedChangeListener(mOnCheckedChangeListener);
 
             }
+        }
+
+        public void updateReplyAsync() {
+            mReplyExecutorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    ReplyLab.getInstance(getContext()).update(getContext(), mReply);
+                }
+            });
         }
     }
 
@@ -186,6 +263,11 @@ public class RepliesFragment extends BottomNavBarFragment {
 
         public void setReplies(List<Reply> replies) {
             mReplies = replies;
+        }
+        public void add(Reply reply) {
+            if (mReplies != null) {
+                mReplies.add(reply);
+            }
         }
     }
 }

@@ -4,9 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.telecom.Call;
 
 import com.google.gson.Gson;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,14 +22,21 @@ import database.Schema.Reply.Cols;
 public class ReplyLab {
 
     private SQLiteDatabase mDatabase;
-    private static ReplyLab sReplyLab;
+    private static volatile ReplyLab sReplyLab;
     private ReplyLab(Context context) {
         mDatabase = new DBOpenHelper(context.getApplicationContext()).getWritableDatabase();
     };
 
     public static ReplyLab getInstance(Context context) {
         if (sReplyLab == null) {
-            sReplyLab = new ReplyLab(context);
+
+            synchronized (ReplyLab.class) {
+                if (sReplyLab == null) {
+                    sReplyLab = new ReplyLab(context);
+                }
+
+            }
+
         }
 
         return sReplyLab;
@@ -64,6 +73,28 @@ public class ReplyLab {
             while (!cursor.isAfterLast()) {
 
                 replies.add(cursor.getReply());
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+        return replies;
+    }
+    public List<Reply> getReplies(WeakReference<Callbacks> callbacksWeakReference) {
+
+        ReplyCursorWrapper cursor = queryDatabase(null, null) ;
+        List<Reply> replies = new ArrayList<>();
+
+        try {
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+
+                replies.add(cursor.getReply());
+
+                if (callbacksWeakReference.get() != null) {
+                    callbacksWeakReference.get().ongetSingleReply(cursor.getReply());
+                }
                 cursor.moveToNext();
             }
         } finally {
@@ -201,5 +232,27 @@ public class ReplyLab {
             reply.setEnabled(isChecked);
             update(context, reply);
         }
+    }
+
+    public void setEnabledAllReplies(Context context, boolean isChecked, WeakReference<Callbacks> callbacksWeakReference) {
+
+        List<Reply> replies = getReplies();
+
+        int i = 0;
+        for (Reply reply : replies) {
+            reply.setEnabled(isChecked);
+            update(context, reply);
+            i+=1;
+        }
+
+        if (callbacksWeakReference.get() != null) {
+            callbacksWeakReference.get().onUpdateReplies(replies);
+        }
+    }
+
+    public interface Callbacks {
+        void ongetSingleReply(Reply reply);
+        void onUpdateReplies(List<Reply> replies);
+        void onUpdateReply(int index);
     }
 }

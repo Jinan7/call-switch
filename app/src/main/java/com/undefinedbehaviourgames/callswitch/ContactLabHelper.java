@@ -160,7 +160,6 @@ public class ContactLabHelper<T extends Contact> {
 
             final List<T> immutableContactSnapshot = new ArrayList<>(contacts);
 
-            Callbacks liveCallbacks = callbacksWeakReference.get();
             if (callbacksWeakReference != null) {
                 callbacksWeakReference.get().onGetAllContacts(immutableContactSnapshot);
             }
