@@ -2,6 +2,7 @@ package com.undefinedbehaviourgames.callswitch;
 
 import android.content.Context;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -76,6 +77,22 @@ public class Reply {
         return replyToList;
     }
 
+    public List<Contact> getReplyToList(Context context, WeakReference<Callbacks> callbacksWeakReference) {
+        ArrayList<Contact> replyToList = new ArrayList<>();
+
+        for (int i = 0; i<mReplyToList.size(); i++) {
+            Contact contact = ContactLab.getInstance(context).get(mReplyToList.get(i));
+            //if contact is null, then it has probably been deleted,
+            //remove the contact from reply to list
+            if (contact != null) replyToList.add(contact);
+
+            if (callbacksWeakReference.get() != null) {
+                callbacksWeakReference.get().onGetSingleContact(contact);
+            }
+        }
+
+        return replyToList;
+    }
     public void setReplyToList(List<Long> replyToList) {
         mReplyToList = replyToList;
     }
@@ -132,5 +149,9 @@ public class Reply {
                 break;
             }
         }
+    }
+
+    public interface  Callbacks {
+        void onGetSingleContact(Contact contact);
     }
 }

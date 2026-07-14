@@ -6,6 +6,7 @@ import static com.undefinedbehaviourgames.callswitch.EditReplyActivity.NEW_REPLY
 import static com.undefinedbehaviourgames.callswitch.PriorityModalBottomSheetDialog.EXTRA_PRIORITY;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
@@ -39,11 +40,14 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class EditReplyFragment extends Fragment {
+public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
 
     private static final String TAG = "EditReplyFragmentLogger";
     private static final String PRIORITY_DIALOG_TAG = "Priority dialog";
@@ -62,6 +66,7 @@ public class EditReplyFragment extends Fragment {
     private SwitchMaterial mEnableSwitch;
     private SwitchMaterial mReplyUnknownSwitch;
     private SwitchMaterial mReplaceEqualPrioritySwitch;
+    private ExecutorService mExecutorService;
     ActivityResultLauncher<Intent> mLauncher;
     private Reply mReply;
     public static EditReplyFragment newInstance(int mode) {
@@ -117,6 +122,14 @@ public class EditReplyFragment extends Fragment {
 
             }
         });
+
+        mExecutorService = Executors.newSingleThreadExecutor();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mExecutorService.shutdownNow();
     }
 
     @Nullable
@@ -164,7 +177,8 @@ public class EditReplyFragment extends Fragment {
         });
         mRecyclerView = v.findViewById(R.id.selected_contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(new ContactAdapter(mReply.getReplyToList(getContext())));
+        mRecyclerView.setAdapter(new ContactAdapter(new ArrayList<>()));
+        getReplyToListAsync();
         mReplyTextField = v.findViewById(R.id.reply_text_field);
         mReplyTextField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -246,6 +260,30 @@ public class EditReplyFragment extends Fragment {
         mPriorityTextView.setText(mReply.getPriorityText(getContext()));
     }
 
+    private void getReplyToListAsync() {
+        WeakReference<Reply.Callbacks> callbacksWeakReference = new WeakReference<>(EditReplyFragment.this);
+        Context context = getContext().getApplicationContext();
+        ((ContactAdapter) mRecyclerView.getAdapter()).setContacts(new ArrayList<>());
+        mExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                mReply.getReplyToList(context, callbacksWeakReference);
+            }
+        });
+    }
+
+    @Override
+    public void onGetSingleContact(Contact contact) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((ContactAdapter) mRecyclerView.getAdapter()).add(contact);
+                mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() -1);
+            }
+        });
+
+    }
+
     private class ContactHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private Contact mContact;
@@ -308,6 +346,9 @@ public class EditReplyFragment extends Fragment {
 
         public void setContacts(List<Contact> contacts) {
             mContacts = contacts;
+        }
+        public void add(Contact contact) {
+            if (mContacts != null) mContacts.add(contact);
         }
     }
 }
