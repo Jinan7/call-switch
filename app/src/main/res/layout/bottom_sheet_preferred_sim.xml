@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:text="@string/use_phone_settings"/>
         <RadioButton
+            android:enabled="false"
             android:id="@+id/preferred_sim_receiving_sim"
             android:textSize="16sp"
             android:layout_marginHorizontal="16dp"

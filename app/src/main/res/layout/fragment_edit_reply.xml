@@ -215,11 +215,6 @@
         </androidx.core.widget.NestedScrollView>
 
 
-
-
-        <include layout="@layout/component_bottom_nav_bar"
-            android:id="@+id/bottom_nav_view"/>
-
     </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
