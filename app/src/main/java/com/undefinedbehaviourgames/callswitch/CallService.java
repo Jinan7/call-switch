@@ -90,7 +90,7 @@ public class CallService extends Service {
         SimSettings simSettings = SettingsPreferences.getPreferredSimSettings(CallService.this);
         SubscriptionManager subscriptionManager = (SubscriptionManager) getSystemService(SubscriptionManager.class);
 
-        SmsManager manager;
+        SmsManager manager = SmsManager.getDefault();
 
         switch (simSettings.getSettings()) {
 
