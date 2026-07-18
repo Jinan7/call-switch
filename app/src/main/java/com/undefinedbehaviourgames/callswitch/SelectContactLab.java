@@ -6,6 +6,9 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import database.ContactCursorWrapper;
+import database.Schema;
+
 public class SelectContactLab extends ContactLabHelper<SelectContact> {
 
 
@@ -30,12 +33,47 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
 
     @Override
     public List<SelectContact> getContacts(WeakReference<Callbacks<SelectContact>> callbacksWeakReference) {
-        super.getContacts(callbacksWeakReference);
+        List<SelectContact> contacts = new ArrayList<>();
+        ContactCursorWrapper<SelectContact> cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
+        contacts = getContacts(cursor, callbacksWeakReference);
+        return contacts;
+    }
 
-        for (SelectContact contact : mContacts) {
-            contact.setChecked(isPreviousSelected(contact.getId()));
+    @Override
+    public List<SelectContact> getContacts(ContactCursorWrapper<SelectContact> cursor, WeakReference<Callbacks<SelectContact>> callbacksWeakReference) {
+
+        List<SelectContact> contacts = new ArrayList<>();
+
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                SelectContact contact = (SelectContact) cursor.getContact();
+                //only check if contact has been deleted once contact query handler fetches all contacts
+                //if not any contact that has not yet been fetched will be marked as deleted temporarily since
+                //it will not be in the list of contacts
+                if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
+                contact.setChecked(isPreviousSelected(contact.getLookupKey()));
+                contacts.add(contact);
+
+                if (callbacksWeakReference.get() != null) {
+                    callbacksWeakReference.get().onGetSingleContact(contact);
+                }
+                cursor.moveToNext();
+            }
+
+            final List<SelectContact> immutableContactSnapshot = new ArrayList<>(contacts);
+
+            if (callbacksWeakReference != null) {
+                callbacksWeakReference.get().onGetAllContacts(immutableContactSnapshot);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return new ArrayList<>();
+        finally {
+            cursor.close();
+        }
+        return contacts;
     }
 
     public List<SelectContact> getContacts(boolean _new) {
@@ -49,7 +87,7 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
         List<SelectContact> contacts = super.getContacts(queryString);
 
         for (SelectContact contact : contacts) {
-            contact.setChecked(isSelected(contact.getId()));
+            contact.setChecked(isSelected(contact.getLookupKey()));
         }
 
         return contacts;
@@ -60,7 +98,7 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
         List<SelectContact> contacts = super.getContacts(queryString, callbacksWeakReference);
 
         for (SelectContact contact : contacts) {
-            contact.setChecked(isSelected(contact.getId()));
+            contact.setChecked(isSelected(contact.getLookupKey()));
         }
 
         return contacts;
@@ -70,10 +108,10 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
         mPreviousSelectedContacts = selectedContacts;
     }
 
-    public boolean isPreviousSelected(Long id) {
+    public boolean isPreviousSelected(String lookupkey) {
         //make asynchronous
         for (Contact contact : mPreviousSelectedContacts) {
-            if (contact.getId().equals(id)) {
+            if (contact.getLookupKey().equals(lookupkey)) {
                 return true;
             }
         }
@@ -81,10 +119,10 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
         return false;
     }
 
-    public boolean isSelected(Long id) {
+    public boolean isSelected(String lookupkey) {
         //make asynchronous
         for (SelectContact contact : mContacts) {
-            if (contact.getId().equals(id)) {
+            if (contact.getLookupKey().equals(lookupkey)) {
                 return contact.isChecked();
             }
         }

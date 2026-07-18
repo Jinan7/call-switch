@@ -28,7 +28,7 @@ public class ContactLabHelper<T extends Contact> {
     private SQLiteDatabase mDatabase;
 
 
-    private Context mContext;
+    protected Context mContext;
     private List<T> mContacts;
     private List<T> mSearchResults;
     private List<T> mPhoneBookImage;
