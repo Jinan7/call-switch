@@ -188,7 +188,7 @@ public class ReplyLab {
 
     public void delete(Context context, Reply reply) {
         mDatabase.delete(Schema.Reply.name, Cols.uuid + " = ?", new String[] { reply.getId().toString()});
-        List<Contact> replyToList = new ArrayList<>();
+        List<Contact> replyToList = reply.getReplyToList(context);
 
         for (Contact contact : replyToList) {
             contact.removeReply(context, reply);

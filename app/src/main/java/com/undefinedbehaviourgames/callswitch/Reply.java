@@ -144,7 +144,7 @@ public class Reply {
 
         for (int i = 0; i < mReplyToList.size(); i++) {
 
-            if (contact.getId().equals(mReplyToList.get(i))) {
+            if (contact.getLookupKey().equals(mReplyToList.get(i))) {
                 mReplyToList.remove(i);
                 break;
             }
