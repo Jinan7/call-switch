@@ -18,11 +18,11 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
     }
 
 
-    public ArrayList<Long> getSelectedContacts() {
-        ArrayList<Long> selectedContacts = new ArrayList<>();
+    public ArrayList<String> getSelectedContacts() {
+        ArrayList<String> selectedContacts = new ArrayList<>();
         for (SelectContact contact : mContacts) {
             if (contact.isChecked()) {
-                selectedContacts.add(contact.getId());
+                selectedContacts.add(contact.getLookupKey());
             }
         }
         return selectedContacts;

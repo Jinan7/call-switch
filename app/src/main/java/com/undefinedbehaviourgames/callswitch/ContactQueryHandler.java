@@ -1,5 +1,7 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import static android.content.Context.TELEPHONY_SERVICE;
+
 import android.Manifest;
 import android.content.AsyncQueryHandler;
 import android.content.ContentUris;
@@ -8,16 +10,23 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 
 
 import androidx.core.app.ActivityCompat;
+
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 import java.lang.ref.WeakReference;
 import java.util.Random;
 
 enum State { FETCHED, FETCHING, IDLE}
 public class ContactQueryHandler extends AsyncQueryHandler {
-
+    private static final String TAG = "ContactQueryHandlerLogger";
     private static ContactQueryHandler sContactQueryHandler;
     private final Context mContext;
     public static final int TOKEN_CONTACT = 0;
@@ -26,13 +35,16 @@ public class ContactQueryHandler extends AsyncQueryHandler {
     public final int DISPLAY_NAME_INDEX = 1;
     public final int PHONE_INDEX = 1;
     public final int CONTACT_ID_INDEX = 0;
+    public final int LOOKUP_KEY_INDEX = 2;
     private final int [] colors;
     private final int [] colorsSecondary;
     private WeakReference<Callbacks> mCallbacks;
     private State queryState = State.IDLE;
+    private TelephonyManager mTelephonyManager;
     private final String[] CONTACT_PROJECTION = new String [] {
             ContactsContract.Contacts._ID,
             ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.Contacts.LOOKUP_KEY,
     };
     protected final String[] PHONE_PROJECTION = new String [] {
             ContactsContract.CommonDataKinds.Phone._ID,
@@ -46,6 +58,7 @@ public class ContactQueryHandler extends AsyncQueryHandler {
         colors = context.getResources().getIntArray(R.array.contact_colors);
         colorsSecondary = context.getResources().getIntArray(R.array.contact_colors_dark);
         mContext = context.getApplicationContext();
+        mTelephonyManager = (TelephonyManager) mContext.getSystemService(TELEPHONY_SERVICE);
     }
 
     public static ContactQueryHandler getInstance(Context context) {
@@ -116,12 +129,16 @@ public class ContactQueryHandler extends AsyncQueryHandler {
             while (!cursor.isAfterLast()) {
                 String name = cursor.getString(DISPLAY_NAME_INDEX);
                 Long id = cursor.getLong(CONTACT_ID_INDEX);
+                String lookupkey = cursor.getString(LOOKUP_KEY_INDEX);
                 Contact contact = new Contact();
 
                 Random random = new Random();
                 int colorIndex = random.nextInt(colors.length);
+
+
                 contact.setName(name);
                 contact.setId(id);
+                contact.setLookupKey(lookupkey);
                 contact.setColor(colors[colorIndex]);
                 contact.setSecondaryColor(colorsSecondary[colorIndex]);
                 Uri.Builder builder = ContactsContract.Contacts.CONTENT_URI.buildUpon();
@@ -151,6 +168,15 @@ public class ContactQueryHandler extends AsyncQueryHandler {
             cursor.moveToFirst();
             String phone = cursor.getString(PHONE_INDEX);
             contact.setPhone(phone);
+            String country = mTelephonyManager.getNetworkCountryIso();
+            PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+            try {
+                PhoneNumber number = phoneNumberUtil.parse(phone, country.toUpperCase());
+                contact.setPhoneNumber(number);
+                Log.d(TAG, number.toString());
+            } catch (NumberParseException e) {
+                e.printStackTrace();
+            }
             ContactLab.getInstance(mContext).addContactToPhoneImage(contact);
             ContactLab.getInstance(mContext).add(contact);
             Callbacks callbacks = mCallbacks.get();

@@ -4,6 +4,9 @@ import static database.Schema.Contact.Cols.id;
 
 import android.content.Context;
 
+import com.google.i18n.phonenumbers.Phonenumber;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -12,6 +15,8 @@ public class Contact implements Serializable {
 
     private String mName;
     private String mPhone;
+    private PhoneNumber mPhoneNumber;
+    private String mLookupKey;
     private Long mId;
     private boolean deleted;
     private ArrayList<UUID> mReplies;
@@ -204,5 +209,21 @@ public class Contact implements Serializable {
 
     public void setReplies(ArrayList<UUID> replies) {
         mReplies = replies;
+    }
+
+    public String getLookupKey() {
+        return mLookupKey;
+    }
+
+    public void setLookupKey(String lookupKey) {
+        mLookupKey = lookupKey;
+    }
+
+    public PhoneNumber getPhoneNumber() {
+        return mPhoneNumber;
+    }
+
+    public void setPhoneNumber(PhoneNumber phoneNumber) {
+        mPhoneNumber = phoneNumber;
     }
 }

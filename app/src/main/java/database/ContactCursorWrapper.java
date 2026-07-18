@@ -5,6 +5,8 @@ import android.database.CursorWrapper;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.i18n.phonenumbers.Phonenumber;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.undefinedbehaviourgames.callswitch.Contact;
 
 import java.lang.reflect.InvocationTargetException;
@@ -32,16 +34,21 @@ public class ContactCursorWrapper<T extends Contact> extends CursorWrapper {
 
         Long id = getLong(getColumnIndex(Cols.id));
         String name = getString(getColumnIndex(Cols.name));
+        String lookupkey = getString(getColumnIndex(Cols.lookupKey));
         String phone = getString(getColumnIndex(Cols.phone));
+        String phoneNumberString = getString(getColumnIndex(Cols.phone_proto));
         String activeReplyId = getString(getColumnIndex(Cols.active_reply));
         String repliesString = getString(getColumnIndex(Cols.replies));
         int color = getInt(getColumnIndex(Cols.color));
         int secondaryColor = getInt(getColumnIndex(Cols.secondary_color));
 
         ArrayList<UUID> replies = new Gson().fromJson(repliesString, new TypeToken<ArrayList<UUID>>(){}.getType());
+        PhoneNumber phoneNumber = new Gson().fromJson(phoneNumberString, new TypeToken<PhoneNumber>(){}.getType());
         contact.setId(id);
         contact.setName(name);
         contact.setPhone(phone);
+        contact.setLookupKey(lookupkey);
+        contact.setPhoneNumber(phoneNumber);
         try {
             contact.setActiveReplyId(UUID.fromString(activeReplyId));
         } catch (IllegalArgumentException e) {

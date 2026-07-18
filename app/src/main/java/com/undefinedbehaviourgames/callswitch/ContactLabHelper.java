@@ -4,8 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.transition.Scene;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.i18n.phonenumbers.Phonenumber;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -45,11 +49,29 @@ public class ContactLabHelper<T extends Contact> {
 
 
     @SuppressWarnings("unchecked")
-    public T get(Long id) {
+    public T get(String lookupkey) {
 
         //make asynchronous
-        String _id = id.toString();
-        ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.id + " = ?", new String [] {id.toString()}, null);
+        ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.lookupKey + " = ?", new String [] {lookupkey}, null);
+        T contact;
+        try {
+            cursor.moveToFirst();
+            contact = (T) cursor.getContact();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            cursor.close();
+        }
+
+        return contact;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T get(PhoneNumber phoneNumber) {
+
+        String phoneNumberString = new Gson().toJson(phoneNumber);
+        ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.phone_proto + " = ?", new String[] { phoneNumberString }, null);
         T contact;
         try {
             cursor.moveToFirst();
@@ -238,13 +260,13 @@ public class ContactLabHelper<T extends Contact> {
         mDatabase.update(
                 Schema.Contact.name,
                 values,
-                Schema.Contact.Cols.id + " = ?",
-                new String [] { contact.getId().toString()}
+                Schema.Contact.Cols.lookupKey + " = ?",
+                new String [] { contact.getLookupKey()}
         );
     }
 
     public void delete(Context context, Contact contact) {
-        mDatabase.delete(Schema.Contact.name, Schema.Contact.Cols.id + " = ?", new String [] { contact.getId().toString()});
+        mDatabase.delete(Schema.Contact.name, Schema.Contact.Cols.lookupKey + " = ?", new String [] { contact.getLookupKey()});
 
         List<Reply> replies = new ArrayList<>();
 
@@ -274,11 +296,13 @@ public class ContactLabHelper<T extends Contact> {
 
         ContentValues values = new ContentValues();
         values.put(Schema.Contact.Cols.id, contact.getId().toString());
+        values.put(Schema.Contact.Cols.lookupKey, contact.getLookupKey());
         values.put(Schema.Contact.Cols.name, contact.getName());
         values.put(Schema.Contact.Cols.phone, contact.getPhone());
         if (contact.getActiveReplyId() != null)  values.put(Schema.Contact.Cols.active_reply, contact.getActiveReplyId().toString());
         else values.put(Schema.Contact.Cols.active_reply, "");
         values.put(Schema.Contact.Cols.replies, new Gson().toJson(contact.getReplies()));
+        values.put(Schema.Contact.Cols.phone_proto, new Gson().toJson(contact.getPhoneNumber()));
         values.put(Schema.Contact.Cols.color, contact.getColor());
         values.put(Schema.Contact.Cols.secondary_color, contact.getSecondaryColor());
         return values;

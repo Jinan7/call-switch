@@ -42,7 +42,7 @@ import java.util.List;
 
 public class ContactFragment extends Fragment {
     private static final String TAG = "ContactFragmentLogger";
-    private static final String ARG_ID = "contact_id";
+    private static final String ARG_LOOKUPKEY = "contact_id";
     private MaterialToolbar mToolbar;
     private TextView mContactIconTextView;
     private TextView mContactNameTextView;
@@ -53,10 +53,10 @@ public class ContactFragment extends Fragment {
     private ImageButton mEditActiveReply;
     private Contact mContact;
 
-    public static ContactFragment newInstance(Long id) {
+    public static ContactFragment newInstance(String lookupkey) {
         ContactFragment fragment = new ContactFragment();
         Bundle args = new Bundle();
-        args.putLong(ARG_ID, id);
+        args.putString(ARG_LOOKUPKEY, lookupkey);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,8 +64,8 @@ public class ContactFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Long contactId = getArguments().getLong(ARG_ID);
-        mContact = ContactLab.getInstance(getContext()).get(contactId);
+        String contactLookup = getArguments().getString(ARG_LOOKUPKEY);
+        mContact = ContactLab.getInstance(getContext()).get(contactLookup);
     }
 
     @Nullable

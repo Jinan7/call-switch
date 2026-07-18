@@ -19,6 +19,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.search.SearchView;
 
 import java.lang.ref.WeakReference;
@@ -33,6 +34,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     private RecyclerView mSearchResultRecyclerView;
     private SearchView mSearchView;
     private ExecutorService mExecutorService;
+    private BottomNavigationView mBottomNavigationView;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +56,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
         View v = inflater.inflate(R.layout.fragment_contacts, container, false);
         setUpNavBar(v, R.id.menu_contacts);
 
+//        mBottomNavigationView = v.findViewById(R.id.bottom_nav_view);
         mRecyclerView = v.findViewById(R.id.contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         if (ContactQueryHandler.getInstance(getContext()).getQueryState() == State.FETCHED) {
@@ -225,7 +228,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
 
         @Override
         public void onClick(View v) {
-            Intent intent = ContactActivity.newIntent(getContext(), mContact.getId());
+            Intent intent = ContactActivity.newIntent(getContext(), mContact.getLookupKey());
             startActivity(intent);
         }
     }

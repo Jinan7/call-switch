@@ -25,6 +25,7 @@ public class Schema {
             public static String id = "contact_id";
             public static String name = "name";
             public static String phone = "phone";
+            public static String phone_proto = "phone_proto";
             public static String active_reply = "active_reply";
             public static String replies = "replies";
             public static String color = "color";

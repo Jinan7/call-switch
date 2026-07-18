@@ -18,10 +18,10 @@ import java.util.UUID;
 
 public class ContactActivity extends SingleFragmentActivity {
 
-    public static final String EXTRA_ID = "com.undefinedhbehaviourgames.callswitch.contact_id";
-    public static Intent newIntent(Context context, Long id ) {
+    public static final String EXTRA_LOOKUP_KEY = "com.undefinedhbehaviourgames.callswitch.contact_lookupkey";
+    public static Intent newIntent(Context context, String lookupkey ) {
         Intent intent = new Intent(context, ContactActivity.class);
-        intent.putExtra(EXTRA_ID, id);
+        intent.putExtra(EXTRA_LOOKUP_KEY, lookupkey);
         return intent;
     }
 
@@ -34,8 +34,8 @@ public class ContactActivity extends SingleFragmentActivity {
 
     @Override
     public Fragment createFragment() {
-        Long id  = getIntent().getLongExtra(EXTRA_ID, -1);
-        return ContactFragment.newInstance(id);
+        String lookupkey  = getIntent().getStringExtra(EXTRA_LOOKUP_KEY);
+        return ContactFragment.newInstance(lookupkey);
     }
 
 }

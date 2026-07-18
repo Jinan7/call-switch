@@ -35,7 +35,7 @@ public class ReplyCursorWrapper extends CursorWrapper {
         int priorityOrdinal = getInt(getColumnIndex(Cols.priority));
         int replaceEqualPriority = getInt(getColumnIndex(Cols.replace_equal_priority));
 
-        ArrayList<Long> replyToList = new Gson().fromJson(replyToListString, new TypeToken<ArrayList<Long>>() {}.getType());
+        ArrayList<String> replyToList = new Gson().fromJson(replyToListString, new TypeToken<ArrayList<String>>() {}.getType());
 
         reply.setId(UUID.fromString(uuidString));
         reply.setReply(message);

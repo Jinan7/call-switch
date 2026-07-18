@@ -23,8 +23,10 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                         "(" +
                         "_id integer primary key autoincrement, " +
                         Schema.Contact.Cols.id + " UNIQUE, " +
+                        Schema.Contact.Cols.lookupKey + " UNIQUE, " +
                         Schema.Contact.Cols.name + " COLLATE NOCASE, " +
                         Schema.Contact.Cols.phone + ", " +
+                        Schema.Contact.Cols.phone_proto + ", " +
                         Schema.Contact.Cols.active_reply + ", " +
                         Schema.Contact.Cols.replies + ", " +
                         Schema.Contact.Cols.color + ", " +

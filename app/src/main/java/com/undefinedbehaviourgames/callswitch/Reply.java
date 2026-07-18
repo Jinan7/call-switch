@@ -21,7 +21,7 @@ public class Reply {
     private boolean mEnabled;
     private boolean mReplyUnknown;
     private boolean mReplaceEqualPriority;
-    private List<Long> mReplyToList;
+    private List<String> mReplyToList;
     public Reply() {
         mUuid = UUID.randomUUID();
         mPriority = Priority.NORMAL;
@@ -58,7 +58,7 @@ public class Reply {
         mReply = reply;
     }
 
-    public List<Long> getReplyToList() {
+    public List<String> getReplyToList() {
         return mReplyToList;
     }
 
@@ -93,7 +93,7 @@ public class Reply {
 
         return replyToList;
     }
-    public void setReplyToList(List<Long> replyToList) {
+    public void setReplyToList(List<String> replyToList) {
         mReplyToList = replyToList;
     }
 

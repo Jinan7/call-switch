@@ -199,7 +199,7 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
 
 
     public void onFinish() {
-        ArrayList<Long> selectedContacts = new ArrayList<>();
+        ArrayList<String> selectedContacts = new ArrayList<>();
         selectedContacts = mSelectContactLab.getSelectedContacts();
         Intent result = new Intent();
         result.putExtra(EXTRA_SELECTED_CONTACTS, selectedContacts);

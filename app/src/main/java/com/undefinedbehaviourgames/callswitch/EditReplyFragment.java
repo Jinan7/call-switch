@@ -113,7 +113,7 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
 
                 if (data != null) {
                     @SuppressWarnings("unchecked")
-                    ArrayList<Long> selectedContacts = (ArrayList<Long>) data.getSerializableExtra(EXTRA_SELECTED_CONTACTS);
+                    ArrayList<String> selectedContacts = (ArrayList<String>) data.getSerializableExtra(EXTRA_SELECTED_CONTACTS);
                     mReply.setReplyToList(selectedContacts);
                     ContactAdapter adapter = (ContactAdapter) mRecyclerView.getAdapter();
                     adapter.setContacts(mReply.getReplyToList(getContext()));
