@@ -26,13 +26,13 @@ public class EditReplyActivity extends SingleFragmentActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_CALL_LOG}, PermissionManager.REQUEST_CODE_READ_CALL_LOG);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_CALL_LOG, Manifest.permission.SEND_SMS}, PermissionManager.REQUEST_CODE_CALL_LOG_AND_SEND_SMS);
         }
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.SEND_SMS}, PermissionManager.REQUEST_CODE_READ_CALL_LOG);
-        }
+
     }
 
     @Override

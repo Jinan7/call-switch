@@ -225,7 +225,7 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
 
             case  PermissionManager.REQUEST_CODE_READ_CONTACTS:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    getActivity().finish();
+
                 }else{
 
                 }

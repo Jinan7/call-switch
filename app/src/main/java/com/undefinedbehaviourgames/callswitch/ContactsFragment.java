@@ -177,7 +177,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
 
             case  PermissionManager.REQUEST_CODE_READ_CONTACTS:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    getActivity().finish();
+
                 }else{
 
                 }

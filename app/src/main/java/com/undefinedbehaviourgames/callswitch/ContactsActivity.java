@@ -39,9 +39,6 @@ public class ContactsActivity extends SingleFragmentActivity{
 
         switch (requestCode) {
             case  READ_CONTACT_REQUEST_CODE:
-                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    finish();
-                }
 
                 FragmentManager fm = getSupportFragmentManager();
 
