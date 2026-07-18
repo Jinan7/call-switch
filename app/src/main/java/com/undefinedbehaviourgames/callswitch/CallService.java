@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.telephony.SmsManager;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -19,6 +21,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -51,6 +54,9 @@ public class CallService extends Service {
 
     public void answerCall(String number) {
 
+
+
+
         mExecutorService.execute(new Runnable() {
             @Override
             public void run() {
@@ -81,8 +87,31 @@ public class CallService extends Service {
 
     private void sendMessage(String message, String phone) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) return;
-        SmsManager manager = SmsManager.getDefault();
-        int subscriptionId = SmsManager.getDefaultSmsSubscriptionId();
+        SimSettings simSettings = SettingsPreferences.getPreferredSimSettings(CallService.this);
+        SubscriptionManager subscriptionManager = (SubscriptionManager) getSystemService(SubscriptionManager.class);
+
+        SmsManager manager;
+
+        switch (simSettings.getSettings()) {
+
+            case SIM:
+                int simIndex = simSettings.getSimIndex();
+                List<SubscriptionInfo> subscriptionInfoList = subscriptionManager.getActiveSubscriptionInfoList();
+
+                for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
+
+                    if (subscriptionInfo.getSimSlotIndex() != SubscriptionManager.INVALID_SIM_SLOT_INDEX && subscriptionInfo.getSimSlotIndex() == simIndex) {
+                        manager = SmsManager.getSmsManagerForSubscriptionId(subscriptionInfo.getSubscriptionId());
+                        break;
+                    }
+                }
+            case PHONE_SETTINGS:
+            case RECEIVING_SIM:
+            default:
+                manager = SmsManager.getDefault();
+        }
+//        SmsManager manager = SmsManager.getDefault();
+//        int subscriptionId = SmsManager.getDefaultSmsSubscriptionId();
         manager.sendTextMessage(
                 phone,
                 null,
