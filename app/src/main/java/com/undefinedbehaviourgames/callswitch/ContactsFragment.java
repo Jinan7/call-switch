@@ -33,6 +33,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     private RecyclerView mRecyclerView;
     private RecyclerView mSearchResultRecyclerView;
     private SearchView mSearchView;
+    private TextView mUnknownContactTextView;
     private ExecutorService mExecutorService;
     private BottomNavigationView mBottomNavigationView;
     @Override
@@ -89,6 +90,15 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
                             }
                         }
                 );
+            }
+        });
+        mUnknownContactTextView = v.findViewById(R.id.unknown_contacts_textview);
+
+        mUnknownContactTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = ContactActivity.newIntent(getContext());
+                startActivity(intent);
             }
         });
         return v;

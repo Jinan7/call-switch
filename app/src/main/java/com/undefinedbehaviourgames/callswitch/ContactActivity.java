@@ -25,6 +25,10 @@ public class ContactActivity extends SingleFragmentActivity {
         return intent;
     }
 
+    public static Intent newIntent(Context context) {
+        return new Intent(context, ContactActivity.class);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,8 +38,14 @@ public class ContactActivity extends SingleFragmentActivity {
 
     @Override
     public Fragment createFragment() {
-        String lookupkey  = getIntent().getStringExtra(EXTRA_LOOKUP_KEY);
-        return ContactFragment.newInstance(lookupkey);
+
+        if (getIntent().hasExtra(EXTRA_LOOKUP_KEY)) {
+            String lookupkey  = getIntent().getStringExtra(EXTRA_LOOKUP_KEY);
+            return ContactFragment.newInstance(lookupkey);
+        } else {
+            return ContactFragment.newInstance();
+        }
+
     }
 
 }

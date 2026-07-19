@@ -26,6 +26,9 @@ public class ContactLab extends ContactLabHelper<Contact> {
     }
 
 
+    public Contact getUnknownContact(Context context) {
+        return ContactPreferences.getUnknownContact(context);
+    }
 
 
 

@@ -52,6 +52,7 @@ public class ContactFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ImageButton mEditActiveReply;
     private Contact mContact;
+    private boolean unknownContact;
 
     public static ContactFragment newInstance(String lookupkey) {
         ContactFragment fragment = new ContactFragment();
@@ -61,11 +62,25 @@ public class ContactFragment extends Fragment {
         return fragment;
     }
 
+    public static ContactFragment newInstance() {
+        return new ContactFragment();
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String contactLookup = getArguments().getString(ARG_LOOKUPKEY);
-        mContact = ContactLab.getInstance(getContext()).get(contactLookup);
+
+
+
+        if (getArguments() != null) {
+            String contactLookup = getArguments().getString(ARG_LOOKUPKEY);
+            mContact = ContactLab.getInstance(getContext()).get(contactLookup);
+            unknownContact = false;
+        } else {
+            mContact = ContactLab.getInstance(getContext()).getUnknownContact(getContext());
+            unknownContact = true;
+        }
+
     }
 
     @Nullable
@@ -83,6 +98,8 @@ public class ContactFragment extends Fragment {
                 return false;
             }
         });
+
+        if (unknownContact) mToolbar.getMenu().clear();
         mContactIconTextView = v.findViewById(R.id.contact_contact_icon);
         mContactNameTextView = v.findViewById(R.id.contact_contact_name);
         mContactPhoneTextView = v.findViewById(R.id.contact_contact_phone);
