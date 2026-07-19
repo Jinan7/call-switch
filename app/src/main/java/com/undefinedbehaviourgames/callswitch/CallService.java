@@ -71,10 +71,11 @@ public class CallService extends Service {
 
                     if (contact != null) {
                         String reply = contact.getActiveReplyText(CallService.this);
+                        sendMessage(reply, contact.getPhone());
 
-                        if (!reply.isEmpty()) {
-                            sendMessage(reply, contact.getPhone());
-                        }
+                    } else {
+                        String reply = ContactPreferences.getUnknownContact(CallService.this).getActiveReplyText(CallService.this);
+                        sendMessage(reply, number);
                     }
                 } catch (NumberParseException e) {
                     Log.d(TAG, "could not parse number");
@@ -86,6 +87,7 @@ public class CallService extends Service {
     }
 
     private void sendMessage(String message, String phone) {
+        if (message.isEmpty()) return;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) return;
         SimSettings simSettings = SettingsPreferences.getPreferredSimSettings(CallService.this);
         SubscriptionManager subscriptionManager = (SubscriptionManager) getSystemService(SubscriptionManager.class);
