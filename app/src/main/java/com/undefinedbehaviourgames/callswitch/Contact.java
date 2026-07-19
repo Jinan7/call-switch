@@ -155,7 +155,6 @@ public class Contact implements Serializable {
         Reply reply = ReplyLab.getInstance(context).get(mActiveReplyId);
         if (reply == null) {
             mActiveReplyId = null;
-            ContactLab.getInstance(context).update(this);
         }
         return mActiveReplyId;
     }
