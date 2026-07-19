@@ -30,11 +30,15 @@ public class CallReceiver extends BroadcastReceiver {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) return;
             //if the system is turned off getSystemSettings return false
             if (!SettingsPreferences.getSystemSettings(context)) return;
-            number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+
+
+
             if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+                number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
                 Log.d(TAG, "Incoming call from " + number);
-                Intent callServiceIntent = CallService.newIntent(context);
-                context.bindService(callServiceIntent, mCallServiceConnection, Context.BIND_AUTO_CREATE);
+                Intent callServiceIntent = CallService.newIntent(context, number);
+//                context.bindService(callServiceIntent, mCallServiceConnection, Context.BIND_AUTO_CREATE);
+                context.startService(callServiceIntent);
             }
         }
     }

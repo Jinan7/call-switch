@@ -129,7 +129,7 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mExecutorService.shutdownNow();
+        mExecutorService.shutdown();
     }
 
     @Nullable
@@ -158,7 +158,7 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
                                     ReplyLab.getInstance(getContext()).add(getContext(), mReply);
                                 }
                             });
-
+                            break;
                         case EDIT_REPLY:
                             mExecutorService.execute(new Runnable() {
                                 @Override
@@ -166,7 +166,7 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
                                     ReplyLab.getInstance(getContext()).update(getContext(), mReply);
                                 }
                             });
-
+                            break;
 
                     }
 

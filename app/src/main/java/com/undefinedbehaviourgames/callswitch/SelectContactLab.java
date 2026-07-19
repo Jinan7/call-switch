@@ -22,128 +22,172 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
 
 
     public ArrayList<String> getSelectedContacts() {
-        ArrayList<String> selectedContacts = new ArrayList<>();
-        for (SelectContact contact : mContacts) {
-            if (contact.isChecked()) {
-                selectedContacts.add(contact.getLookupKey());
+
+        synchronized (this) {
+            ArrayList<String> selectedContacts = new ArrayList<>();
+            for (SelectContact contact : mContacts) {
+                if (contact.isChecked()) {
+                    selectedContacts.add(contact.getLookupKey());
+                }
             }
+            return selectedContacts;
         }
-        return selectedContacts;
+
     }
 
     @Override
     public List<SelectContact> getContacts(WeakReference<Callbacks<SelectContact>> callbacksWeakReference) {
-        List<SelectContact> contacts = new ArrayList<>();
-        ContactCursorWrapper<SelectContact> cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
-        contacts = getContacts(cursor, callbacksWeakReference);
-        return contacts;
+        synchronized (this) {
+            List<SelectContact> contacts = new ArrayList<>();
+            ContactCursorWrapper<SelectContact> cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
+            contacts = getContacts(cursor, callbacksWeakReference);
+            return contacts;
+        }
+
     }
 
     @Override
     public List<SelectContact> getContacts(ContactCursorWrapper<SelectContact> cursor, WeakReference<Callbacks<SelectContact>> callbacksWeakReference) {
 
-        List<SelectContact> contacts = new ArrayList<>();
+        synchronized (this) {
+            List<SelectContact> contacts = new ArrayList<>();
 
-        try {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                SelectContact contact = (SelectContact) cursor.getContact();
-                //only check if contact has been deleted once contact query handler fetches all contacts
-                //if not any contact that has not yet been fetched will be marked as deleted temporarily since
-                //it will not be in the list of contacts
-                if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
-                contact.setChecked(isPreviousSelected(contact.getLookupKey()));
-                contacts.add(contact);
+            try {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    SelectContact contact = (SelectContact) cursor.getContact();
+                    //only check if contact has been deleted once contact query handler fetches all contacts
+                    //if not any contact that has not yet been fetched will be marked as deleted temporarily since
+                    //it will not be in the list of contacts
+                    if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
+                    contact.setChecked(isPreviousSelected(contact.getLookupKey()));
+                    contacts.add(contact);
 
-                if (callbacksWeakReference.get() != null) {
-                    callbacksWeakReference.get().onGetSingleContact(contact);
+                    if (callbacksWeakReference.get() != null) {
+                        callbacksWeakReference.get().onGetSingleContact(contact);
+                    }
+                    cursor.moveToNext();
                 }
-                cursor.moveToNext();
+
+                final List<SelectContact> immutableContactSnapshot = new ArrayList<>(contacts);
+
+                if (callbacksWeakReference != null) {
+                    callbacksWeakReference.get().onGetAllContacts(immutableContactSnapshot);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            final List<SelectContact> immutableContactSnapshot = new ArrayList<>(contacts);
-
-            if (callbacksWeakReference != null) {
-                callbacksWeakReference.get().onGetAllContacts(immutableContactSnapshot);
+            finally {
+                cursor.close();
             }
+            return contacts;
+        }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            cursor.close();
-        }
-        return contacts;
     }
 
     public List<SelectContact> getContacts(boolean _new) {
 
-        if (_new) return getContacts();
-        return mContacts;
+        synchronized (this) {
+            if (_new) return getContacts();
+            return mContacts;
+        }
+
     }
 
     @Override
     public List<SelectContact> getContacts(String queryString) {
-        List<SelectContact> contacts = super.getContacts(queryString);
 
-        for (SelectContact contact : contacts) {
-            contact.setChecked(isSelected(contact.getLookupKey()));
+        synchronized (this) {
+            List<SelectContact> contacts = super.getContacts(queryString);
+
+            for (SelectContact contact : contacts) {
+                contact.setChecked(isSelected(contact.getLookupKey()));
+            }
+
+            return contacts;
         }
 
-        return contacts;
     }
 
     @Override
     public List<SelectContact> getContacts(String queryString, WeakReference<SearchCallbacks<SelectContact>> callbacksWeakReference) {
-        List<SelectContact> contacts = super.getContacts(queryString, callbacksWeakReference);
 
-        for (SelectContact contact : contacts) {
-            contact.setChecked(isSelected(contact.getLookupKey()));
+        synchronized (this) {
+            List<SelectContact> contacts = super.getContacts(queryString, callbacksWeakReference);
+
+            for (SelectContact contact : contacts) {
+                contact.setChecked(isSelected(contact.getLookupKey()));
+            }
+
+            return contacts;
         }
 
-        return contacts;
     }
 
     public void setPreviousSelectedContacts(List<Contact> selectedContacts) {
-        mPreviousSelectedContacts = selectedContacts;
+        synchronized (this) {
+            mPreviousSelectedContacts = selectedContacts;
+        }
+
     }
 
     public boolean isPreviousSelected(String lookupkey) {
         //make asynchronous
-        for (Contact contact : mPreviousSelectedContacts) {
-            if (contact.getLookupKey().equals(lookupkey)) {
-                return true;
+        synchronized (this) {
+            for (Contact contact : mPreviousSelectedContacts) {
+                if (contact.getLookupKey().equals(lookupkey)) {
+                    return true;
+                }
             }
+
+            return false;
         }
 
-        return false;
     }
 
     public boolean isSelected(String lookupkey) {
         //make asynchronous
-        for (SelectContact contact : mContacts) {
-            if (contact.getLookupKey().equals(lookupkey)) {
-                return contact.isChecked();
+        synchronized (this) {
+            for (SelectContact contact : mContacts) {
+                if (contact.getLookupKey().equals(lookupkey)) {
+                    return contact.isChecked();
+                }
             }
+
+            return false;
         }
 
-        return false;
     }
 
-    public void setSelectAllContacts(boolean isChecked) {
+    public void setSelectAllContacts(boolean isChecked, WeakReference<SelectContactCallbacks> callbacksWeakReference) {
 
-        for (SelectContact contact : mContacts) {
-            contact.setChecked(isChecked);
+        synchronized (this) {
+            for (SelectContact contact : mContacts) {
+                contact.setChecked(isChecked);
+            }
+
+            if (callbacksWeakReference.get() != null) {
+                callbacksWeakReference.get().onSetSelectAllContacts();
+            }
+
         }
+
 
     }
 
 
     public  void setContacts(List<SelectContact> contacts) {
-        mContacts = contacts;
+        synchronized (this) {
+            mContacts = contacts;
+        }
+
     }
 
 
+    public interface SelectContactCallbacks extends Callbacks<SelectContact> {
 
+        void onSetSelectAllContacts();
+    }
 
 }

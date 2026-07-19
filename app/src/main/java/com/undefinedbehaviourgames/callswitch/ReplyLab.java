@@ -44,23 +44,26 @@ public class ReplyLab {
 
     public Reply get(UUID id) {
 
-        if (id == null) return null;
-        ReplyCursorWrapper cursor = queryDatabase( Cols.uuid + " = ?", new String []  { id.toString() });
-        Reply reply;
-        try {
-            if (cursor.getCount() != 0)
-            {
-                cursor.moveToFirst();
-                reply = cursor.getReply();
-            } else {
-                reply = null;
+        synchronized (ReplyLab.this) {
+            if (id == null) return null;
+            ReplyCursorWrapper cursor = queryDatabase( Cols.uuid + " = ?", new String []  { id.toString() });
+            Reply reply;
+            try {
+                if (cursor.getCount() != 0)
+                {
+                    cursor.moveToFirst();
+                    reply = cursor.getReply();
+                } else {
+                    reply = null;
+                }
+
+            } finally {
+                cursor.close();
             }
 
-        } finally {
-            cursor.close();
+            return reply;
         }
 
-        return reply;
     }
     public List<Reply> getReplies() {
 
@@ -82,57 +85,63 @@ public class ReplyLab {
     }
     public List<Reply> getReplies(WeakReference<Callbacks> callbacksWeakReference) {
 
-        ReplyCursorWrapper cursor = queryDatabase(null, null) ;
-        List<Reply> replies = new ArrayList<>();
+        synchronized (ReplyLab.this) {
+            ReplyCursorWrapper cursor = queryDatabase(null, null) ;
+            List<Reply> replies = new ArrayList<>();
 
-        try {
-            cursor.moveToFirst();
+            try {
+                cursor.moveToFirst();
 
-            while (!cursor.isAfterLast()) {
+                while (!cursor.isAfterLast()) {
 
-                replies.add(cursor.getReply());
+                    replies.add(cursor.getReply());
 
-                if (callbacksWeakReference.get() != null) {
-                    callbacksWeakReference.get().ongetSingleReply(cursor.getReply());
+                    if (callbacksWeakReference.get() != null) {
+                        callbacksWeakReference.get().ongetSingleReply(cursor.getReply());
+                    }
+                    cursor.moveToNext();
                 }
-                cursor.moveToNext();
+            } finally {
+                cursor.close();
             }
-        } finally {
-            cursor.close();
+            return replies;
         }
-        return replies;
+
     }
 
     public void add(Context context, Reply reply) {
 
-        ContentValues values = getContentValues(reply);
+        synchronized (ReplyLab.this) {
+            ContentValues values = getContentValues(reply);
 
-        mDatabase.insert(Schema.Reply.name, null, values);
+            mDatabase.insert(Schema.Reply.name, null, values);
 
-        //if reply was added successfully, go through reply to list and add reply to each contact and update active reply based on reply priority
-        //make asynchronous
-        Reply newReply = get(reply.getId());
+            //if reply was added successfully, go through reply to list and add reply to each contact and update active reply based on reply priority
+            //make asynchronous
+            Reply newReply = get(reply.getId());
 
-        //if null, reply was not added successfully
-        if (newReply != null) {
-            List<Contact> replyToList = newReply.getReplyToList(context);
+            //if null, reply was not added successfully
+            if (newReply != null) {
+                List<Contact> replyToList = newReply.getReplyToList(context);
 
-            for (Contact contact : replyToList) {
-                //add the new reply to the list of contact replies
-                contact.addReply(newReply);
-                //update active reply if necessary
-                contact.updateActiveReply(context, newReply, newReply.replaceEqualPriority());
-                //write to database
-                ContactLab.getInstance(context).update(contact);
-            }
+                for (Contact contact : replyToList) {
+                    //add the new reply to the list of contact replies
+                    contact.addReply(newReply);
+                    //update active reply if necessary
+                    contact.updateActiveReply(context, newReply, newReply.replaceEqualPriority());
+                    //write to database
+                    ContactLab.getInstance(context).update(contact);
+                }
 
-            if (newReply.replyUnknown()) {
-                Contact contact = ContactPreferences.getUnknownContact(context);
-                contact.addReply(newReply);
-                contact.updateActiveReply(context, newReply, newReply.replaceEqualPriority());
-                ContactPreferences.setUnknownContact(context, contact);
+                if (newReply.replyUnknown()) {
+                    Contact contact = ContactPreferences.getUnknownContact(context);
+                    contact.addReply(newReply);
+                    contact.updateActiveReply(context, newReply, newReply.replaceEqualPriority());
+                    ContactPreferences.setUnknownContact(context, contact);
+                }
             }
         }
+
     }
 
     public void update(Reply reply) {
@@ -153,61 +162,69 @@ public class ReplyLab {
         //and then add reply to all the contacts in new reply to list
         //the reply argument reply to list cannot be used because it has already been tampered with
         //so query database for the current state before update
-        List<Contact> prevReplyToList = get(reply.getId()).getReplyToList(context);
-        boolean prevReplyUnknown = get(reply.getId()).replyUnknown();
 
-        ContentValues values = getContentValues(reply);
-        mDatabase.update(Schema.Reply.name, values, Cols.uuid + " = ?", new String[] {reply.getId().toString()});
+        synchronized (ReplyLab.this) {
+            List<Contact> prevReplyToList = get(reply.getId()).getReplyToList(context);
+            boolean prevReplyUnknown = get(reply.getId()).replyUnknown();
 
-        //if updated successfully, go through reply list and update active reply based on priority and only if reply is enabled
-        //make asynchronous
-        Reply updatedReply = get(reply.getId());
+            ContentValues values = getContentValues(reply);
+            mDatabase.update(Schema.Reply.name, values, Cols.uuid + " = ?", new String[] {reply.getId().toString()});
+
+            //if updated successfully, go through reply list and update active reply based on priority and only if reply is enabled
+            //make asynchronous
+            Reply updatedReply = get(reply.getId());
 
 
 
-        if (updatedReply != null) {
-            //first go through previous reply to list and remove reply from contacts in the list
-            for (Contact contact : prevReplyToList) {
-                //remove the reply from contacts reply to list
-                contact.removeReply(context, updatedReply);
-                //update contact
-                ContactLab.getInstance(context).update(contact);
+            if (updatedReply != null) {
+                //first go through previous reply to list and remove reply from contacts in the list
+                for (Contact contact : prevReplyToList) {
+                    //remove the reply from contacts reply to list
+                    contact.removeReply(context, updatedReply);
+                    //update contact
+                    ContactLab.getInstance(context).update(contact);
+                }
+                List<Contact> replyToList = updatedReply.getReplyToList(context);
+                for (Contact contact : replyToList) {
+                    //add the new reply to the list of contact replies
+                    contact.addReply(updatedReply);
+                    //if reply was previously active or is enabled, then update active reply if necessary
+                    //if reply was previously active, it will be restored since the first remove reply for loop would
+                    //have made the contacts active reply to be null
+                    contact.updateActiveReply(context, updatedReply, updatedReply.replaceEqualPriority());
+                    //write to database
+                    ContactLab.getInstance(context).update(contact);
+                }
+
+                //update unknown contacts
+                Contact contact = ContactPreferences.getUnknownContact(context);
+
+                if (updatedReply.replyUnknown()) {
+                    contact.addReply(updatedReply);
+                    contact.updateActiveReply(context, updatedReply, updatedReply.replaceEqualPriority());
+
+                } else {
+                    contact.removeReply(context, updatedReply);
+                }
+
+                ContactPreferences.setUnknownContact(context, contact);
             }
-            List<Contact> replyToList = updatedReply.getReplyToList(context);
-            for (Contact contact : replyToList) {
-                //add the new reply to the list of contact replies
-                contact.addReply(updatedReply);
-                //if reply was previously active or is enabled, then update active reply if necessary
-                //if reply was previously active, it will be restored since the first remove reply for loop would
-                //have made the contacts active reply to be null
-                contact.updateActiveReply(context, updatedReply, updatedReply.replaceEqualPriority());
-                //write to database
-                ContactLab.getInstance(context).update(contact);
-            }
-
-            //update unknown contacts
-            Contact contact = ContactPreferences.getUnknownContact(context);
-
-            if (updatedReply.replyUnknown()) {
-                contact.addReply(updatedReply);
-                contact.updateActiveReply(context, updatedReply, updatedReply.replaceEqualPriority());
-
-            } else {
-                contact.removeReply(context, updatedReply);
-            }
-
-            ContactPreferences.setUnknownContact(context, contact);
         }
+
     }
 
     public void delete(Context context, Reply reply) {
-        mDatabase.delete(Schema.Reply.name, Cols.uuid + " = ?", new String[] { reply.getId().toString()});
-        List<Contact> replyToList = reply.getReplyToList(context);
 
-        for (Contact contact : replyToList) {
-            contact.removeReply(context, reply);
-            ContactLab.getInstance(context).update(contact);
+        synchronized (ReplyLab.this) {
+            mDatabase.delete(Schema.Reply.name, Cols.uuid + " = ?", new String[] { reply.getId().toString()});
+            List<Contact> replyToList = reply.getReplyToList(context);
+
+            for (Contact contact : replyToList) {
+                contact.removeReply(context, reply);
+                ContactLab.getInstance(context).update(contact);
+            }
         }
+
     }
 
     public ContentValues getContentValues(Reply reply) {

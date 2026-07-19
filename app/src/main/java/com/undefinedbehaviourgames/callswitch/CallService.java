@@ -28,9 +28,12 @@ import java.util.concurrent.Executors;
 public class CallService extends Service {
 
     private static final String TAG = "CallServiceLogger";
+    private static final String EXTRA_NUMBER = "com.undefinedbehaviourgames.callswitch.number";
     private ExecutorService mExecutorService;
-    public static final Intent newIntent(Context context) {
-        return new Intent(context, CallService.class);
+    public static final Intent newIntent(Context context, String number) {
+        Intent intent = new Intent(context, CallService.class);
+        intent.putExtra(EXTRA_NUMBER, number);
+        return intent;
     }
 
     @Override
@@ -50,6 +53,17 @@ public class CallService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return mCallServiceBinder;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        if (intent != null) {
+            String number = intent.getStringExtra(EXTRA_NUMBER);
+            answerCall(number);
+
+        }
+        return START_REDELIVER_INTENT;
     }
 
     public void answerCall(String number) {
@@ -87,8 +101,14 @@ public class CallService extends Service {
     }
 
     private void sendMessage(String message, String phone) {
-        if (message.isEmpty()) return;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) return;
+        if (message.isEmpty()) {
+            stopSelf();
+            return;
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            stopSelf();
+            return;
+        }
         SimSettings simSettings = SettingsPreferences.getPreferredSimSettings(CallService.this);
         SubscriptionManager subscriptionManager = (SubscriptionManager) getSystemService(SubscriptionManager.class);
 
@@ -121,6 +141,8 @@ public class CallService extends Service {
                 null,
                 null
         );
+
+        stopSelf();
 
     }
     public class CallServiceBinder extends Binder {

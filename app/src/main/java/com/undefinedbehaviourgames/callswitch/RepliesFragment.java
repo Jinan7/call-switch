@@ -184,7 +184,9 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
         public void bind(Reply reply) {
             mReply = reply;
             mReplyTextView.setText(reply.getReply());
+            mSwitch.setOnCheckedChangeListener(null);
             mSwitch.setChecked(mReply.isEnabled());
+            mSwitch.setOnCheckedChangeListener(this);
             GradientDrawable background = (GradientDrawable) mReplyPriorityButton.getBackground();
             background.mutate();
             int stroke_width = (int)getResources().getDimension(R.dimen.circle_stroke_2);
