@@ -64,11 +64,16 @@ public class Contact implements Serializable {
     public boolean removeReply(Context context, Reply reply) {
 
         //remove reply if in reply list
+        int removeIdx = -1;
         for (int i = 0; i < mReplies.size(); i++) {
             if (reply.getId().equals(mReplies.get(i))) {
-                mReplies.remove(i);
+                removeIdx = i;
+                break;
             }
         }
+
+        if (removeIdx != -1) mReplies.remove(removeIdx);
+
         //if reply is also active reply, make active reply null;
         if (mActiveReplyId != null && reply.getId().equals(mActiveReplyId)){
             mActiveReplyId = null;
