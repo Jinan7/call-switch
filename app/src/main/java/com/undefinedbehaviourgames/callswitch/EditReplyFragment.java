@@ -152,9 +152,21 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
 
                     switch (mode) {
                         case NEW_REPLY:
-                            ReplyLab.getInstance(getContext()).add(getContext(), mReply);
+                            mExecutorService.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ReplyLab.getInstance(getContext()).add(getContext(), mReply);
+                                }
+                            });
+
                         case EDIT_REPLY:
-                            ReplyLab.getInstance(getContext()).update(getContext(), mReply);
+                            mExecutorService.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ReplyLab.getInstance(getContext()).update(getContext(), mReply);
+                                }
+                            });
+
 
                     }
 

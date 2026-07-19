@@ -38,6 +38,10 @@ public class ContactActivity extends SingleFragmentActivity {
         WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
                 .setAppearanceLightStatusBars(true);
 
+        //make navigation bar icons and text light color
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
+                .setAppearanceLightNavigationBars(true);
+
     }
 
     @Override

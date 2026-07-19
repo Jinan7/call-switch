@@ -31,7 +31,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
                 .setAppearanceLightStatusBars(false);
 
-        //make status bar icons and text light color
+        //make navigation bar icons and text light color
         WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
                 .setAppearanceLightNavigationBars(false);
 
