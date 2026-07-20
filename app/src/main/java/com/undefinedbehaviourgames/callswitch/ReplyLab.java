@@ -101,6 +101,10 @@ public class ReplyLab {
                     }
                     cursor.moveToNext();
                 }
+
+                if (callbacksWeakReference.get() != null) {
+                    callbacksWeakReference.get().onGetAllReplies();
+                }
             } finally {
                 cursor.close();
             }
@@ -283,6 +287,7 @@ public class ReplyLab {
 
     public interface Callbacks {
         void ongetSingleReply(Reply reply);
+        void onGetAllReplies();
         void onUpdateReplies(List<Reply> replies);
         void onUpdateReply(int index);
     }

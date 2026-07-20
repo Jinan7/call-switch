@@ -85,6 +85,7 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
         });
 
         mToggleAllReplies = v.findViewById(R.id.toggle_all);
+        mToggleAllReplies.setEnabled(false);
         mToggleAllReplies.setOnCheckedChangeListener(mOnCheckedChangeListener);
         return v;
     }
@@ -116,6 +117,17 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
                 mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() - 1);
             }
         });
+    }
+
+    @Override
+    public void onGetAllReplies() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mToggleAllReplies.setEnabled(true);
+            }
+        });
+
     }
 
     @Override

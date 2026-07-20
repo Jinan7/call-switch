@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
@@ -33,6 +34,9 @@ public class EditReplyActivity extends SingleFragmentActivity{
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_CALL_LOG, Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE}, PermissionManager.REQUEST_CODE_CALL_LOG_AND_SEND_SMS);
         }
 
+        //make navigation bar icons and text light color
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
+                .setAppearanceLightNavigationBars(true);
 
     }
 

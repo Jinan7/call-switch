@@ -12,6 +12,9 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.OutOfQuotaPolicy;
+import androidx.work.WorkManager;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -36,9 +39,13 @@ public class CallReceiver extends BroadcastReceiver {
             if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
                 number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
                 Log.d(TAG, "Incoming call from " + number);
-                Intent callServiceIntent = CallService.newIntent(context, number);
-//                context.bindService(callServiceIntent, mCallServiceConnection, Context.BIND_AUTO_CREATE);
-                context.startService(callServiceIntent);
+
+                OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(CallWorker.class)
+                        .setInputData(CallWorker.newData(number))
+                        .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                        .build();
+
+                WorkManager.getInstance(context).enqueue(request);
             }
         }
     }
