@@ -248,28 +248,28 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
         });
 
         mReplyUnknownSwitch.setChecked(mReply.replyUnknown());
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            mReplyUnknownSwitch.setEnabled(false);
-            mReplyUnknownSwitch.setVisibility(GONE);
-        }
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+//            mReplyUnknownSwitch.setEnabled(false);
+//            mReplyUnknownSwitch.setVisibility(GONE);
+//        }
         mReplyUnknownSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
                 mReply.setReplyUnknown(isChecked);
-                if (isChecked) {
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-
-
-                        RoleManager roleManager = (RoleManager) getContext().getSystemService(ROLE_SERVICE);
-                        if (roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING) && !roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)) {
-                            Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING);
-                            getActivity().startActivityForResult(intent, PermissionManager.REQUEST_CODE_ROLE_CALL_SCREENING);
-                        }
-
-                    }
-
-                }
+//                if (isChecked) {
+//
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//
+//
+//                        RoleManager roleManager = (RoleManager) getContext().getSystemService(ROLE_SERVICE);
+//                        if (roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING) && !roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)) {
+//                            Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING);
+//                            getActivity().startActivityForResult(intent, PermissionManager.REQUEST_CODE_ROLE_CALL_SCREENING);
+//                        }
+//
+//                    }
+//
+//                }
             }
         });
 

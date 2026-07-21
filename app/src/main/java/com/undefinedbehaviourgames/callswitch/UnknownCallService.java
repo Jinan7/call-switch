@@ -50,13 +50,6 @@ public class UnknownCallService extends CallScreeningService {
         mExecutorService.shutdownNow();
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        sRunning = true;
-        return START_REDELIVER_INTENT;
-    }
-
-
 
     @Override
     public void onScreenCall(@NonNull Call.Details callDetails) {
