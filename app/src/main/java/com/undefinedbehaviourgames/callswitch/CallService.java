@@ -22,6 +22,7 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -84,12 +85,18 @@ public class CallService extends Service {
                     Contact contact = ContactLab.getInstance(CallService.this).get(phoneProto);
 
                     if (contact != null) {
-                        String reply = contact.getActiveReplyText(CallService.this);
-                        sendMessage(reply, contact.getPhone());
+                        Reply reply = ReplyLab.getInstance(CallService.this).get(contact.getActiveReplyId());
+                        if (reply != null && reply.isEnabled()) {
+                            sendMessage(reply.getReply(), contact.getPhone());
+                        }
+
 
                     } else {
-                        String reply = ContactPreferences.getUnknownContact(CallService.this).getActiveReplyText(CallService.this);
-                        sendMessage(reply, number);
+                        UUID id = ContactPreferences.getUnknownContact(CallService.this).getActiveReplyId();
+                        Reply reply = ReplyLab.getInstance(CallService.this).get(id);
+                        if (reply != null && reply.isEnabled()) {
+                            sendMessage(reply.getReply(), number);
+                        }
                     }
                 } catch (NumberParseException e) {
                     Log.d(TAG, "could not parse number");
