@@ -126,6 +126,7 @@ public class ReplyLab {
 
             //if null, reply was not added successfully
             if (newReply != null) {
+
                 List<Contact> replyToList = newReply.getReplyToList(context);
 
                 for (Contact contact : replyToList) {

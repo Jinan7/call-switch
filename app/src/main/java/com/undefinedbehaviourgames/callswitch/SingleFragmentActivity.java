@@ -1,7 +1,9 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +17,7 @@ import androidx.fragment.app.FragmentManager;
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
+    private static final String TAG = "SingleFragmentActivityLogger";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,8 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             frag = createFragment();
             fm.beginTransaction().add(R.id.main, frag).commit();
         }
+
+
     }
 
     public abstract Fragment createFragment();

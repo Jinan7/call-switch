@@ -1,15 +1,20 @@
 package com.undefinedbehaviourgames.callswitch;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.ROLE_SERVICE;
+import static android.view.View.GONE;
+import static androidx.core.content.ContextCompat.getSystemService;
 import static com.undefinedbehaviourgames.callswitch.EditReplyActivity.EDIT_REPLY;
 import static com.undefinedbehaviourgames.callswitch.EditReplyActivity.NEW_REPLY;
 import static com.undefinedbehaviourgames.callswitch.PriorityModalBottomSheetDialog.EXTRA_PRIORITY;
 
 import android.app.Activity;
+import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Editable;
@@ -237,14 +242,34 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
             @Override
             public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
                 mReply.setEnabled(isChecked);
+
+
             }
         });
 
         mReplyUnknownSwitch.setChecked(mReply.replyUnknown());
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            mReplyUnknownSwitch.setEnabled(false);
+            mReplyUnknownSwitch.setVisibility(GONE);
+        }
         mReplyUnknownSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
                 mReply.setReplyUnknown(isChecked);
+                if (isChecked) {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+
+                        RoleManager roleManager = (RoleManager) getContext().getSystemService(ROLE_SERVICE);
+                        if (roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING) && !roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)) {
+                            Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING);
+                            getActivity().startActivityForResult(intent, PermissionManager.REQUEST_CODE_ROLE_CALL_SCREENING);
+                        }
+
+                    }
+
+                }
             }
         });
 

@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
@@ -19,6 +21,7 @@ import java.util.UUID;
 
 public class EditReplyActivity extends SingleFragmentActivity{
 
+    private static final String TAG = "EditReplyActivityLogger";
     public static final String EXTRA_MODE = "com.undefinedbehaviourgames.callswitch.reply_mode";
     public static final String EXTRA_ID = "com.undefinedbehaviourgames.callswitch.reply_id";
     public static final int EDIT_REPLY = 0;
@@ -65,5 +68,25 @@ public class EditReplyActivity extends SingleFragmentActivity{
         intent.putExtra(EXTRA_MODE, mode);
         intent.putExtra(EXTRA_ID,id);
         return intent;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode ) {
+
+            case PermissionManager.REQUEST_CODE_ROLE_CALL_SCREENING:
+                if (requestCode == RESULT_OK) {
+                    Log.d(TAG, "Role call screening granted");
+                    if (!UnknownCallService.isRunning()) {
+                        Log.d(TAG, "starting unknown call service");
+                        Intent intent = UnknownCallService.newIntent(this);
+                        startService(intent);
+                    } else {
+                        Log.d(TAG, "service already running");
+                    }
+                }
+        }
     }
 }

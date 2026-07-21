@@ -43,7 +43,7 @@ public class CallWorker extends Worker {
     public Result doWork() {
 
         String number = getInputData().getString(DATA_NUMBER);
-
+        Log.d(TAG, "Doing work");
         if (number != null)  {
             answerCall(number);
         }
