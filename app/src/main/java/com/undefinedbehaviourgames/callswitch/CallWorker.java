@@ -23,6 +23,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.util.List;
+import java.util.UUID;
 
 public class CallWorker extends Worker {
     public static final String TAG = "CallWorkerLogger";
@@ -63,12 +64,17 @@ public class CallWorker extends Worker {
             Contact contact = ContactLab.getInstance(getApplicationContext()).get(phoneProto);
 
             if (contact != null) {
-                String reply = contact.getActiveReplyText(getApplicationContext());
-                sendMessage(reply, contact.getPhone());
+                Reply reply = ReplyLab.getInstance(getApplicationContext()).get(contact.getActiveReplyId());
+                if (reply != null && reply.isEnabled()) {
+                    sendMessage(reply.getReply(), contact.getPhone());
+                }
 
             } else {
-                String reply = ContactPreferences.getUnknownContact(getApplicationContext()).getActiveReplyText(getApplicationContext());
-                sendMessage(reply, number);
+                UUID id = ContactPreferences.getUnknownContact(getApplicationContext()).getActiveReplyId();
+                Reply reply = ReplyLab.getInstance(getApplicationContext()).get(id);
+                if (reply != null && reply.isEnabled()) {
+                    sendMessage(reply.getReply(), number);
+                }
             }
         } catch (NumberParseException e) {
             Log.d(TAG, "could not parse number");

@@ -69,9 +69,7 @@ public class CallService extends Service {
 
     public void answerCall(String number) {
 
-
-
-
+        Log.d(TAG, "answering call");
         mExecutorService.execute(new Runnable() {
             @Override
             public void run() {
@@ -90,7 +88,6 @@ public class CallService extends Service {
                             sendMessage(reply.getReply(), contact.getPhone());
                         }
 
-
                     } else {
                         UUID id = ContactPreferences.getUnknownContact(CallService.this).getActiveReplyId();
                         Reply reply = ReplyLab.getInstance(CallService.this).get(id);
@@ -99,7 +96,6 @@ public class CallService extends Service {
                         }
                     }
                 } catch (NumberParseException e) {
-                    Log.d(TAG, "could not parse number");
                     e.printStackTrace();
                 }
             }
@@ -139,8 +135,6 @@ public class CallService extends Service {
             default:
                 manager = SmsManager.getDefault();
         }
-//        SmsManager manager = SmsManager.getDefault();
-//        int subscriptionId = SmsManager.getDefaultSmsSubscriptionId();
         manager.sendTextMessage(
                 phone,
                 null,
