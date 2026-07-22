@@ -39,6 +39,8 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ContactFragment extends Fragment {
     private static final String TAG = "ContactFragmentLogger";
@@ -52,6 +54,7 @@ public class ContactFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ImageButton mEditActiveReply;
     private Contact mContact;
+    private ExecutorService mExecutorService;
     private boolean unknownContact;
 
     public static ContactFragment newInstance(String lookupkey) {
@@ -81,6 +84,13 @@ public class ContactFragment extends Fragment {
             unknownContact = true;
         }
 
+        mExecutorService = Executors.newSingleThreadExecutor();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mExecutorService.shutdownNow();
     }
 
     @Nullable
@@ -92,7 +102,13 @@ public class ContactFragment extends Fragment {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.contact_menu_delete) {
-                    ContactLab.getInstance(getContext()).delete(getContext(), mContact);
+                    mExecutorService.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            ContactLab.getInstance(getContext()).delete(getContext(), mContact);
+                        }
+                    });
+
                     getActivity().finish();
                 }
                 return false;

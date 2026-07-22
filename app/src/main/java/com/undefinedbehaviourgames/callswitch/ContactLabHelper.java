@@ -51,172 +51,201 @@ public class ContactLabHelper<T extends Contact> {
     @SuppressWarnings("unchecked")
     public T get(String lookupkey) {
 
-        //make asynchronous
-        ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.lookupKey + " = ?", new String [] {lookupkey}, null);
-        T contact;
-        try {
-            cursor.moveToFirst();
-            contact = (T) cursor.getContact();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            cursor.close();
+        synchronized (this) {
+            ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.lookupKey + " = ?", new String [] {lookupkey}, null);
+            T contact;
+            try {
+                cursor.moveToFirst();
+                contact = (T) cursor.getContact();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            } finally {
+                cursor.close();
+            }
+
+            return contact;
         }
 
-        return contact;
     }
 
     @SuppressWarnings("unchecked")
     public T get(PhoneNumber phoneNumber) {
 
-        String phoneNumberString = new Gson().toJson(phoneNumber);
-        ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.phone_proto + " = ?", new String[] { phoneNumberString }, null);
-        T contact;
-        try {
-            cursor.moveToFirst();
-            contact = (T) cursor.getContact();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            cursor.close();
+        synchronized (this) {
+            String phoneNumberString = new Gson().toJson(phoneNumber);
+            ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.phone_proto + " = ?", new String[] { phoneNumberString }, null);
+            T contact;
+            try {
+                cursor.moveToFirst();
+                contact = (T) cursor.getContact();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            } finally {
+                cursor.close();
+            }
+
+            return contact;
         }
 
-        return contact;
     }
 
     @SuppressWarnings("unchecked")
     public List<T> getContacts() {
 
-        List<T> contacts = new ArrayList<>();
-        ContactCursorWrapper<T> cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
-        contacts = getContacts(cursor);
-        return contacts;
+        synchronized (this) {
+            List<T> contacts = new ArrayList<>();
+            ContactCursorWrapper<T> cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
+            contacts = getContacts(cursor);
+            return contacts;
+        }
+
+
     }
 
     public List<T> getContacts(WeakReference<Callbacks<T>> callbacksWeakReference) {
-        List<T> contacts = new ArrayList<>();
-        ContactCursorWrapper<T> cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
-        contacts = getContacts(cursor, callbacksWeakReference);
-        return contacts;
+
+        synchronized (this) {
+            List<T> contacts = new ArrayList<>();
+            ContactCursorWrapper<T> cursor = queryDatabase(null, null, Schema.Contact.Cols.name + " ASC");
+            contacts = getContacts(cursor, callbacksWeakReference);
+            return contacts;
+        }
+
     }
 
     @SuppressWarnings("unchecked")
     public List<T> getContacts(String searchQuery) {
 
-        List<T> contacts = new ArrayList<>();
+        synchronized (this) {
+            List<T> contacts = new ArrayList<>();
 
-        if (searchQuery.isEmpty()) {
+            if (searchQuery.isEmpty()) {
+                return contacts;
+            }
+            String query = "%" + searchQuery + "%";
+            ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.name + " LIKE ?", new String[] { query }, Schema.Contact.Cols.name + " ASC");
+            contacts = getContacts(cursor);
             return contacts;
         }
-        String query = "%" + searchQuery + "%";
-        ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.name + " LIKE ?", new String[] { query }, Schema.Contact.Cols.name + " ASC");
-        contacts = getContacts(cursor);
-        return contacts;
+
     }
 
     public List<T> getContacts(String searchQuery, WeakReference<SearchCallbacks<T>> callbacksWeakReference) {
-        List<T> contacts = new ArrayList<>();
 
-        if (searchQuery.isEmpty()) {
+        synchronized (this) {
+            List<T> contacts = new ArrayList<>();
+
+            if (searchQuery.isEmpty()) {
+                if (callbacksWeakReference.get() != null) {
+                    callbacksWeakReference.get().onSearchResults(contacts);
+                }
+                return contacts;
+            }
+            String query = "%" + searchQuery + "%";
+            ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.name + " LIKE ?", new String[] { query }, Schema.Contact.Cols.name + " ASC");
+            contacts = getContacts(cursor, callbacksWeakReference, null);
+            return contacts;
+        }
+
+    }
+
+    public List<T> getContacts(ContactCursorWrapper<T> cursor, WeakReference<SearchCallbacks<T>> callbacksWeakReference, SearchCallbacks callbacks) {
+
+        synchronized (this) {
+            List<T> contacts = new ArrayList<>();
+
+            try {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    T contact = (T) cursor.getContact();
+                    //only check if contact has been deleted once contact query handler fetches all contacts
+                    //if not any contact that has not yet been fetched will be marked as deleted temporarily since
+                    //it will not be in the list of contacts
+                    if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
+                    contacts.add(contact);
+
+                    cursor.moveToNext();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally {
+                cursor.close();
+            }
+
             if (callbacksWeakReference.get() != null) {
                 callbacksWeakReference.get().onSearchResults(contacts);
             }
             return contacts;
         }
-        String query = "%" + searchQuery + "%";
-        ContactCursorWrapper<T> cursor = queryDatabase(Schema.Contact.Cols.name + " LIKE ?", new String[] { query }, Schema.Contact.Cols.name + " ASC");
-        contacts = getContacts(cursor, callbacksWeakReference, null);
-        return contacts;
-    }
 
-    public List<T> getContacts(ContactCursorWrapper<T> cursor, WeakReference<SearchCallbacks<T>> callbacksWeakReference, SearchCallbacks callbacks) {
-
-        List<T> contacts = new ArrayList<>();
-
-        try {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                T contact = (T) cursor.getContact();
-                //only check if contact has been deleted once contact query handler fetches all contacts
-                //if not any contact that has not yet been fetched will be marked as deleted temporarily since
-                //it will not be in the list of contacts
-                if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
-                contacts.add(contact);
-
-                cursor.moveToNext();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            cursor.close();
-        }
-
-        if (callbacksWeakReference.get() != null) {
-            callbacksWeakReference.get().onSearchResults(contacts);
-        }
-        return contacts;
     }
     public List<T> getContacts(ContactCursorWrapper<T> cursor, WeakReference<Callbacks<T>> callbacksWeakReference) {
 
-        List<T> contacts = new ArrayList<>();
+        synchronized (this) {
+            List<T> contacts = new ArrayList<>();
 
-        try {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                T contact = (T) cursor.getContact();
-                //only check if contact has been deleted once contact query handler fetches all contacts
-                //if not any contact that has not yet been fetched will be marked as deleted temporarily since
-                //it will not be in the list of contacts
-                if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
-                contacts.add(contact);
+            try {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    T contact = (T) cursor.getContact();
+                    //only check if contact has been deleted once contact query handler fetches all contacts
+                    //if not any contact that has not yet been fetched will be marked as deleted temporarily since
+                    //it will not be in the list of contacts
+                    if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
+                    contacts.add(contact);
 
-                if (callbacksWeakReference.get() != null) {
-                    callbacksWeakReference.get().onGetSingleContact(contact);
+                    if (callbacksWeakReference.get() != null) {
+                        callbacksWeakReference.get().onGetSingleContact(contact);
+                    }
+                    cursor.moveToNext();
                 }
-                cursor.moveToNext();
+
+                final List<T> immutableContactSnapshot = new ArrayList<>(contacts);
+
+                if (callbacksWeakReference != null) {
+                    callbacksWeakReference.get().onGetAllContacts(immutableContactSnapshot);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            final List<T> immutableContactSnapshot = new ArrayList<>(contacts);
-
-            if (callbacksWeakReference != null) {
-                callbacksWeakReference.get().onGetAllContacts(immutableContactSnapshot);
+            finally {
+                cursor.close();
             }
+            return contacts;
+        }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            cursor.close();
-        }
-        return contacts;
     }
     public List<T> getContacts(ContactCursorWrapper<T> cursor) {
 
-        List<T> contacts = new ArrayList<>();
-        try {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                T contact = (T) cursor.getContact();
-                //only check if contact has been deleted once contact query handler fetches all contacts
-                //if not any contact that has not yet been fetched will be marked as deleted temporarily since
-                //it will not be in the list of contacts
-                if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
-                contacts.add(contact);
-                cursor.moveToNext();
+        synchronized (this) {
+            List<T> contacts = new ArrayList<>();
+            try {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    T contact = (T) cursor.getContact();
+                    //only check if contact has been deleted once contact query handler fetches all contacts
+                    //if not any contact that has not yet been fetched will be marked as deleted temporarily since
+                    //it will not be in the list of contacts
+                    if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
+                    contacts.add(contact);
+                    cursor.moveToNext();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally {
+                cursor.close();
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            cursor.close();
+            return contacts;
         }
 
-        return contacts;
     }
 
     public boolean isDeleted(Contact contact) {
@@ -243,37 +272,46 @@ public class ContactLabHelper<T extends Contact> {
     }
     public void add(Contact contact) {
 
-        ContentValues values = getContentValues(contact);
-
-
+        synchronized (this) {
+            ContentValues values = getContentValues(contact);
             mDatabase.insert(
                     Schema.Contact.name,
                     null,
                     values
             );
+        }
+
 
     }
 
     public void update(Contact contact) {
-        ContentValues values = getContentValues(contact);
 
-        mDatabase.update(
-                Schema.Contact.name,
-                values,
-                Schema.Contact.Cols.lookupKey + " = ?",
-                new String [] { contact.getLookupKey()}
-        );
+        synchronized (this) {
+            ContentValues values = getContentValues(contact);
+
+            mDatabase.update(
+                    Schema.Contact.name,
+                    values,
+                    Schema.Contact.Cols.lookupKey + " = ?",
+                    new String [] { contact.getLookupKey()}
+            );
+        }
+
     }
 
     public void delete(Context context, Contact contact) {
-        mDatabase.delete(Schema.Contact.name, Schema.Contact.Cols.lookupKey + " = ?", new String [] { contact.getLookupKey()});
 
-        List<Reply> replies = contact.getReplies(context);
+        synchronized (this) {
+            mDatabase.delete(Schema.Contact.name, Schema.Contact.Cols.lookupKey + " = ?", new String [] { contact.getLookupKey()});
 
-        for (Reply reply : replies) {
-            reply.deleteContact(contact);
-            ReplyLab.getInstance(context).update(context, reply);
+            List<Reply> replies = contact.getReplies(context);
+
+            for (Reply reply : replies) {
+                reply.deleteContact(contact);
+                ReplyLab.getInstance(context).update(context, reply);
+            }
         }
+
     }
 
     public ContactCursorWrapper queryDatabase(String queryString, String [] queryArgs, String orderBy ) {
@@ -308,11 +346,6 @@ public class ContactLabHelper<T extends Contact> {
         return values;
     }
 
-
-
-    public List<T> getSearchResults() {
-        return mSearchResults;
-    }
 
 
     public void addContactToPhoneImage(T contact) {

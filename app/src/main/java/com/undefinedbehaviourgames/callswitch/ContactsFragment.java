@@ -60,9 +60,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
 //        mBottomNavigationView = v.findViewById(R.id.bottom_nav_view);
         mRecyclerView = v.findViewById(R.id.contacts_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        if (ContactQueryHandler.getInstance(getContext()).getQueryState() == State.FETCHED) {
-            getContactsAsync();
-        }
+
         mSearchResultRecyclerView = v.findViewById(R.id.contact_search_results);
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mSearchResultRecyclerView.setAdapter(new ContactAdapter(new ArrayList<>()));
@@ -116,6 +114,8 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
                     contactQueryHandler.startQuery(callbacksWeakReference);
                 }
             });
+        } else if (ContactQueryHandler.getInstance(getContext()).getQueryState() == State.FETCHED) {
+            getContactsAsync();
         }
     }
 
