@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import database.DBOpenHelper;
 import database.ReplyCursorWrapper;
@@ -103,6 +105,37 @@ public class ReplyLab {
                 }
 
                 if (callbacksWeakReference.get() != null) {
+                    callbacksWeakReference.get().onGetAllReplies();
+                }
+            } finally {
+                cursor.close();
+            }
+            return replies;
+        }
+
+    }
+
+    public List<Reply> getReplies(WeakReference<Callbacks> callbacksWeakReference, Future<Object> future) {
+
+        synchronized (ReplyLab.this) {
+            ReplyCursorWrapper cursor = queryDatabase(null, null) ;
+            List<Reply> replies = new ArrayList<>();
+
+            try {
+                cursor.moveToFirst();
+
+                while (!cursor.isAfterLast()) {
+                    if (future.isCancelled()) break;
+
+                    replies.add(cursor.getReply());
+
+                    if ( !future.isCancelled() && callbacksWeakReference.get() != null) {
+                        callbacksWeakReference.get().ongetSingleReply(cursor.getReply());
+                    }
+                    cursor.moveToNext();
+                }
+
+                if (!future.isCancelled() && callbacksWeakReference.get() != null) {
                     callbacksWeakReference.get().onGetAllReplies();
                 }
             } finally {

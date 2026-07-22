@@ -25,8 +25,10 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Callbacks {
 
@@ -36,6 +38,7 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
     private SwitchMaterial mToggleAllReplies;
     private ExecutorService mExecutorService;
     private ExecutorService mReplyExecutorService;
+    private Future<Object> mGetRepliesFuture;
     private final CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
@@ -98,14 +101,20 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
     }
 
     private void getRepliesAsync() {
+        if (mGetRepliesFuture != null) {
+            mGetRepliesFuture.cancel(true);
+        }
         mRecyclerView.setAdapter(new RepliesAdapter(new ArrayList<>()));
         WeakReference<ReplyLab.Callbacks> callbacksWeakReference = new WeakReference<>(RepliesFragment.this);
-        mExecutorService.execute(new Runnable() {
+        mGetRepliesFuture = mExecutorService.submit(new Callable<Object>() {
             @Override
-            public void run() {
-                ReplyLab.getInstance(getContext()).getReplies(callbacksWeakReference);
+            public Object call() throws Exception {
+
+                ReplyLab.getInstance(getContext()).getReplies(callbacksWeakReference, mGetRepliesFuture);
+                return null;
             }
         });
+
     }
 
     @Override
@@ -135,11 +144,9 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((RepliesAdapter) mRecyclerView.getAdapter()).setReplies(replies);
-                mRecyclerView.getAdapter().notifyDataSetChanged();
+                getRepliesAsync();
             }
         });
-
     }
 
     @Override
@@ -147,8 +154,7 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (index < mRecyclerView.getAdapter().getItemCount())
-                mRecyclerView.getAdapter().notifyItemChanged(index);
+                if (index < mRecyclerView.getAdapter().getItemCount()) mRecyclerView.getAdapter().notifyItemChanged(index);
             }
         });
     }
