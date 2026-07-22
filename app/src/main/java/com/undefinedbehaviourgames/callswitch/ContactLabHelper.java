@@ -268,7 +268,7 @@ public class ContactLabHelper<T extends Contact> {
     public void delete(Context context, Contact contact) {
         mDatabase.delete(Schema.Contact.name, Schema.Contact.Cols.lookupKey + " = ?", new String [] { contact.getLookupKey()});
 
-        List<Reply> replies = new ArrayList<>();
+        List<Reply> replies = contact.getReplies(context);
 
         for (Reply reply : replies) {
             reply.deleteContact(contact);

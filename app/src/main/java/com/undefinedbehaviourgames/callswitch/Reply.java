@@ -84,11 +84,14 @@ public class Reply {
             Contact contact = ContactLab.getInstance(context).get(mReplyToList.get(i));
             //if contact is null, then it has probably been deleted,
             //remove the contact from reply to list
-            if (contact != null) replyToList.add(contact);
-
-            if (callbacksWeakReference.get() != null) {
-                callbacksWeakReference.get().onGetSingleContact(contact);
+            if (contact != null) {
+                replyToList.add(contact);
+                if (callbacksWeakReference.get() != null) {
+                    callbacksWeakReference.get().onGetSingleContact(contact);
+                }
             }
+
+
         }
 
         return replyToList;
