@@ -14,8 +14,8 @@ public class ContactPreferences {
 
     public static Contact getUnknownContact(Context context) {
         Contact defaultUnknownContact = new Contact();
-        defaultUnknownContact.setPhone("## #### ###");
-        defaultUnknownContact.setName("Unknown Contact");
+        defaultUnknownContact.setPhone(context.getString(R.string.unknown_contacts_phone_label));
+        defaultUnknownContact.setName(context.getString(R.string.unknown_contacts_label));
         defaultUnknownContact.setColor(getColor(context, R.color.grey_7));
         defaultUnknownContact.setSecondaryColor(getColor(context, R.color.grey_1));
         String contactString = PreferenceManager.getDefaultSharedPreferences(context)

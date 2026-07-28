@@ -17,21 +17,27 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:background="@drawable/rounded_rectangle_background_4"
-                android:layout_marginHorizontal="8dp"
-                android:id="@+id/unknown_contacts_textview"
-                android:layout_marginTop="120dp"
-                android:textSize="16sp"
-                android:textStyle="bold"
+<!--            <TextView-->
+<!--                android:paddingHorizontal="16dp"-->
+<!--                android:paddingVertical="8dp"-->
+<!--                android:background="@drawable/rounded_rectangle_background_4"-->
+<!--                android:layout_marginHorizontal="8dp"-->
+<!--                android:id="@+id/unknown_contacts_textview"-->
+<!--                android:layout_marginTop="120dp"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textStyle="bold"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Unknown Contacts"/>-->
+
+            <include layout="@layout/component_contact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Unknown Contacts"/>
-
+                android:layout_marginTop="120dp"
+                android:layout_marginHorizontal="8dp"
+                android:id="@+id/unknown_contacts_view"/>
             <androidx.recyclerview.widget.RecyclerView
-                android:layout_below="@id/unknown_contacts_textview"
+                android:layout_below="@id/unknown_contacts_view"
                 android:id="@+id/contacts_recycler_view"
                 android:layout_marginHorizontal="8dp"
                 android:layout_marginTop="8dp"

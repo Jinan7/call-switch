@@ -33,9 +33,10 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     private RecyclerView mRecyclerView;
     private RecyclerView mSearchResultRecyclerView;
     private SearchView mSearchView;
-    private TextView mUnknownContactTextView;
+    private View mUnknownContactView;
     private ExecutorService mExecutorService;
     private BottomNavigationView mBottomNavigationView;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,18 +91,29 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
                 );
             }
         });
-        mUnknownContactTextView = v.findViewById(R.id.unknown_contacts_textview);
-
-        mUnknownContactTextView.setOnClickListener(new View.OnClickListener() {
+        mUnknownContactView = v.findViewById(R.id.unknown_contacts_view);
+        mUnknownContactView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = ContactActivity.newIntent(getContext());
                 startActivity(intent);
             }
         });
+
+        updateUnknownContactViewUI();
         return v;
     }
 
+    private void updateUnknownContactViewUI() {
+        TextView iconView = (TextView) mUnknownContactView.findViewById(R.id.contact_icon);
+        TextView nameView = (TextView) mUnknownContactView.findViewById(R.id.contact_name);
+        TextView phoneView = (TextView) mUnknownContactView.findViewById(R.id.contact_phone);
+
+
+        iconView.setText(R.string.unknown_contacts_icon_label);
+        nameView.setText(getString(R.string.unknown_contacts_label));
+        phoneView.setText(getString(R.string.unknown_contacts_phone_label));
+    }
     @Override
     public void onResume() {
         super.onResume();

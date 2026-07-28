@@ -1,0 +1,18 @@
+
+ä
+;
+android*http://schemas.android.com/apk/res/androidBmenu*Œ
+ƒitem"A
+*http://schemas.android.com/apk/res/androidtitleReplies(áƒ„"J
+*http://schemas.android.com/apk/res/androidenabledtrue"(€„2:@"€
+*http://schemas.android.com/apk/res/androidicon@drawable/ic_action_message"(‚€„2&
+$‘ ødrawable/ic_action_message0"i
+*http://schemas.android.com/apk/res/androidid@+id/menu_replies"(Ğ„2
+¸‚¤øid/menu_replies05*
+†item"B
+*http://schemas.android.com/apk/res/androidtitleContacts(áƒ„"J
+*http://schemas.android.com/apk/res/androidenabledtrue"(€„2:@"€
+*http://schemas.android.com/apk/res/androidicon@drawable/ic_action_contact"(‚€„2&
+$ ødrawable/ic_action_contact0"k
+*http://schemas.android.com/apk/res/androidid@+id/menu_contacts"(Ğ„2
+¶‚¤øid/menu_contacts05B
