@@ -56,7 +56,7 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_contacts, container, false);
-        setUpNavBar(v, R.id.menu_contacts);
+        setUpNavBar(v, R.id.nav_contacts);
 
 //        mBottomNavigationView = v.findViewById(R.id.bottom_nav_view);
         mRecyclerView = v.findViewById(R.id.contacts_recycler_view);

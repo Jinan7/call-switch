@@ -65,7 +65,7 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_replies, container, false);
-        setUpNavBar(v, R.id.menu_replies);
+        setUpNavBar(v, R.id.nav_replies);
         mRecyclerView = v.findViewById(R.id.replies_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new RepliesAdapter(new ArrayList<>()));

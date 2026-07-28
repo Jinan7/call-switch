@@ -52,6 +52,7 @@
     <string name="unknown_contacts_label">Unknown Contacts</string>
     <string name="unknown_contacts_phone_label">## #### ###</string>
     <string name="unknown_contacts_icon_label">U</string>
+    <string name="contacts">Contacts</string>
     <string-array name="priority_array">
         <item>High</item>
         <item>Normal</item>

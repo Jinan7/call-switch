@@ -50,8 +50,8 @@
 
 
 
-    <include layout="@layout/component_bottom_nav_bar"
-        android:id="@+id/bottom_nav_view"
+    <include layout="@layout/component_bottom_nav_bar_alt"
+        android:id="@+id/bottom_nav_view_alt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"/>

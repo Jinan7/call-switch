@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--<com.google.android.material.bottomnavigation.BottomNavigationView xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:transitionName="@string/bottom_nav_view_transition"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:fitsSystemWindows="true"-->
+<!--    android:id="@+id/bottom_nav_view"-->
+<!--    android:layout_alignParentBottom="true"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    app:menu="@menu/bottom_navigation_menu" />-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/blue"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingBottom="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/bottom_nav_view_alt"
+    android:layout_alignParentBottom="true">
+
+    <LinearLayout
+
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:id="@+id/nav_replies"
+            android:layout_marginTop="16dp"
+            android:paddingHorizontal="20dp"
+            android:background="@drawable/rounded_rectangle_background_16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/nav_replies_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:src="@drawable/ic_action_message" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_marginTop="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/replies"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/white"/>
+    </LinearLayout>
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:id="@+id/nav_contacts"
+            android:paddingHorizontal="20dp"
+            android:background="@drawable/rounded_rectangle_background_16"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/nav_contacts_icon"
+                android:layout_margin="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_action_contact"/>
+        </FrameLayout>
+
+        <TextView
+            android:layout_marginTop="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/contacts"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/white"/>
+    </LinearLayout>
+</LinearLayout>
