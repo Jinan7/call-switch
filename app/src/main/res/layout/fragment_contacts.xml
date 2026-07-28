@@ -1,76 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_fragment"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".RepliesActivity">
-
-
-    <androidx.core.widget.NestedScrollView
+    android:layout_height="match_parent">
+    <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main_fragment"
         android:layout_width="match_parent"
-        app:layout_behavior="@string/searchbar_scrolling_view_behavior"
-        android:layout_height="match_parent">
-        <RelativeLayout
-            android:id="@+id/relative_layout"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_nav_view_alt"
+        tools:context=".RepliesActivity">
+
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
+            app:layout_behavior="@string/searchbar_scrolling_view_behavior"
             android:layout_height="match_parent">
-
-<!--            <TextView-->
-<!--                android:paddingHorizontal="16dp"-->
-<!--                android:paddingVertical="8dp"-->
-<!--                android:background="@drawable/rounded_rectangle_background_4"-->
-<!--                android:layout_marginHorizontal="8dp"-->
-<!--                android:id="@+id/unknown_contacts_textview"-->
-<!--                android:layout_marginTop="120dp"-->
-<!--                android:textSize="16sp"-->
-<!--                android:textStyle="bold"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Unknown Contacts"/>-->
-
-            <include layout="@layout/component_contact"
+            <RelativeLayout
+                android:id="@+id/relative_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="120dp"
-                android:layout_marginHorizontal="8dp"
-                android:id="@+id/unknown_contacts_view"/>
+                android:layout_height="match_parent">
+
+                <include layout="@layout/component_contact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="120dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:id="@+id/unknown_contacts_view"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_below="@id/unknown_contacts_view"
+                    android:id="@+id/contacts_recycler_view"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginTop="8dp"
+                    android:clipToPadding="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </RelativeLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+        <include layout="@layout/component_contacts_app_bar"/>
+
+
+        <com.google.android.material.search.SearchView
+            android:id="@+id/contact_search_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_anchor="@id/contact_search_bar"
+            android:hint="@string/search_contacts">
             <androidx.recyclerview.widget.RecyclerView
-                android:layout_below="@id/unknown_contacts_view"
-                android:id="@+id/contacts_recycler_view"
                 android:layout_marginHorizontal="8dp"
-                android:layout_marginTop="8dp"
+                android:fitsSystemWindows="true"
                 android:clipToPadding="false"
+                android:id="@+id/contact_search_results"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </RelativeLayout>
-    </androidx.core.widget.NestedScrollView>
-
-
+                android:layout_height="match_parent"/>
+        </com.google.android.material.search.SearchView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <include layout="@layout/component_bottom_nav_bar_alt"
         android:id="@+id/bottom_nav_view_alt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"/>
-
-    <include layout="@layout/component_contacts_app_bar"/>
-
-
-    <com.google.android.material.search.SearchView
-        android:id="@+id/contact_search_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_anchor="@id/contact_search_bar"
-        android:hint="@string/search_contacts">
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_marginHorizontal="8dp"
-            android:fitsSystemWindows="true"
-            android:clipToPadding="false"
-            android:id="@+id/contact_search_results"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </com.google.android.material.search.SearchView>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>
