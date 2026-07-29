@@ -13,7 +13,9 @@ import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 
 import database.ContactCursorWrapper;
@@ -31,7 +33,7 @@ public class ContactLabHelper<T extends Contact> {
     protected Context mContext;
     private List<T> mContacts;
     private List<T> mSearchResults;
-    private List<T> mPhoneBookImage;
+    private HashSet<String> mPhoneBookImage;
 
 
     public ContactLabHelper(Context context, Class<T> clazz) {
@@ -39,7 +41,7 @@ public class ContactLabHelper<T extends Contact> {
         mDatabase = new DBOpenHelper(mContext).getWritableDatabase();
         mContacts = new ArrayList<>();
         mSearchResults = new ArrayList<>();
-        mPhoneBookImage = new ArrayList<>();
+        mPhoneBookImage = new HashSet<>();
 
         this.clazz = clazz;
 
@@ -249,14 +251,7 @@ public class ContactLabHelper<T extends Contact> {
     }
 
     public boolean isDeleted(Contact contact) {
-
-        for (T _contact : mPhoneBookImage) {
-            if (_contact.getId().equals(contact.getId())) {
-                return false;
-            }
-        }
-
-        return true;
+        return !mPhoneBookImage.contains(contact.getLookupKey());
     }
 
     public void removeDeleted() {
@@ -349,7 +344,7 @@ public class ContactLabHelper<T extends Contact> {
 
 
     public void addContactToPhoneImage(T contact) {
-        mPhoneBookImage.add(contact);
+        mPhoneBookImage.add(contact.getLookupKey());
     }
 
     public interface Callbacks<T extends Contact> {

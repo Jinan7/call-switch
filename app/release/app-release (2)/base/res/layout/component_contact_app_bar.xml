@@ -1,0 +1,37 @@
+
+€
+;
+android*http://schemas.android.com/apk/res/android
+
+4
+app'http://schemas.android.com/apk/res-auto
+/com.google.android.material.appbar.AppBarLayout"o
+'http://schemas.android.com/apk/res-autoliftOnScrollColor@color/grey_2"
+(–†ø2
+ì€˜øcolor/grey_20"`
+*http://schemas.android.com/apk/res/androidlayout_widthmatch_parent"
+(ô„2:0ÿÿÿÿÿÿÿÿÿ"a
+*http://schemas.android.com/apk/res/androidlayout_heightwrap_content"
+(õ„2:0şÿÿÿÿÿÿÿÿ"M
+'http://schemas.android.com/apk/res-autoliftOnScrolltrue"
+(•†ø2:@"T
+*http://schemas.android.com/apk/res/androidfitsSystemWindowstrue"
+(İ„2:@"Xstyle@style/Widget.App.LightToolbar"
+2+
+)ı‡Èøstyle/Widget.App.LightToolbar0ÿÿ"i
+*http://schemas.android.com/apk/res/androidid@+id/toolbar_main"
+(Ğ„2
+Ç„¤øid/toolbar_main0*¹
+°2com.google.android.material.appbar.MaterialToolbar"w
+*http://schemas.android.com/apk/res/android	minHeight?attr/actionBarSize"(À‚„2 
+…€øattr/actionBarSize0@"l
+'http://schemas.android.com/apk/res-automenu@menu/contact_menu"(Š‡ø2
+€¸ømenu/contact_menu0"`
+*http://schemas.android.com/apk/res/androidlayout_widthmatch_parent"(ô„2:0ÿÿÿÿÿÿÿÿÿ"a
+*http://schemas.android.com/apk/res/androidlayout_heightwrap_content"(õ„2:0şÿÿÿÿÿÿÿÿ"‚
+'http://schemas.android.com/apk/res-autonavigationIcon@drawable/ic_action_back"(Ğ‡ø2#
+!‹ ødrawable/ic_action_back0"Xstyle@style/Widget.App.LightToolbar"2+
+)ı‡Èøstyle/Widget.App.LightToolbar0ÿÿ"o
+*http://schemas.android.com/apk/res/androidid@+id/contact_toolbar"(Ğ„2
+š¤øid/contact_toolbar0(
+

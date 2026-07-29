@@ -1,0 +1,13 @@
+
+²
+;
+android*http://schemas.android.com/apk/res/android	&
+4
+app'http://schemas.android.com/apk/res-auto	&1androidx.constraintlayout.widget.ConstraintLayout"j
+*http://schemas.android.com/apk/res/android
+background@color/grey_2"	(Ô„2
+ì€˜øcolor/grey_20"`
+*http://schemas.android.com/apk/res/androidlayout_widthmatch_parent"	(ô„2:0ÿÿÿÿÿÿÿÿÿ"a
+*http://schemas.android.com/apk/res/androidlayout_heightmatch_parent"	(õ„2:0ÿÿÿÿÿÿÿÿÿ"Y
+*http://schemas.android.com/apk/res/androidid	@+id/main"	(Ğ„2
+›‚¤øid/main0	&

@@ -1,0 +1,35 @@
+
+Ö
+;
+android*http://schemas.android.com/apk/res/androidH
+layer-list*·
+®item"J
+*http://schemas.android.com/apk/res/androidheight50dp"(Õ‚„2:hd"I
+*http://schemas.android.com/apk/res/androidwidth50dp"(Ù‚„2:hd"s
+*http://schemas.android.com/apk/res/androidid@+id/circle_background"(Ğ„2 
+ı€¤øid/circle_background0*™
+shape"H
+*http://schemas.android.com/apk/res/androidshapeoval"(šƒ„2:0*v
+nsolid"e
+*http://schemas.android.com/apk/res/androidcolor@color/grey_7"(¥ƒ„2
+ñ€˜øcolor/grey_703*Ä
+»stroke"g
+*http://schemas.android.com/apk/res/androidcolor@color/grey_15"	(¥ƒ„2
+ë€˜øcolor/grey_150"H
+*http://schemas.android.com/apk/res/androidwidth2dp"	(Ù‚„2:h	&%*Ğ
+Çitem"F
+*http://schemas.android.com/apk/res/androidtop3dp"(®ƒ„2:h"G
+*http://schemas.android.com/apk/res/androidleft3dp"(­ƒ„2:h"J
+*http://schemas.android.com/apk/res/androidheight10dp"(Õ‚„2:h"I
+*http://schemas.android.com/apk/res/androidwidth10dp"(Ù‚„2:h"
+*http://schemas.android.com/apk/res/androidid@+id/state_circle_background"(Ğ„2&
+$–„¤øid/state_circle_background0*•
+Œshape"H
+*http://schemas.android.com/apk/res/androidshapeoval"(šƒ„2:0*v
+nsolid"e
+*http://schemas.android.com/apk/res/androidcolor@color/grey_7"(¥ƒ„2
+ñ€˜øcolor/grey_703*À
+·stroke"c
+*http://schemas.android.com/apk/res/androidcolor@color/black"(¥ƒ„2
+¡€˜øcolor/black0"H
+*http://schemas.android.com/apk/res/androidwidth1dp"(Ù‚„2:h&%H
