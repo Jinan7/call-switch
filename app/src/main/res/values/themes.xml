@@ -9,6 +9,8 @@
         <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
         <item name="popupMenuStyle">@style/Widget.App.PopupMenu</item>
         <item name="popupMenuBackground">@drawable/pop_up_background</item>
+        <item name="materialSearchViewStyle">@style/Widget.App.SearchView</item>
+        <item name="searchViewStyle">@style/Widget.App.SearchView</item>
     </style>
 
     <!--    Toolbar styles -->
@@ -30,6 +32,16 @@
     </style>
 
     <!--    Toolbar styles -->
+    <style name="Widget.App.SearchToolbar" parent="Widget.Material3.Toolbar">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.SearchToolbar</item>
+    </style>
+
+    <style name="ThemeOverlay.App.SearchToolbar" parent="">
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.App.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.App.TitleMedium</item>
+    </style>
+
+    <!--    Toolbar styles -->
     <style name="Widget.App.LightToolbar" parent="Widget.Material3.Toolbar">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.LightToolbar</item>
     </style>
@@ -46,6 +58,8 @@
         <item name="textAppearanceTitleLarge">@style/TextAppearance.App.TitleLarge</item>
         <item name="textAppearanceTitleMedium">@style/TextAppearance.App.TitleMedium</item>
     </style>
+
+
 
     <style name="TextAppearance.App.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
         <!--        <item name="fontFamily">@font/rubik</item>-->
@@ -138,5 +152,17 @@
         <item name="android:textColor">@color/grey_15</item>
     </style>
 
+    <!-- Search View Style -->
+    <style name="Widget.App.SearchView" parent="Widget.Material3.SearchView">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.SearchView</item>
+    </style>
+
+    <style name="ThemeOverlay.App.SearchView" parent="">
+        <item name="colorSurface">@color/grey_15</item>
+        <item name="colorOnSurface">@color/grey_15</item>
+        <item name="colorSurfaceContainer">@color/grey_15</item>
+        <item name="colorOutlineVariant">@color/grey_15</item>
+        <item name="colorControlNormal">@color/grey_15</item>
+    </style>
 
 </resources>
