@@ -34,8 +34,8 @@ public class BottomNavBarFragment extends Fragment {
         updateUI(v.findViewById(R.id.nav_contacts), v.findViewById(R.id.nav_contacts_icon), exclude == R.id.nav_contacts);
         updateUI(v.findViewById(R.id.nav_replies), v.findViewById(R.id.nav_replies_icon), exclude == R.id.nav_replies);
 
-        wire(v.findViewById(R.id.nav_replies), R.id.nav_replies, exclude, RepliesActivity.newIntent(getContext()));
-        wire(v.findViewById(R.id.nav_contacts), R.id.nav_contacts, exclude, ContactsActivity.newIntent(getContext()));
+        wire(v.findViewById(R.id.reply_menu_button), R.id.nav_replies, exclude, RepliesActivity.newIntent(getContext()));
+        wire(v.findViewById(R.id.contact_menu_button), R.id.nav_contacts, exclude, ContactsActivity.newIntent(getContext()));
     }
 
    private void updateUI(FrameLayout backgroundLayout, ImageView iconLayout, boolean selected) {

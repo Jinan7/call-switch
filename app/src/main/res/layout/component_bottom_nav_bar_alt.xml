@@ -29,29 +29,37 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
 
-        <FrameLayout
-            android:id="@+id/nav_replies"
-            android:layout_marginTop="16dp"
-            android:paddingHorizontal="20dp"
-            android:background="@drawable/rounded_rectangle_background_16"
+        <LinearLayout
+            android:id="@+id/reply_menu_button"
+            android:orientation="vertical"
+            android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/nav_replies_icon"
+            <FrameLayout
+                android:id="@+id/nav_replies"
+                android:layout_marginTop="16dp"
+                android:paddingHorizontal="20dp"
+                android:background="@drawable/rounded_rectangle_background_16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/nav_replies_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/ic_action_message" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_marginTop="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:src="@drawable/ic_action_message" />
-        </FrameLayout>
+                android:text="@string/replies"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:textColor="@color/white"/>
+        </LinearLayout>
 
-        <TextView
-            android:layout_marginTop="4dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/replies"
-            android:textStyle="bold"
-            android:textSize="12sp"
-            android:textColor="@color/white"/>
     </LinearLayout>
     <LinearLayout
         android:gravity="center"
@@ -60,28 +68,36 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
 
-        <FrameLayout
-            android:id="@+id/nav_contacts"
-            android:paddingHorizontal="20dp"
-            android:background="@drawable/rounded_rectangle_background_16"
-            android:layout_marginTop="16dp"
+        <LinearLayout
+            android:id="@+id/contact_menu_button"
+            android:gravity="center"
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/nav_contacts_icon"
-                android:layout_margin="4dp"
+            <FrameLayout
+                android:id="@+id/nav_contacts"
+                android:paddingHorizontal="20dp"
+                android:background="@drawable/rounded_rectangle_background_16"
+                android:layout_marginTop="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/nav_contacts_icon"
+                    android:layout_margin="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_action_contact"/>
+            </FrameLayout>
+
+            <TextView
+                android:layout_marginTop="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_action_contact"/>
-        </FrameLayout>
+                android:text="@string/contacts"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:textColor="@color/white"/>
+        </LinearLayout>
 
-        <TextView
-            android:layout_marginTop="4dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/contacts"
-            android:textStyle="bold"
-            android:textSize="12sp"
-            android:textColor="@color/white"/>
     </LinearLayout>
 </LinearLayout>
