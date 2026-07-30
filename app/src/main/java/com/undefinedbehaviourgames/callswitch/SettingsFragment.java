@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class SettingsFragment extends Fragment {
@@ -32,9 +33,9 @@ public class SettingsFragment extends Fragment {
     private TextView mPreferredSimTextView;
     private TextView mDeletedContactsTextView;
     private PreferredSimSettingsDialog mPreferredSimSettingsDialog;
-    private SwitchMaterial mSystemSwitch;
-    private SwitchMaterial mNotificationSwitch;
-    private SwitchMaterial mAllowCallRingSwitch;
+    private MaterialSwitch mSystemSwitch;
+    private MaterialSwitch mNotificationSwitch;
+    private MaterialSwitch mAllowCallRingSwitch;
     private TextView mSystemSwitchText;
 
     public static SettingsFragment newInstance() {

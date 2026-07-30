@@ -31,8 +31,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/enable_all"
                     android:textStyle="bold"/>
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    app:thumbIconSize="2dp"
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    app:track="@drawable/switch_track"
+                    android:thumb="@drawable/switch_thumb"
+                    app:thumbTint="@android:color/transparent"
+                    app:thumbIcon="@drawable/switch_thumb"
+                    app:thumbIconTint="@color/white"
+                    app:trackDecoration="@null"
                     android:scrollbarSize="2dp"
                     android:id="@+id/toggle_all"
                     android:layout_width="wrap_content"

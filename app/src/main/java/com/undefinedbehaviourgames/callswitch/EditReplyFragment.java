@@ -46,6 +46,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -72,9 +73,9 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
     private TextInputEditText mReplyTextField;
     private LinearLayout mPriorityButton;
     private TextView mPriorityTextView;
-    private SwitchMaterial mEnableSwitch;
-    private SwitchMaterial mReplyUnknownSwitch;
-    private SwitchMaterial mReplaceEqualPrioritySwitch;
+    private MaterialSwitch mEnableSwitch;
+    private MaterialSwitch mReplyUnknownSwitch;
+    private MaterialSwitch mReplaceEqualPrioritySwitch;
     private ExecutorService mExecutorService;
     ActivityResultLauncher<Intent> mLauncher;
     private Reply mReply;

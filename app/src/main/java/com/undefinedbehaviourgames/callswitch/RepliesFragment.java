@@ -35,7 +35,7 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
     private static final String TAG = "RepliesFragmentLogger";
     private RecyclerView mRecyclerView;
     private MaterialToolbar mToolbar;
-    private SwitchMaterial mToggleAllReplies;
+    private MaterialSwitch mToggleAllReplies;
     private ExecutorService mExecutorService;
     private ExecutorService mReplyExecutorService;
     private Future<Object> mGetRepliesFuture;
@@ -187,12 +187,12 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
         private Reply mReply;
         private FrameLayout mReplyPriorityButton;
         private TextView mReplyTextView;
-        private SwitchMaterial mSwitch;
+        private MaterialSwitch mSwitch;
         public RepliesHolder(@NonNull View itemView) {
             super(itemView);
             mReplyPriorityButton = (FrameLayout) itemView.findViewById(R.id.reply_priority_button);
             mReplyTextView = (TextView) itemView.findViewById(R.id.reply_text_view);
-            mSwitch = (SwitchMaterial) itemView.findViewById(R.id.toggle_reply);
+            mSwitch =  itemView.findViewById(R.id.toggle_reply);
             mSwitch.setOnCheckedChangeListener(this);
             mReplyPriorityButton.setOnClickListener(this);
             mReplyTextView.setOnClickListener(this);
