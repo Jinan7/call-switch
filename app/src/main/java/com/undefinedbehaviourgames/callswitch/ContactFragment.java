@@ -137,7 +137,7 @@ public class ContactFragment extends Fragment {
             public void onClick(View v) {
 
                 if (mContact.getActiveReplyId(getContext()) == null) return;
-                Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mContact.getActiveReplyId(getContext()));
+                Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mContact.getActiveReplyId(getContext()), -1);
                 startActivity(intent);
             }
         });
@@ -265,7 +265,7 @@ public class ContactFragment extends Fragment {
                 updateUI();
                 return true;
             } else if (item.getItemId() == R.id.contact_menu_edit_reply) {
-                Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mReply.getId());
+                Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mReply.getId(), getBindingAdapterPosition());
                 startActivity(intent);
                 return true;
             }

@@ -1,8 +1,10 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,6 +13,10 @@ import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -25,6 +31,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,6 +40,10 @@ import java.util.concurrent.Future;
 public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Callbacks {
 
     private static final String TAG = "RepliesFragmentLogger";
+    public static final String EXTRA_REPLY_UPDATED = "com.undefinedbehaviourgames.callswitch.reply_updated";
+    public static final String EXTRA_REPLY_ADDED = "com.undefinedbehaviourgames.callswitch.reply_added";
+    public static final String EXTRA_REPLY_DELETED = "com.undefinedbehaviourgames.callswitch.reply_deleted";
+    public static final String EXTRA_REPLY_INDEX = "com.undefinedbehaviourgames.callswitch.reply_index";
     private RecyclerView mRecyclerView;
     private MaterialToolbar mToolbar;
     private MaterialSwitch mToggleAllReplies;
@@ -41,6 +52,8 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
     private Future<Object> mGetRepliesFuture;
     private boolean fetch_complete = false;
     private List<Reply> mReplies;
+
+    ActivityResultLauncher<Intent> mLauncher;
     private final CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
@@ -58,6 +71,43 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+
+
+            @Override
+            public void onActivityResult(ActivityResult result) {
+
+                if (result.getResultCode() != Activity.RESULT_OK) return;
+
+                Intent data = result.getData();
+
+                if (data != null) {
+                    int index = data.getIntExtra(EXTRA_REPLY_INDEX, -1);
+
+                    UUID updatedReplyId = (UUID)data.getSerializableExtra(EXTRA_REPLY_UPDATED);
+                    if (updatedReplyId != null) {
+                        Reply updatedReply = ReplyLab.getInstance(getContext()).get(updatedReplyId);
+                        if (index != -1 ) {
+                            ((RepliesAdapter)mRecyclerView.getAdapter()).updateReply(index, updatedReply);
+                        }
+                    }
+
+                    UUID newReplyId = (UUID) data.getSerializableExtra(EXTRA_REPLY_ADDED);
+                    if (newReplyId != null) {
+                        Reply newReply = ReplyLab.getInstance(getContext()).get(newReplyId);
+                        ((RepliesAdapter)mRecyclerView.getAdapter()).addReply(newReply);
+                    }
+
+                    UUID deletedReplyId = (UUID)data.getSerializableExtra(EXTRA_REPLY_DELETED);
+                    if (deletedReplyId != null) {
+                        if (index != -1 ) {
+                            ((RepliesAdapter)mRecyclerView.getAdapter()).deleteReply(index, deletedReplyId);
+                        }
+                    }
+                }
+
+            }
+        });
         mExecutorService = Executors.newSingleThreadExecutor();
         mReplyExecutorService = Executors.newSingleThreadExecutor();
         getRepliesAsync();
@@ -79,8 +129,8 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
 
                 if (item.getItemId() == R.id.add_reply) {
 
-                    Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.NEW_REPLY);
-                    startActivity(intent);
+                    Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.NEW_REPLY, -1);
+                    mLauncher.launch(intent);
                     return true;
                 } else if (item.getItemId() == R.id.settings) {
                     Intent intent = SettingsActivity.newIntent(getContext());
@@ -243,8 +293,8 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
 
         @Override
         public void onClick(View v) {
-            Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mReply.getId());
-            startActivity(intent);
+            Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mReply.getId(), getBindingAdapterPosition());
+            mLauncher.launch(intent);
         }
 
         @Override
@@ -302,6 +352,32 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
             if (mReplies != null) {
                 mReplies.add(reply);
             }
+        }
+
+        public void updateReply(int position, Reply reply) {
+            if (mReplies == null) return;
+            if (position >= mReplies.size()) return ;
+
+            if (reply.getId().equals(mReplies.get(position).getId())) {
+                mReplies.set(position, reply);
+                notifyItemChanged(position);
+            }
+        }
+
+        public void deleteReply(int position, UUID replyId) {
+            if (mReplies == null) return;
+            if (position >= mReplies.size()) return ;
+
+            if (replyId.equals(mReplies.get(position).getId())) {
+                mReplies.remove(position);
+                notifyItemRemoved(position);
+            }
+        }
+
+        public void addReply(Reply reply) {
+            if (mReplies == null) return;
+            mReplies.add(reply);
+            notifyItemInserted(mReplies.size() - 1);
         }
     }
 }

@@ -7,6 +7,10 @@ import static androidx.core.content.ContextCompat.getSystemService;
 import static com.undefinedbehaviourgames.callswitch.EditReplyActivity.EDIT_REPLY;
 import static com.undefinedbehaviourgames.callswitch.EditReplyActivity.NEW_REPLY;
 import static com.undefinedbehaviourgames.callswitch.PriorityModalBottomSheetDialog.EXTRA_PRIORITY;
+import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_ADDED;
+import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_DELETED;
+import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_INDEX;
+import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_UPDATED;
 
 import android.app.Activity;
 import android.app.role.RoleManager;
@@ -64,9 +68,11 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
     private static final int PRIORITY_REQUEST_CODE = 0;
     private static final String ARGS_ID = "reply_id";
     private static final String ARGS_MODE = "mode";
+    private static final String ARGS_REPLY_IDX = "reply_index";
     private static final int SELECT_CONTACT_REQUEST_CODE = 0;
     public static final String EXTRA_SELECTED_CONTACTS = "com.undefinedbehaviourgames.callswitch.selected_contacts";
     private int mode;
+    private int replyIndex;
     private ImageButton mAddContactButton;
     private RecyclerView mRecyclerView;
     private MaterialToolbar mToolbar;
@@ -81,19 +87,21 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
     private List<Contact> mContacts;
     ActivityResultLauncher<Intent> mLauncher;
     private Reply mReply;
-    public static EditReplyFragment newInstance(int mode) {
+    public static EditReplyFragment newInstance(int mode, int replyIdx) {
         EditReplyFragment fragment = new EditReplyFragment();
         Bundle args = new Bundle();
         args.putInt(ARGS_MODE, mode);
+        args.putInt(ARGS_REPLY_IDX, replyIdx);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static EditReplyFragment newInstance(int mode, UUID id) {
+    public static EditReplyFragment newInstance(int mode, UUID id, int replyIdx) {
         EditReplyFragment fragment = new EditReplyFragment();
         Bundle args = new Bundle();
         args.putInt(ARGS_MODE, mode);
         args.putSerializable(ARGS_ID, id);
+        args.putInt(ARGS_REPLY_IDX, replyIdx);
         fragment.setArguments(args);
         return fragment;
     }
@@ -103,7 +111,7 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
         super.onCreate(savedInstanceState);
 
         mode = getArguments().getInt(ARGS_MODE);
-
+        replyIndex = getArguments().getInt(ARGS_REPLY_IDX);
         if (mode == EDIT_REPLY) {
 
             UUID id = (UUID) getArguments().getSerializable(ARGS_ID);
@@ -165,6 +173,9 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
 
                     switch (mode) {
                         case NEW_REPLY:
+                            Intent newReplyIntent = new Intent();
+                            newReplyIntent.putExtra(EXTRA_REPLY_ADDED, mReply.getId());
+                            getActivity().setResult(RESULT_OK, newReplyIntent);
                             mExecutorService.execute(new Runnable() {
                                 @Override
                                 public void run() {
@@ -173,7 +184,13 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
                             });
                             break;
                         case EDIT_REPLY:
+                            Intent editReplyIntent = new Intent();
+                            editReplyIntent.putExtra(EXTRA_REPLY_UPDATED, mReply.getId());
+                            editReplyIntent.putExtra(EXTRA_REPLY_INDEX, replyIndex);
+                            getActivity().setResult(RESULT_OK, editReplyIntent);
+
                             mExecutorService.execute(new Runnable() {
+
                                 @Override
                                 public void run() {
                                     ReplyLab.getInstance(getContext()).update(getContext(), mReply);
@@ -186,6 +203,10 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
                     getActivity().finish();
                     return true;
                 } else if (item.getItemId() == R.id.menu_delete_reply) {
+                    Intent deleteReplyIntent = new Intent();
+                    deleteReplyIntent.putExtra(EXTRA_REPLY_DELETED, mReply.getId());
+                    deleteReplyIntent.putExtra(EXTRA_REPLY_INDEX, replyIndex);
+                    getActivity().setResult(RESULT_OK, deleteReplyIntent);
                     ReplyLab.getInstance(getContext()).delete(getContext(), mReply);
                     getActivity().finish();
                 }

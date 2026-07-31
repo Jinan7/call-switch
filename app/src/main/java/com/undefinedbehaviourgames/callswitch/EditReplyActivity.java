@@ -1,5 +1,7 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_INDEX;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -46,27 +48,29 @@ public class EditReplyActivity extends SingleFragmentActivity{
     @Override
     public Fragment createFragment() {
         int mode = getIntent().getIntExtra(EXTRA_MODE, NEW_REPLY);
-
+        int replyIdx = getIntent().getIntExtra(EXTRA_REPLY_INDEX, -1);
         if (mode == EDIT_REPLY) {
             UUID id = (UUID) getIntent().getSerializableExtra(EXTRA_ID);
-            return EditReplyFragment.newInstance(mode, id);
+            return EditReplyFragment.newInstance(mode, id, replyIdx);
         }
 
-        return EditReplyFragment.newInstance(NEW_REPLY);
+        return EditReplyFragment.newInstance(NEW_REPLY, replyIdx);
     }
 
-    public static Intent newIntent(Context context, int mode) {
+    public static Intent newIntent(Context context, int mode, int replyIdx) {
 
         Intent intent = new Intent(context, EditReplyActivity.class);
         intent.putExtra(EXTRA_MODE, mode);
+        intent.putExtra(EXTRA_REPLY_INDEX, replyIdx);
         return intent;
     }
 
-    public static Intent newIntent(Context context, int mode, UUID id) {
+    public static Intent newIntent(Context context, int mode, UUID id, int replyIdx) {
 
         Intent intent = new Intent(context, EditReplyActivity.class);
         intent.putExtra(EXTRA_MODE, mode);
         intent.putExtra(EXTRA_ID,id);
+        intent.putExtra(EXTRA_REPLY_INDEX, replyIdx);
         return intent;
     }
 
