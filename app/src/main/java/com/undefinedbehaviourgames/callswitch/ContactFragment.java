@@ -188,6 +188,7 @@ public class ContactFragment extends Fragment implements Contact.CallBacks {
         mEditActiveReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (mContact.getActiveReplyId(getContext()) == null) return;
                 Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mContact.getActiveReplyId(getContext()), -1);
                 mLauncher.launch(intent);
@@ -229,7 +230,8 @@ public class ContactFragment extends Fragment implements Contact.CallBacks {
     private void updateActiveReplyUI() {
         mContactActiveReplyTextView.setText(mContact.getActiveReplyText(getContext()));
 
-        LayerDrawable stateBackground = (LayerDrawable) mPriorityIcon.getBackground();
+        LayerDrawable stateBackground = (LayerDrawable) getResources().getDrawable(R.drawable.circle_background_with_state);
+        mPriorityIcon.setBackground(stateBackground);
 //
         GradientDrawable background = (GradientDrawable) stateBackground.findDrawableByLayerId(R.id.circle_background);
         GradientDrawable state = (GradientDrawable) stateBackground.findDrawableByLayerId(R.id.state_circle_background);
@@ -340,6 +342,11 @@ public class ContactFragment extends Fragment implements Contact.CallBacks {
         public boolean onMenuItemClick(MenuItem item) {
 
             if (item.getItemId() ==R.id.contact_menu_make_active) {
+
+                int swapPosition = getBindingAdapterPosition();
+                ((RepliesAdapter) mRecyclerView.getAdapter()).remove(swapPosition);
+                Reply reply = ReplyLab.getInstance(getContext()).get(mContact.getActiveReplyId());
+                ((RepliesAdapter) mRecyclerView.getAdapter()).add(swapPosition, reply);
                 mContact.setActiveReplyId(mReply.getId());
                 ContactLab.getInstance(getContext()).update(mContact);
                 updateUI();
@@ -387,6 +394,27 @@ public class ContactFragment extends Fragment implements Contact.CallBacks {
             mReplies = replies;
         }
 
+        public void add(int position, Reply reply) {
+            if (reply == null) return;
+            if (mReplies == null) return;
+
+            if (position <= mReplies.size()) {
+                mReplies.add(position, reply);
+                notifyItemInserted(position);
+            }else {
+                mReplies.add(reply);
+                notifyItemInserted(mReplies.size() -1);
+            }
+
+
+        }
+
+        private void remove(int position) {
+            if (mReplies == null) return;
+            if (position >= mReplies.size()) return;
+            mReplies.remove(position);
+            notifyItemRemoved(position);
+        }
         public void updateReply(int position, Reply reply) {
             if (mReplies == null) return;
             if (position >= mReplies.size()) return ;
@@ -404,6 +432,31 @@ public class ContactFragment extends Fragment implements Contact.CallBacks {
             if (replyId.equals(mReplies.get(position).getId())) {
                 mReplies.remove(position);
                 notifyItemRemoved(position);
+            }
+        }
+
+        public void updateReply(Reply reply) {
+            if (mReplies == null) return;
+
+            for (int i=0; i< mReplies.size(); i++) {
+                if (mReplies.get(i).getId().equals(reply.getId())) {
+                    mReplies.set(i, reply);
+                    notifyItemChanged(i);
+                    break;
+                }
+            }
+
+        }
+
+        public void deleteReply(UUID id) {
+            if (mReplies == null) return;
+
+            for (int i=0; i< mReplies.size(); i++) {
+                if (mReplies.get(i).getId().equals(id)) {
+                    mReplies.remove(i);
+                    notifyItemRemoved(i);
+                    break;
+                }
             }
         }
     }

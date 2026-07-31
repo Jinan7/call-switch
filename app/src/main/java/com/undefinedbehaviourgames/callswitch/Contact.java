@@ -218,7 +218,7 @@ public class Contact implements Serializable {
         int n = mReplies.size();
         for (int i = 0; i< mReplies.size(); i++) {
             Reply reply = ReplyLab.getInstance(context).get(mReplies.get(i));
-            if (reply != null) replies.add(reply);
+            if (reply != null && !reply.getId().equals(mActiveReplyId)) replies.add(reply);
 
         }
 
