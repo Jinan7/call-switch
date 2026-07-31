@@ -3,6 +3,9 @@ package com.undefinedbehaviourgames.callswitch;
 import static com.undefinedbehaviourgames.callswitch.Priority.HIGH;
 import static com.undefinedbehaviourgames.callswitch.Priority.LOW;
 import static com.undefinedbehaviourgames.callswitch.Priority.NORMAL;
+import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_DELETED;
+import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_INDEX;
+import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_UPDATED;
 
 import android.content.Intent;
 import android.graphics.Insets;
@@ -23,6 +26,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
@@ -38,13 +45,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ContactFragment extends Fragment {
+public class ContactFragment extends Fragment implements Contact.CallBacks {
     private static final String TAG = "ContactFragmentLogger";
     private static final String ARG_LOOKUPKEY = "contact_id";
+    public static final String EXTRA_UPDATE_ACTIVE_REPLY = "com.undefinedbehaviourgames.callswitch.update_active_reply";
     private MaterialToolbar mToolbar;
     private TextView mContactIconTextView;
     private TextView mContactNameTextView;
@@ -55,7 +65,11 @@ public class ContactFragment extends Fragment {
     private ImageButton mEditActiveReply;
     private Contact mContact;
     private ExecutorService mExecutorService;
+    private boolean fetch_complete = false;
+    private List<Reply> mReplies;
     private boolean unknownContact;
+
+    ActivityResultLauncher<Intent> mLauncher;
 
     public static ContactFragment newInstance(String lookupkey) {
         ContactFragment fragment = new ContactFragment();
@@ -73,7 +87,38 @@ public class ContactFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
 
+                Intent data = result.getData();
+
+                if (data != null) {
+
+                    int index = data.getIntExtra(EXTRA_REPLY_INDEX, -1);
+
+                    UUID updateReplyId = (UUID) data.getSerializableExtra(EXTRA_REPLY_UPDATED);
+                    if (updateReplyId != null) {
+                        Reply reply = ReplyLab.getInstance(getContext()).get(updateReplyId);
+                        if (index == -1) {
+                            updateActiveReplyUI();
+                        } else {
+                            ((RepliesAdapter) mRecyclerView.getAdapter()).updateReply(index, reply);
+                        }
+                    }
+
+                    UUID deletedReplyId = (UUID) data.getSerializableExtra(EXTRA_REPLY_DELETED);
+                    if (deletedReplyId != null) {
+                        Reply reply = ReplyLab.getInstance(getContext()).get(deletedReplyId);
+                        if (index == -1) {
+                            updateActiveReplyUI();
+                        } else {
+                            ((RepliesAdapter) mRecyclerView.getAdapter()).deleteReply(index, deletedReplyId);
+                        }
+                    }
+                }
+            }
+        });
 
         if (getArguments() != null) {
             String contactLookup = getArguments().getString(ARG_LOOKUPKEY);
@@ -85,6 +130,15 @@ public class ContactFragment extends Fragment {
         }
 
         mExecutorService = Executors.newSingleThreadExecutor();
+        getRepliesAsync();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (fetch_complete) {
+            mRecyclerView.setAdapter(new RepliesAdapter(mReplies));
+        }
     }
 
     @Override
@@ -123,7 +177,6 @@ public class ContactFragment extends Fragment {
         mPriorityIcon = v.findViewById(R.id.contact_reply_priority_button);
         mRecyclerView = v.findViewById(R.id.contact_replies_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(new RepliesAdapter(mContact.getReplies(getContext())));
         ViewCompat.setOnApplyWindowInsetsListener(mRecyclerView, new OnApplyWindowInsetsListener() {
             @Override
             public @org.jspecify.annotations.NonNull WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat insets) {
@@ -135,10 +188,9 @@ public class ContactFragment extends Fragment {
         mEditActiveReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if (mContact.getActiveReplyId(getContext()) == null) return;
                 Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mContact.getActiveReplyId(getContext()), -1);
-                startActivity(intent);
+                mLauncher.launch(intent);
             }
         });
 
@@ -147,16 +199,38 @@ public class ContactFragment extends Fragment {
         return v;
     }
 
+    private void getRepliesAsync() {
 
+        WeakReference<Contact.CallBacks> callbackWeakReference = new WeakReference(ContactFragment.this);
 
-    private void updateUI() {
-        mContactNameTextView.setText(mContact.getName());
-        mContactIconTextView.setText(mContact.getIcon());
-        mContactPhoneTextView.setText(mContact.getPhone());
+        mExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                mContact.getReplies(getContext(), callbackWeakReference);
+            }
+        });
+    }
+    @Override
+    public void onGetReplies(List<Reply> replies) {
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mRecyclerView != null) {
+                    mRecyclerView.setAdapter(new RepliesAdapter(replies));
+                } else {
+                    fetch_complete = true;
+                    mReplies = replies;
+                }
+            }
+        });
+    }
+
+    private void updateActiveReplyUI() {
         mContactActiveReplyTextView.setText(mContact.getActiveReplyText(getContext()));
 
         LayerDrawable stateBackground = (LayerDrawable) mPriorityIcon.getBackground();
-//        LayerDrawable stateBackground = (LayerDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.circle_background_with_state, getContext().getTheme());
+//
         GradientDrawable background = (GradientDrawable) stateBackground.findDrawableByLayerId(R.id.circle_background);
         GradientDrawable state = (GradientDrawable) stateBackground.findDrawableByLayerId(R.id.state_circle_background);
         GradientDrawable altBackground = (GradientDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.circle_background_stroke_2, getContext().getTheme());
@@ -190,7 +264,13 @@ public class ContactFragment extends Fragment {
                 break;
 
         }
+    }
+    private void updateUI() {
+        mContactNameTextView.setText(mContact.getName());
+        mContactIconTextView.setText(mContact.getIcon());
+        mContactPhoneTextView.setText(mContact.getPhone());
 
+        updateActiveReplyUI();
 
         GradientDrawable contactIconBackground = (GradientDrawable) mContactIconTextView.getBackground();
         contactIconBackground.mutate();
@@ -266,7 +346,7 @@ public class ContactFragment extends Fragment {
                 return true;
             } else if (item.getItemId() == R.id.contact_menu_edit_reply) {
                 Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mReply.getId(), getBindingAdapterPosition());
-                startActivity(intent);
+                mLauncher.launch(intent);
                 return true;
             }
             return false;
@@ -305,6 +385,26 @@ public class ContactFragment extends Fragment {
 
         public void setReplies(List<Reply> replies) {
             mReplies = replies;
+        }
+
+        public void updateReply(int position, Reply reply) {
+            if (mReplies == null) return;
+            if (position >= mReplies.size()) return ;
+
+            if (reply.getId().equals(mReplies.get(position).getId())) {
+                mReplies.set(position, reply);
+                notifyItemChanged(position);
+            }
+        }
+
+        public void deleteReply(int position, UUID replyId) {
+            if (mReplies == null) return;
+            if (position >= mReplies.size()) return ;
+
+            if (replyId.equals(mReplies.get(position).getId())) {
+                mReplies.remove(position);
+                notifyItemRemoved(position);
+            }
         }
     }
 }

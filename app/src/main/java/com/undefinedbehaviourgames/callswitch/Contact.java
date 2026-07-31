@@ -8,7 +8,9 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Contact implements Serializable {
@@ -200,12 +202,28 @@ public class Contact implements Serializable {
     public ArrayList<Reply> getReplies(Context context) {
         //make asynchronous
         ArrayList<Reply> replies = new ArrayList<>();
-        ArrayList<Integer> removeIdx = new ArrayList<>();
         int n = mReplies.size();
         for (int i = 0; i< mReplies.size(); i++) {
             Reply reply = ReplyLab.getInstance(context).get(mReplies.get(i));
             if (reply != null) replies.add(reply);
 
+        }
+
+        return replies;
+    }
+
+    public ArrayList<Reply> getReplies(Context context, WeakReference<CallBacks> callBacksWeakReference) {
+        //make asynchronous
+        ArrayList<Reply> replies = new ArrayList<>();
+        int n = mReplies.size();
+        for (int i = 0; i< mReplies.size(); i++) {
+            Reply reply = ReplyLab.getInstance(context).get(mReplies.get(i));
+            if (reply != null) replies.add(reply);
+
+        }
+
+        if (callBacksWeakReference.get() != null) {
+            callBacksWeakReference.get().onGetReplies(replies);
         }
 
         return replies;
@@ -229,5 +247,9 @@ public class Contact implements Serializable {
 
     public void setPhoneNumber(PhoneNumber phoneNumber) {
         mPhoneNumber = phoneNumber;
+    }
+
+    public interface CallBacks {
+        void onGetReplies(List<Reply> replies);
     }
 }
