@@ -95,6 +95,7 @@ public class ContactFragment extends Fragment implements Contact.CallBacks {
 
                 if (data != null) {
 
+                    ReplyLab.getInstance(getContext()).setUnreachableUpdate(true);
                     int index = data.getIntExtra(EXTRA_REPLY_INDEX, -1);
 
                     UUID updateReplyId = (UUID) data.getSerializableExtra(EXTRA_REPLY_UPDATED);

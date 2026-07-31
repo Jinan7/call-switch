@@ -155,6 +155,11 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
             mToggleAllReplies.setEnabled(true);
             mRecyclerView.setAdapter(new RepliesAdapter(mReplies));
         }
+
+        if (ReplyLab.getInstance(getContext()).hasUnreachableUpdate()) {
+            getRepliesAsync();
+            ReplyLab.getInstance(getContext()).setUnreachableUpdate(false);
+        }
     }
 
     private void getRepliesAsync() {

@@ -25,8 +25,10 @@ public class ReplyLab {
 
     private SQLiteDatabase mDatabase;
     private static volatile ReplyLab sReplyLab;
+    private boolean unreachableUpdate;
     private ReplyLab(Context context) {
         mDatabase = new DBOpenHelper(context.getApplicationContext()).getWritableDatabase();
+        unreachableUpdate = false;
     };
 
     public static ReplyLab getInstance(Context context) {
@@ -42,6 +44,14 @@ public class ReplyLab {
         }
 
         return sReplyLab;
+    }
+
+    public boolean hasUnreachableUpdate() {
+        return unreachableUpdate;
+    }
+
+    public void setUnreachableUpdate(boolean unreachableUpdate) {
+        this.unreachableUpdate = unreachableUpdate;
     }
 
     public Reply get(UUID id) {
