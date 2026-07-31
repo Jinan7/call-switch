@@ -82,7 +82,7 @@ public class ContactQueryHandler extends AsyncQueryHandler {
             return;
         }
 
-        mCallbacks = callbacks;
+        if (callbacks != null) mCallbacks = callbacks;
 
         if (queryState != State.IDLE) return;
 
@@ -182,23 +182,34 @@ public class ContactQueryHandler extends AsyncQueryHandler {
             Callbacks callbacks = mCallbacks.get();
 
             if (last) {
-                queryState = State.FETCHED;
-
                 DeletedContactSettings settings = SettingsPreferences.getDeletedContactSettings(mContext);
                 //make asynchronous
                 //deleted all contacts that have been deleted from phone book if settings say so
                 if (settings == DeletedContactSettings.DELETE) ContactLab.getInstance(mContext).removeDeleted();
 
-                if (callbacks != null) {
+                synchronized (this) {
+                    queryState = State.FETCHED;
 
-                    callbacks.onQueryComplete();
+                    if (callbacks != null) {
+
+                        callbacks.onQueryComplete();
+                    }
                 }
+
             }
 
 
         } finally {
             if (cursor != null) cursor.close();
         }
+    }
+
+    public WeakReference<Callbacks> getCallbacks() {
+        return mCallbacks;
+    }
+
+    public void setCallbacks(WeakReference<Callbacks> callbacks) {
+        mCallbacks = callbacks;
     }
 
     public interface Callbacks {

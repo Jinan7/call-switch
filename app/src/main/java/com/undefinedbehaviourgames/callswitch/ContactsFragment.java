@@ -1,6 +1,9 @@
 package com.undefinedbehaviourgames.callswitch;
 
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.GradientDrawable;
@@ -37,10 +40,22 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     private ExecutorService mExecutorService;
     private BottomNavigationView mBottomNavigationView;
 
+    boolean fetch_initiated = false;
+    boolean fetch_complete = false;
+    private List<Contact> mContactList;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mExecutorService = Executors.newSingleThreadExecutor();
+
+        if (ContactQueryHandler.getInstance(getContext()).getQueryState() == State.FETCHED) {
+            fetch_initiated = true;
+            getContactsAsync();
+        } else {
+            WeakReference<ContactQueryHandler.Callbacks> callbacksWeakReference = new WeakReference<>(ContactsFragment.this);
+            ContactQueryHandler.getInstance(getContext()).setCallbacks(callbacksWeakReference);
+        }
     }
 
     public static ContactsFragment newInstance() {
@@ -99,7 +114,9 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
                 startActivity(intent);
             }
         });
-
+        if (!fetch_complete) {
+            mUnknownContactView.setVisibility(INVISIBLE);
+        }
         updateUnknownContactViewUI();
         return v;
     }
@@ -117,17 +134,9 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     @Override
     public void onResume() {
         super.onResume();
-        if (ContactQueryHandler.getInstance(getContext()).getQueryState() != State.FETCHED) {
-            ContactQueryHandler contactQueryHandler = ContactQueryHandler.getInstance(getContext());
-            WeakReference<ContactQueryHandler.Callbacks> callbacksWeakReference = new WeakReference<>(ContactsFragment.this);
-            Executors.newSingleThreadExecutor().execute(new Runnable() {
-                @Override
-                public void run() {
-                    contactQueryHandler.startQuery(callbacksWeakReference);
-                }
-            });
-        } else if (ContactQueryHandler.getInstance(getContext()).getQueryState() == State.FETCHED) {
-            getContactsAsync();
+        if (fetch_complete) {
+            mUnknownContactView.setVisibility(VISIBLE);
+            mRecyclerView.setAdapter(new ContactAdapter(mContactList));
         }
     }
 
@@ -144,18 +153,23 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
 
     @Override
     public void onGetSingleContact(Contact contact) {
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((ContactAdapter)mRecyclerView.getAdapter()).add(contact);
-                mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() - 1);
-            }
-        });
     }
 
     @Override
     public void onGetAllContacts(List<Contact> contacts) {
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mRecyclerView != null) {
+                    mUnknownContactView.setVisibility(VISIBLE);
+                    mRecyclerView.setAdapter(new ContactAdapter(contacts));
+                } else {
+                    mContactList = contacts;
+                    fetch_complete = true;
+                }
+            }
+        });
 
     }
 
@@ -173,7 +187,6 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
 
     public void getContactsAsync() {
 
-        mRecyclerView.setAdapter(new ContactAdapter(new ArrayList<>()));
         WeakReference<ContactLabHelper.Callbacks<Contact>> callbacksWeakReference = new WeakReference<>(ContactsFragment.this);
         mExecutorService.execute(
                 new Runnable() {

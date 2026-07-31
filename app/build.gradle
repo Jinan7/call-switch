@@ -10,8 +10,8 @@ android {
         applicationId "com.undefinedbehaviourgames.callswitch"
         minSdk 24
         targetSdk 36
-        versionCode 3
-        versionName "1.0.1-alpha"
+        versionCode 4
+        versionName "1.0.2-alpha"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

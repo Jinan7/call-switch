@@ -200,9 +200,9 @@ public class ContactLabHelper<T extends Contact> {
                     if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
                     contacts.add(contact);
 
-                    if (callbacksWeakReference.get() != null) {
-                        callbacksWeakReference.get().onGetSingleContact(contact);
-                    }
+//                    if (callbacksWeakReference.get() != null) {
+//                        callbacksWeakReference.get().onGetSingleContact(contact);
+//                    }
                     cursor.moveToNext();
                 }
 

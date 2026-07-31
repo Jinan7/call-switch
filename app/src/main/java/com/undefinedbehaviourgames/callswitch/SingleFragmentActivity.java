@@ -15,10 +15,14 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     private static final String TAG = "SingleFragmentActivityLogger";
-
+    private ExecutorService mExecutor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +59,25 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             fm.beginTransaction().add(R.id.main, frag).commit();
         }
 
+        mExecutor = Executors.newSingleThreadExecutor();
 
+        if (ContactQueryHandler.getInstance(this).getQueryState() == State.IDLE) {
+            mExecutor.submit(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    ContactQueryHandler.getInstance(SingleFragmentActivity.this).startQuery(null);
+                    return null;
+                }
+            });
+        }
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mExecutor.shutdownNow();
     }
 
     public abstract Fragment createFragment();

@@ -51,6 +51,10 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
     private SearchView mSearchView;
     private CheckBox mSelectAllCheckBox;
     private ExecutorService mExecutorService;
+
+    boolean fetch_initiated = false;
+    boolean fetch_complete = false;
+    private List<SelectContact> mContactList;
     private final CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
@@ -78,6 +82,14 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
         mSelectContactLab = new SelectContactLab(getContext());
         mSelectContactLab.setPreviousSelectedContacts(mPrevSelectedContacts);
         mExecutorService = Executors.newSingleThreadExecutor();
+
+        if (ContactQueryHandler.getInstance(getContext()).getQueryState() == State.FETCHED) {
+            fetch_initiated = true;
+            getContactsAsync();
+        } else {
+            WeakReference<ContactQueryHandler.Callbacks> callbacksWeakReference = new WeakReference<>(SelectContactsFragment.this);
+            ContactQueryHandler.getInstance(getContext()).setCallbacks(callbacksWeakReference);
+        }
     }
 
     @Override
@@ -89,15 +101,9 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
     @Override
     public void onResume() {
         super.onResume();
-        WeakReference<ContactQueryHandler.Callbacks> callbacksWeakReference = new WeakReference<>(SelectContactsFragment.this);
-        ExecutorService executor =  Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                ContactQueryHandler.getInstance(getContext()).startQuery(callbacksWeakReference);
-            }
-        });
-
+        if (fetch_complete) {
+            mRecyclerView.setAdapter(new SelectContactAdapter(mContactList));
+        }
     }
 
     @Nullable
@@ -186,7 +192,6 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
 
     public void getContactsAsync() {
 
-        mRecyclerView.setAdapter(new SelectContactAdapter(new ArrayList<>()));
         WeakReference<ContactLabHelper.Callbacks<SelectContact>> callbacksWeakReference = new WeakReference<>(SelectContactsFragment.this);
         mExecutorService.execute(
                 new Runnable() {
@@ -218,9 +223,6 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
             }
         });
 
-//        getContactsAsync();
-//        ((SelectContactAdapter) mRecyclerView.getAdapter()).setContacts(mSelectContactLab.getContacts(false));
-//        mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
 
@@ -253,13 +255,13 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
 
     @Override
     public void onGetSingleContact(SelectContact contact) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((SelectContactAdapter)mRecyclerView.getAdapter()).add(contact);
-                mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() - 1);
-            }
-        });
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                ((SelectContactAdapter)mRecyclerView.getAdapter()).add(contact);
+//                mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() - 1);
+//            }
+//        });
     }
 
     @Override
@@ -268,6 +270,13 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
             @Override
             public void run() {
                 mSelectContactLab.setContacts(contacts);
+
+                if (mRecyclerView != null) {
+                    mRecyclerView.setAdapter(new SelectContactAdapter(contacts));
+                } else {
+                    mContactList = contacts;
+                    fetch_complete = true;
+                }
             }
         });
         mSelectAllCheckBox.setEnabled(true);
