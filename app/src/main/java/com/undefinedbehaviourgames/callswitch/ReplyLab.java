@@ -98,14 +98,12 @@ public class ReplyLab {
 
                     replies.add(cursor.getReply());
 
-                    if (callbacksWeakReference.get() != null) {
-                        callbacksWeakReference.get().ongetSingleReply(cursor.getReply());
-                    }
                     cursor.moveToNext();
                 }
 
+                List<Reply> repliesImage = new ArrayList<>(replies);
                 if (callbacksWeakReference.get() != null) {
-                    callbacksWeakReference.get().onGetAllReplies();
+                    callbacksWeakReference.get().onGetAllReplies(repliesImage);
                 }
             } finally {
                 cursor.close();
@@ -129,14 +127,12 @@ public class ReplyLab {
 
                     replies.add(cursor.getReply());
 
-                    if ( !future.isCancelled() && callbacksWeakReference.get() != null) {
-                        callbacksWeakReference.get().ongetSingleReply(cursor.getReply());
-                    }
                     cursor.moveToNext();
                 }
 
+                List<Reply> repliesImage = new ArrayList<>(replies);
                 if (!future.isCancelled() && callbacksWeakReference.get() != null) {
-                    callbacksWeakReference.get().onGetAllReplies();
+                    callbacksWeakReference.get().onGetAllReplies(repliesImage);
                 }
             } finally {
                 cursor.close();
@@ -321,7 +317,7 @@ public class ReplyLab {
 
     public interface Callbacks {
         void ongetSingleReply(Reply reply);
-        void onGetAllReplies();
+        void onGetAllReplies(List<Reply> replies);
         void onUpdateReplies(List<Reply> replies);
         void onUpdateReply(int index);
     }

@@ -39,6 +39,8 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
     private ExecutorService mExecutorService;
     private ExecutorService mReplyExecutorService;
     private Future<Object> mGetRepliesFuture;
+    private boolean fetch_complete = false;
+    private List<Reply> mReplies;
     private final CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
@@ -58,6 +60,7 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
         super.onCreate(savedInstanceState);
         mExecutorService = Executors.newSingleThreadExecutor();
         mReplyExecutorService = Executors.newSingleThreadExecutor();
+        getRepliesAsync();
     }
 
     @Nullable
@@ -97,14 +100,17 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
     @Override
     public void onResume() {
         super.onResume();
-        getRepliesAsync();
+
+        if (fetch_complete) {
+            mToggleAllReplies.setEnabled(true);
+            mRecyclerView.setAdapter(new RepliesAdapter(mReplies));
+        }
     }
 
     private void getRepliesAsync() {
         if (mGetRepliesFuture != null) {
             mGetRepliesFuture.cancel(true);
         }
-        mRecyclerView.setAdapter(new RepliesAdapter(new ArrayList<>()));
         WeakReference<ReplyLab.Callbacks> callbacksWeakReference = new WeakReference<>(RepliesFragment.this);
         mGetRepliesFuture = mExecutorService.submit(new Callable<Object>() {
             @Override
@@ -129,11 +135,19 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
     }
 
     @Override
-    public void onGetAllReplies() {
+    public void onGetAllReplies(List<Reply> replies) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mToggleAllReplies.setEnabled(true);
+                if (mToggleAllReplies != null && mRecyclerView != null) {
+                    mToggleAllReplies.setEnabled(true);
+
+                    mRecyclerView.setAdapter(new RepliesAdapter(replies));
+                } else {
+                    fetch_complete = true;
+                    mReplies = replies;
+                }
+
             }
         });
 
