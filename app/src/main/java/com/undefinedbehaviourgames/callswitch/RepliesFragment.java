@@ -298,6 +298,7 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
 
         @Override
         public void onClick(View v) {
+            if (ReplyLab.getInstance(getContext()).get(mReply.getId()) == null) return;
             Intent intent = EditReplyActivity.newIntent(getContext(), EditReplyActivity.EDIT_REPLY, mReply.getId(), getBindingAdapterPosition());
             mLauncher.launch(intent);
         }
