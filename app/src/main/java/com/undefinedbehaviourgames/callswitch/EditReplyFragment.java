@@ -77,6 +77,8 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
     private MaterialSwitch mReplyUnknownSwitch;
     private MaterialSwitch mReplaceEqualPrioritySwitch;
     private ExecutorService mExecutorService;
+    private boolean fetch_complete = false;
+    private List<Contact> mContacts;
     ActivityResultLauncher<Intent> mLauncher;
     private Reply mReply;
     public static EditReplyFragment newInstance(int mode) {
@@ -134,6 +136,7 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
         });
 
         mExecutorService = Executors.newSingleThreadExecutor();
+        getReplyToListAsync();
     }
 
     @Override
@@ -205,7 +208,6 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
         });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new ContactAdapter(new ArrayList<>()));
-        getReplyToListAsync();
         mReplyTextField = v.findViewById(R.id.reply_text_field);
         mReplyTextField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -286,6 +288,14 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (fetch_complete) {
+            mRecyclerView.setAdapter(new ContactAdapter(mContacts));
+        }
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -310,7 +320,6 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
     private void getReplyToListAsync() {
         WeakReference<Reply.Callbacks> callbacksWeakReference = new WeakReference<>(EditReplyFragment.this);
         Context context = getContext().getApplicationContext();
-        ((ContactAdapter) mRecyclerView.getAdapter()).setContacts(new ArrayList<>());
         mExecutorService.execute(new Runnable() {
             @Override
             public void run() {
@@ -321,14 +330,22 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
 
     @Override
     public void onGetSingleContact(Contact contact) {
+
+    }
+
+    @Override
+    public void onGetAllContacts(List<Contact> contacts) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((ContactAdapter) mRecyclerView.getAdapter()).add(contact);
-                mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() -1);
+                if (mRecyclerView != null) {
+                    mRecyclerView.setAdapter(new ContactAdapter(contacts));
+                } else {
+                    fetch_complete = true;
+                    mContacts = contacts;
+                }
             }
         });
-
     }
 
     private class ContactHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

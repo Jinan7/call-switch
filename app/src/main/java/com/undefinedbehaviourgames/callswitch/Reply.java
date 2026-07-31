@@ -86,14 +86,14 @@ public class Reply {
             //remove the contact from reply to list
             if (contact != null) {
                 replyToList.add(contact);
-                if (callbacksWeakReference.get() != null) {
-                    callbacksWeakReference.get().onGetSingleContact(contact);
-                }
             }
-
 
         }
 
+        List<Contact> replyToListImage = new ArrayList<>(replyToList);
+        if (callbacksWeakReference.get() != null) {
+            callbacksWeakReference.get().onGetAllContacts(replyToListImage);
+        }
         return replyToList;
     }
     public void setReplyToList(List<String> replyToList) {
@@ -156,5 +156,6 @@ public class Reply {
 
     public interface  Callbacks {
         void onGetSingleContact(Contact contact);
+        void onGetAllContacts(List<Contact> contacts);
     }
 }
