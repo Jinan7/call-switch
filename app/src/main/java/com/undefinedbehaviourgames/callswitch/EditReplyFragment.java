@@ -12,6 +12,7 @@ import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY
 import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_INDEX;
 import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_UPDATED;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.app.role.RoleManager;
 import android.content.Context;
@@ -29,6 +30,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -53,6 +56,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -77,6 +81,7 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
     private RecyclerView mRecyclerView;
     private MaterialToolbar mToolbar;
     private TextInputEditText mReplyTextField;
+    private TextInputLayout mReplyTextInputLayout;
     private LinearLayout mPriorityButton;
     private TextView mPriorityTextView;
     private MaterialSwitch mEnableSwitch;
@@ -229,7 +234,9 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
         });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new ContactAdapter(new ArrayList<>()));
+        mReplyTextInputLayout = v.findViewById(R.id.reply_text_input_layout);
         mReplyTextField = v.findViewById(R.id.reply_text_field);
+
         mReplyTextField.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
@@ -316,6 +323,8 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
         }
     }
 
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -361,6 +370,16 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
             public void run() {
                 if (mRecyclerView != null) {
                     mRecyclerView.setAdapter(new ContactAdapter(contacts));
+                    mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                        @Override
+                        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                            mRecyclerView.removeOnLayoutChangeListener(this);
+                            if (mReplyTextInputLayout != null) {
+                                mReplyTextInputLayout.setHintAnimationEnabled(true);
+
+                            }
+                        }
+                    });
                 } else {
                     fetch_complete = true;
                     mContacts = contacts;
