@@ -4,16 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.telecom.Call;
 
 import com.google.gson.Gson;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import database.DBOpenHelper;
@@ -73,6 +70,33 @@ public class ReplyLab {
                 cursor.close();
             }
 
+            return reply;
+        }
+
+    }
+
+    public Reply get(UUID id, WeakReference<Callbacks> callbacksWeakReference, GET_REPLY_REASON_CODE reasonCode, int index) {
+
+        synchronized (ReplyLab.this) {
+            if (id == null) return null;
+            ReplyCursorWrapper cursor = queryDatabase( Cols.uuid + " = ?", new String []  { id.toString() });
+            Reply reply;
+            try {
+                if (cursor.getCount() != 0)
+                {
+                    cursor.moveToFirst();
+                    reply = cursor.getReply();
+                } else {
+                    reply = null;
+                }
+
+            } finally {
+                cursor.close();
+            }
+
+            if (callbacksWeakReference.get() != null) {
+                callbacksWeakReference.get().onGetSingleReply(reply, reasonCode, index);
+            }
             return reply;
         }
 
@@ -209,7 +233,6 @@ public class ReplyLab {
 
         synchronized (ReplyLab.this) {
             List<Contact> prevReplyToList = get(reply.getId()).getReplyToList(context);
-            boolean prevReplyUnknown = get(reply.getId()).replyUnknown();
 
             ContentValues values = getContentValues(reply);
             mDatabase.update(Schema.Reply.name, values, Cols.uuid + " = ?", new String[] {reply.getId().toString()});
@@ -326,7 +349,7 @@ public class ReplyLab {
     }
 
     public interface Callbacks {
-        void ongetSingleReply(Reply reply);
+        void onGetSingleReply(Reply reply, GET_REPLY_REASON_CODE reasonCode, int index);
         void onGetAllReplies(List<Reply> replies);
         void onUpdateReplies(List<Reply> replies);
         void onUpdateReply(int index);

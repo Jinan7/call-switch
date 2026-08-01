@@ -176,33 +176,31 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
 
                 if (item.getItemId() == R.id.menu_save_reply) {
 
-                    switch (mode) {
-                        case NEW_REPLY:
-                            Intent newReplyIntent = new Intent();
-                            newReplyIntent.putExtra(EXTRA_REPLY_ADDED, mReply.getId());
-                            getActivity().setResult(RESULT_OK, newReplyIntent);
-                            mExecutorService.execute(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ReplyLab.getInstance(getContext()).add(getContext(), mReply);
-                                }
-                            });
-                            break;
-                        case EDIT_REPLY:
-                            Intent editReplyIntent = new Intent();
-                            editReplyIntent.putExtra(EXTRA_REPLY_UPDATED, mReply.getId());
-                            editReplyIntent.putExtra(EXTRA_REPLY_INDEX, replyIndex);
-                            getActivity().setResult(RESULT_OK, editReplyIntent);
+                    if (mode == NEW_REPLY) {
 
-                            mExecutorService.execute(new Runnable() {
+                        Intent newReplyIntent = new Intent();
+                        newReplyIntent.putExtra(EXTRA_REPLY_ADDED, mReply.getId());
+                        getActivity().setResult(RESULT_OK, newReplyIntent);
+                        mExecutorService.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                ReplyLab.getInstance(getContext()).add(getContext(), mReply);
+                            }
+                        });
+                    } else if (mode == EDIT_REPLY) {
 
-                                @Override
-                                public void run() {
-                                    ReplyLab.getInstance(getContext()).update(getContext(), mReply);
-                                }
-                            });
-                            break;
+                        Intent editReplyIntent = new Intent();
+                        editReplyIntent.putExtra(EXTRA_REPLY_UPDATED, mReply.getId());
+                        editReplyIntent.putExtra(EXTRA_REPLY_INDEX, replyIndex);
+                        getActivity().setResult(RESULT_OK, editReplyIntent);
 
+                        mExecutorService.execute(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                ReplyLab.getInstance(getContext()).update(getContext(), mReply);
+                            }
+                        });
                     }
 
                     getActivity().finish();
@@ -212,8 +210,14 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
                     deleteReplyIntent.putExtra(EXTRA_REPLY_DELETED, mReply.getId());
                     deleteReplyIntent.putExtra(EXTRA_REPLY_INDEX, replyIndex);
                     getActivity().setResult(RESULT_OK, deleteReplyIntent);
-                    ReplyLab.getInstance(getContext()).delete(getContext(), mReply);
+                    mExecutorService.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            ReplyLab.getInstance(getContext()).delete(getContext(), mReply);
+                        }
+                    });
                     getActivity().finish();
+                    return true;
                 }
                 return false;
             }

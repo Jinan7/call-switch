@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,13 +19,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.materialswitch.MaterialSwitch;
-import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -86,16 +83,12 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
 
                     UUID updatedReplyId = (UUID)data.getSerializableExtra(EXTRA_REPLY_UPDATED);
                     if (updatedReplyId != null) {
-                        Reply updatedReply = ReplyLab.getInstance(getContext()).get(updatedReplyId);
-                        if (index != -1 ) {
-                            ((RepliesAdapter)mRecyclerView.getAdapter()).updateReply(index, updatedReply);
-                        }
+                        getReplyAsync(updatedReplyId, GET_REPLY_REASON_CODE.UPDATE, index);
                     }
 
                     UUID newReplyId = (UUID) data.getSerializableExtra(EXTRA_REPLY_ADDED);
                     if (newReplyId != null) {
-                        Reply newReply = ReplyLab.getInstance(getContext()).get(newReplyId);
-                        ((RepliesAdapter)mRecyclerView.getAdapter()).addReply(newReply);
+                        getReplyAsync(newReplyId, GET_REPLY_REASON_CODE.ADD, index);
                     }
 
                     UUID deletedReplyId = (UUID)data.getSerializableExtra(EXTRA_REPLY_DELETED);
@@ -178,13 +171,39 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
 
     }
 
+    private void getReplyAsync(UUID id, GET_REPLY_REASON_CODE reasonCode, int index) {
+        WeakReference<ReplyLab.Callbacks> callbacksWeakReference = new WeakReference<>(RepliesFragment.this);
+
+        mExecutorService.submit(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                ReplyLab.getInstance(getContext()).get(id, callbacksWeakReference, reasonCode, index);
+                return null;
+            }
+        });
+
+    }
+
     @Override
-    public void ongetSingleReply(Reply reply) {
+    public void onGetSingleReply(Reply reply, GET_REPLY_REASON_CODE reasonCode, int index) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((RepliesAdapter) mRecyclerView.getAdapter()).add(reply);
-                mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() - 1);
+
+                switch (reasonCode) {
+                    case UPDATE:
+                        if (index != -1 ) {
+                            ((RepliesAdapter)mRecyclerView.getAdapter()).updateReply(index, reply);
+                        }
+                        break;
+                    case ADD:
+                        ((RepliesAdapter)mRecyclerView.getAdapter()).addReply(reply);
+                        break;
+                    default:
+                        ((RepliesAdapter) mRecyclerView.getAdapter()).add(reply);
+                        mRecyclerView.getAdapter().notifyItemInserted(mRecyclerView.getAdapter().getItemCount() - 1);
+                }
+
             }
         });
     }
