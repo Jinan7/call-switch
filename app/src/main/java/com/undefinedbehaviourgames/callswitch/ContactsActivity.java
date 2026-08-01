@@ -23,9 +23,7 @@ public class ContactsActivity extends SingleFragmentActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String [] {Manifest.permission.READ_CONTACTS}, READ_CONTACT_REQUEST_CODE);
-        }
+
     }
 
     @Override
@@ -33,20 +31,5 @@ public class ContactsActivity extends SingleFragmentActivity{
         return ContactsFragment.newInstance();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults, int deviceId) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId);
 
-        switch (requestCode) {
-            case  READ_CONTACT_REQUEST_CODE:
-
-                FragmentManager fm = getSupportFragmentManager();
-
-                ContactsFragment fragment = (ContactsFragment) fm.findFragmentById(R.id.main);
-
-                if (fragment != null) {
-                    fragment.onRequestPermissionsResult(READ_CONTACT_REQUEST_CODE, permissions, grantResults);
-                }
-        }
-    }
 }

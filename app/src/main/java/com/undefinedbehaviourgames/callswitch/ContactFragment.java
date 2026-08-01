@@ -1,5 +1,7 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import static com.undefinedbehaviourgames.callswitch.ContactsFragment.EXTRA_CONTACT_DELETED;
+import static com.undefinedbehaviourgames.callswitch.ContactsFragment.EXTRA_CONTACT_INDEX;
 import static com.undefinedbehaviourgames.callswitch.Priority.HIGH;
 import static com.undefinedbehaviourgames.callswitch.Priority.LOW;
 import static com.undefinedbehaviourgames.callswitch.Priority.NORMAL;
@@ -7,6 +9,7 @@ import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY
 import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_INDEX;
 import static com.undefinedbehaviourgames.callswitch.RepliesFragment.EXTRA_REPLY_UPDATED;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Insets;
 import android.graphics.drawable.GradientDrawable;
@@ -54,7 +57,9 @@ import java.util.concurrent.Executors;
 public class ContactFragment extends Fragment implements Contact.CallBacks {
     private static final String TAG = "ContactFragmentLogger";
     private static final String ARG_LOOKUPKEY = "contact_id";
+    private static final String ARG_CONTACT_INDEX = "contact_index";
     public static final String EXTRA_UPDATE_ACTIVE_REPLY = "com.undefinedbehaviourgames.callswitch.update_active_reply";
+    private int contactIndex = -1;
     private MaterialToolbar mToolbar;
     private TextView mContactIconTextView;
     private TextView mContactNameTextView;
@@ -71,10 +76,11 @@ public class ContactFragment extends Fragment implements Contact.CallBacks {
 
     ActivityResultLauncher<Intent> mLauncher;
 
-    public static ContactFragment newInstance(String lookupkey) {
+    public static ContactFragment newInstance(String lookupkey, int contactIndex) {
         ContactFragment fragment = new ContactFragment();
         Bundle args = new Bundle();
         args.putString(ARG_LOOKUPKEY, lookupkey);
+        args.putInt(ARG_CONTACT_INDEX, contactIndex);
         fragment.setArguments(args);
         return fragment;
     }
@@ -123,6 +129,7 @@ public class ContactFragment extends Fragment implements Contact.CallBacks {
 
         if (getArguments() != null) {
             String contactLookup = getArguments().getString(ARG_LOOKUPKEY);
+            contactIndex = getArguments().getInt(ARG_CONTACT_INDEX);
             mContact = ContactLab.getInstance(getContext()).get(contactLookup);
             unknownContact = false;
         } else {
@@ -157,6 +164,11 @@ public class ContactFragment extends Fragment implements Contact.CallBacks {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.contact_menu_delete) {
+
+                    Intent intent = new Intent();
+                    intent.putExtra(EXTRA_CONTACT_INDEX, contactIndex);
+                    intent.putExtra(EXTRA_CONTACT_DELETED, mContact.getLookupKey());
+                    getActivity().setResult(Activity.RESULT_OK, intent);
                     mExecutorService.execute(new Runnable() {
                         @Override
                         public void run() {

@@ -16,6 +16,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
@@ -33,6 +37,8 @@ import java.util.concurrent.Executors;
 
 public class ContactsFragment extends BottomNavBarFragment implements ContactQueryHandler.Callbacks, ContactLabHelper.Callbacks<Contact>, ContactLabHelper.SearchCallbacks<Contact>{
 
+    public static final String EXTRA_CONTACT_DELETED = "com.undefinedbehaviourgames.callswitch.contact_deleted";
+    public static final String EXTRA_CONTACT_INDEX = "com.undefinedbehaviourgames.callswitch.contact_index";
     private RecyclerView mRecyclerView;
     private RecyclerView mSearchResultRecyclerView;
     private SearchView mSearchView;
@@ -43,6 +49,8 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
     boolean fetch_initiated = false;
     boolean fetch_complete = false;
     private List<Contact> mContactList;
+
+    private ActivityResultLauncher<Intent> mLauncher;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,6 +64,29 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
             WeakReference<ContactQueryHandler.Callbacks> callbacksWeakReference = new WeakReference<>(ContactsFragment.this);
             ContactQueryHandler.getInstance(getContext()).setCallbacks(callbacksWeakReference);
         }
+
+        mLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+
+                Intent data = result.getData();
+
+                if (data != null) {
+
+                    int index = data.getIntExtra(EXTRA_CONTACT_INDEX, -1);
+
+                    String lookupKey = data.getStringExtra(EXTRA_CONTACT_DELETED);
+
+                    if (lookupKey != null) {
+
+                        if (index != -1) {
+                            ((ContactAdapter) mRecyclerView.getAdapter()).delete(index, lookupKey);
+                        }
+                    }
+
+                }
+            }
+        });
     }
 
     public static ContactsFragment newInstance() {
@@ -263,8 +294,8 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
 
         @Override
         public void onClick(View v) {
-            Intent intent = ContactActivity.newIntent(getContext(), mContact.getLookupKey());
-            startActivity(intent);
+            Intent intent = ContactActivity.newIntent(getContext(), mContact.getLookupKey(), getBindingAdapterPosition());
+            mLauncher.launch(intent);
         }
     }
 
@@ -299,6 +330,16 @@ public class ContactsFragment extends BottomNavBarFragment implements ContactQue
         }
         public void add(Contact contact) {
             if (mContacts != null) mContacts.add(contact);
+        }
+
+        public void delete(int position, String lookupKey) {
+            if (mContacts == null) return;
+            if (position >= mContacts.size()) return;
+
+            if (lookupKey.equals(mContacts.get(position).getLookupKey())) {
+                mContacts.remove(position);
+                notifyItemRemoved(position);
+            }
         }
     }
 }

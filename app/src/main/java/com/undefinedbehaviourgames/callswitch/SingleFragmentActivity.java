@@ -1,11 +1,16 @@
 package com.undefinedbehaviourgames.callswitch;
 
+import static com.undefinedbehaviourgames.callswitch.ContactsActivity.READ_CONTACT_REQUEST_CODE;
+
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
@@ -61,15 +66,13 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
         mExecutor = Executors.newSingleThreadExecutor();
 
-        if (ContactQueryHandler.getInstance(this).getQueryState() == State.IDLE) {
-            mExecutor.submit(new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    ContactQueryHandler.getInstance(SingleFragmentActivity.this).startQuery(null);
-                    return null;
-                }
-            });
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String [] {Manifest.permission.READ_CONTACTS}, READ_CONTACT_REQUEST_CODE);
+        } else {
+            queryContacts();
         }
+
+
 
 
     }
@@ -80,5 +83,27 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         mExecutor.shutdownNow();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults, int deviceId) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId);
+
+        switch (requestCode) {
+            case  READ_CONTACT_REQUEST_CODE:
+                queryContacts();
+
+        }
+    }
+
+    private void queryContacts() {
+        if (ContactQueryHandler.getInstance(this).getQueryState() == State.IDLE) {
+            mExecutor.submit(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    ContactQueryHandler.getInstance(SingleFragmentActivity.this).startQuery(null);
+                    return null;
+                }
+            });
+        }
+    }
     public abstract Fragment createFragment();
 }
