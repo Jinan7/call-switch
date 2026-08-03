@@ -57,6 +57,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -75,8 +76,11 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
     private static final String ARGS_REPLY_IDX = "reply_index";
     private static final int SELECT_CONTACT_REQUEST_CODE = 0;
     public static final String EXTRA_SELECTED_CONTACTS = "com.undefinedbehaviourgames.callswitch.selected_contacts";
+    public static final String STATE_PRIORITY = "priority";
+    public static final String STATE_REPLY_TO_LIST = "replyToList";
     private int mode;
     private int replyIndex;
+    private Priority mReplyPriority;
     private ImageButton mAddContactButton;
     private RecyclerView mRecyclerView;
     private MaterialToolbar mToolbar;
@@ -92,6 +96,7 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
     private List<Contact> mContacts;
     ActivityResultLauncher<Intent> mLauncher;
     private Reply mReply;
+
     public static EditReplyFragment newInstance(int mode, int replyIdx) {
         EditReplyFragment fragment = new EditReplyFragment();
         Bundle args = new Bundle();
@@ -112,6 +117,7 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -123,6 +129,13 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
             mReply = ReplyLab.getInstance(getContext()).get(id);
         } else {
             mReply = new Reply();
+        }
+
+        if (savedInstanceState != null) {
+            mReplyPriority = (Priority) savedInstanceState.getSerializable(STATE_PRIORITY);
+            if (mReplyPriority != null) mReply.setPriority(mReplyPriority);
+            ArrayList<String> outReplyToList = (ArrayList<String>) savedInstanceState.getSerializable(STATE_REPLY_TO_LIST);
+            if (outReplyToList != null) mReply.setReplyToList(outReplyToList);
         }
 
 
@@ -151,6 +164,16 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
         mExecutorService = Executors.newSingleThreadExecutor();
         getReplyToListAsync();
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        String replyToJsonString = new Gson().toJson(mReply.getReplyToList());
+        outState.putSerializable(STATE_PRIORITY, mReplyPriority);
+        outState.putSerializable(STATE_REPLY_TO_LIST, (ArrayList<String>)mReply.getReplyToList());
+    }
+
 
     @Override
     public void onDestroy() {
@@ -339,6 +362,7 @@ public class EditReplyFragment extends Fragment implements  Reply.Callbacks {
             case PRIORITY_REQUEST_CODE:
                 if (data != null) {
                     Priority priority = (Priority) data.getSerializableExtra(EXTRA_PRIORITY);
+                    mReplyPriority = priority;
                     mReply.setPriority(priority);
                     updateUI();
                 }
