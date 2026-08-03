@@ -332,6 +332,7 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
 
         @Override
         public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+            if (mSetEnableAllFuture != null ) mSetEnableAllFuture.cancel(true);
             mReply.setEnabled(isChecked);
             updateReplyAsync();
             if (!isChecked) {
