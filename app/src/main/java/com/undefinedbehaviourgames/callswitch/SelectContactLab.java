@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import database.ContactCursorWrapper;
@@ -14,10 +15,13 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
 
     private List<Contact> mPreviousSelectedContacts;
     private List<SelectContact> mContacts;
+
+    private HashSet<String> mSelectContactsSet;
     public SelectContactLab(Context context) {
         super(context, SelectContact.class);
-        mPreviousSelectedContacts = new ArrayList<>();
+//        mPreviousSelectedContacts = new ArrayList<>();
         mContacts = new ArrayList<>();
+        mSelectContactsSet = new HashSet<>();
     }
 
 
@@ -33,6 +37,16 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
             return selectedContacts;
         }
 
+    }
+
+    public void setSelectedContactsSet(HashSet<String> selectContactsSet) {
+        mSelectContactsSet = selectContactsSet;
+    }
+
+    public HashSet<String> getSelectedContactsSet() {
+        synchronized (this) {
+            return mSelectContactsSet;
+        }
     }
 
     @Override
@@ -60,7 +74,7 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
                     //if not any contact that has not yet been fetched will be marked as deleted temporarily since
                     //it will not be in the list of contacts
                     if (ContactQueryHandler.getInstance(mContext).getQueryState() == State.FETCHED) contact.setDeleted(isDeleted(contact));
-                    contact.setChecked(isPreviousSelected(contact.getLookupKey()));
+                    contact.setChecked(isSelected(contact.getLookupKey()));
                     contacts.add(contact);
 
                     if (callbacksWeakReference.get() != null) {
@@ -127,36 +141,40 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
 
     public void setPreviousSelectedContacts(List<Contact> selectedContacts) {
         synchronized (this) {
-            mPreviousSelectedContacts = selectedContacts;
-        }
-
-    }
-
-    public boolean isPreviousSelected(String lookupkey) {
-        //make asynchronous
-        synchronized (this) {
-            for (Contact contact : mPreviousSelectedContacts) {
-                if (contact.getLookupKey().equals(lookupkey)) {
-                    return true;
-                }
+            for (Contact contact : selectedContacts) {
+                mSelectContactsSet.add(contact.getLookupKey());
             }
-
-            return false;
+//            mPreviousSelectedContacts = selectedContacts;
         }
 
     }
+
+//    public boolean isPreviousSelected(String lookupkey) {
+//        //make asynchronous
+//        synchronized (this) {
+//            for (Contact contact : mPreviousSelectedContacts) {
+//                if (contact.getLookupKey().equals(lookupkey)) {
+//                    return true;
+//                }
+//            }
+//
+//            return false;
+//        }
+//
+//    }
 
     public boolean isSelected(String lookupkey) {
         //make asynchronous
         synchronized (this) {
-            for (SelectContact contact : mContacts) {
-                if (contact.getLookupKey().equals(lookupkey)) {
-                    return contact.isChecked();
-                }
-            }
-
+            if (mSelectContactsSet.contains(lookupkey)) return true;
             return false;
         }
+
+        //            for (SelectContact contact : mContacts) {
+        //                if (contact.getLookupKey().equals(lookupkey)) {
+        //                    return contact.isChecked();
+        //                }
+        //            }
 
     }
 
@@ -165,6 +183,7 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
         synchronized (this) {
             for (SelectContact contact : mContacts) {
                 contact.setChecked(isChecked);
+                setSelectContact(contact.getLookupKey(), isChecked);
             }
 
             if (callbacksWeakReference.get() != null) {
@@ -172,10 +191,15 @@ public class SelectContactLab extends ContactLabHelper<SelectContact> {
             }
 
         }
-
-
     }
 
+    public void setSelectContact(String lookupKey, boolean isChecked) {
+        if (isChecked) {
+            mSelectContactsSet.add(lookupKey);
+        } else {
+            mSelectContactsSet.remove(lookupKey);
+        }
+    }
 
     public  void setContacts(List<SelectContact> contacts) {
         synchronized (this) {

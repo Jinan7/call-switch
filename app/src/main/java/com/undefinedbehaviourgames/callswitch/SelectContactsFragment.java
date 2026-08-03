@@ -33,6 +33,7 @@ import com.google.android.material.search.SearchView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -43,6 +44,7 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
     public static final String TAG = "SelectContactsFragmentLogger";
     private static final String ARGS_ID = "reply_id";
     private static final String ARGS_SELECTED_CONTACTS = "selected_contacts";
+    private static final String STATE_SELECTED_CONTACTS_SET = "previous_selected_contacts";
     private RecyclerView mRecyclerView;
     private RecyclerView mSearchResultRecyclerView;
     private SelectContactLab mSelectContactLab;
@@ -63,7 +65,7 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
     };
 
 
-    private List<Contact> mPrevSelectedContacts;
+
     public static SelectContactsFragment newInstance(UUID id, ArrayList<Contact> selectedContacts ) {
         SelectContactsFragment fragment = new SelectContactsFragment();
         Bundle args = new Bundle();
@@ -78,9 +80,20 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         UUID id = (UUID) getArguments().getSerializable(ARGS_ID);
-        mPrevSelectedContacts = (ArrayList<Contact>) getArguments().getSerializable(ARGS_SELECTED_CONTACTS);
+        List<Contact> prevSelectedContacts = (ArrayList<Contact>) getArguments().getSerializable(ARGS_SELECTED_CONTACTS);
         mSelectContactLab = new SelectContactLab(getContext());
-        mSelectContactLab.setPreviousSelectedContacts(mPrevSelectedContacts);
+
+        if (savedInstanceState != null) {
+            HashSet<String> outSelectedContactsSet = (HashSet<String>) savedInstanceState.getSerializable(STATE_SELECTED_CONTACTS_SET);
+            if (outSelectedContactsSet != null) {
+                mSelectContactLab.setSelectedContactsSet(outSelectedContactsSet);
+            }
+        } else {
+            mSelectContactLab.setPreviousSelectedContacts(prevSelectedContacts);
+        }
+
+
+
         mExecutorService = Executors.newSingleThreadExecutor();
 
         if (ContactQueryHandler.getInstance(getContext()).getQueryState() == State.FETCHED) {
@@ -90,6 +103,12 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
             WeakReference<ContactQueryHandler.Callbacks> callbacksWeakReference = new WeakReference<>(SelectContactsFragment.this);
             ContactQueryHandler.getInstance(getContext()).setCallbacks(callbacksWeakReference);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(STATE_SELECTED_CONTACTS_SET, mSelectContactLab.getSelectedContactsSet());
     }
 
     @Override
@@ -326,7 +345,7 @@ public class SelectContactsFragment extends Fragment implements ContactQueryHand
         @Override
         public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
             mSelectContact.setChecked(isChecked);
-
+            mSelectContactLab.setSelectContact(mSelectContact.getLookupKey(), isChecked);
             if (!isChecked) {
                 mSelectAllCheckBox.setOnCheckedChangeListener(null);
                 mSelectAllCheckBox.setChecked(false);
