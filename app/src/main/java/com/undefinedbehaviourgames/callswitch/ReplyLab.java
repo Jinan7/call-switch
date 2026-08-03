@@ -280,6 +280,76 @@ public class ReplyLab {
 
     }
 
+    public void update(Context context, Reply reply, WeakReference<Callbacks> callbacksWeakReference, int index) {
+
+        //this is a very brute force solution
+        //consider getting prevReplytoList and newReplytoList
+        //compare both list to get the contacts that have been removed and the contacts that have been newly added
+        //for removed contacts, call contact.removeReply;
+        //for added contacts, call contact.addReply();
+
+        //before update, get prev reply to list
+        //remove reply from all contacts in the list
+        //after update is successful
+        //and then add reply to all the contacts in new reply to list
+        //the reply argument reply to list cannot be used because it has already been tampered with
+        //so query database for the current state before update
+
+        synchronized (ReplyLab.this) {
+            List<Contact> prevReplyToList = get(reply.getId()).getReplyToList(context);
+
+            ContentValues values = getContentValues(reply);
+            mDatabase.update(Schema.Reply.name, values, Cols.uuid + " = ?", new String[] {reply.getId().toString()});
+
+            //if updated successfully, go through reply list and update active reply based on priority and only if reply is enabled
+            //make asynchronous
+            Reply updatedReply = get(reply.getId());
+
+
+
+            if (updatedReply != null) {
+                //first go through previous reply to list and remove reply from contacts in the list
+                for (Contact contact : prevReplyToList) {
+                    //remove the reply from contacts reply to list
+                    contact.removeReply(context, updatedReply);
+                    //update contact
+                    ContactLab.getInstance(context).update(contact);
+                }
+                List<Contact> replyToList = updatedReply.getReplyToList(context);
+                for (Contact contact : replyToList) {
+                    //add the new reply to the list of contact replies
+                    contact.addReply(updatedReply);
+                    //if reply was previously active or is enabled, then update active reply if necessary
+                    //if reply was previously active, it will be restored since the first remove reply for loop would
+                    //have made the contacts active reply to be null
+                    contact.updateActiveReply(context, updatedReply, updatedReply.replaceEqualPriority());
+                    //write to database
+                    ContactLab.getInstance(context).update(contact);
+                }
+
+                //update unknown contacts
+                Contact contact = ContactPreferences.getUnknownContact(context);
+
+                if (updatedReply.replyUnknown()) {
+                    contact.addReply(updatedReply);
+                    contact.updateActiveReply(context, updatedReply, updatedReply.replaceEqualPriority());
+
+                } else {
+                    contact.removeReply(context, updatedReply);
+                }
+
+                ContactPreferences.setUnknownContact(context, contact);
+
+                if (callbacksWeakReference.get() != null) {
+                    callbacksWeakReference.get().onGetSingleReply(reply, GET_REPLY_REASON_CODE.UPDATE, index);
+                }
+            }
+
+
+        }
+
+    }
+
     public void delete(Context context, Reply reply) {
 
         synchronized (ReplyLab.this) {
@@ -348,10 +418,33 @@ public class ReplyLab {
         }
     }
 
+    public void setEnabledAllReplies(Context context, boolean isChecked, WeakReference<Callbacks> callbacksWeakReference, Future<Object> future, int index) {
+
+        List<Reply> replies = getReplies();
+
+        int i = 0;
+        for (Reply reply : replies) {
+
+            if (future.isCancelled()) return;
+            reply.setEnabled(isChecked);
+            update(context, reply);
+
+            if (callbacksWeakReference.get() != null)  {
+                callbacksWeakReference.get().onUpdateReply(index, reply.getId());
+            }
+
+            i+=1;
+        }
+
+        if (callbacksWeakReference.get() != null) {
+            callbacksWeakReference.get().onUpdateReplies(replies);
+        }
+    }
+
     public interface Callbacks {
         void onGetSingleReply(Reply reply, GET_REPLY_REASON_CODE reasonCode, int index);
         void onGetAllReplies(List<Reply> replies);
         void onUpdateReplies(List<Reply> replies);
-        void onUpdateReply(int index);
+        void onUpdateReply(int index, UUID id);
     }
 }

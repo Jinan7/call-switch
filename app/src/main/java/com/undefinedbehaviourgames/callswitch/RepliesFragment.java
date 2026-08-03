@@ -49,6 +49,7 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
     private Future<Object> mGetRepliesFuture;
     private boolean fetch_complete = false;
     private List<Reply> mReplies;
+    private Future<Object> mSetEnableAllFuture;
 
     ActivityResultLauncher<Intent> mLauncher;
     private final CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
@@ -229,20 +230,24 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
 
     @Override
     public void onUpdateReplies(List<Reply> replies) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                getRepliesAsync();
-            }
-        });
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                getRepliesAsync();
+//            }
+//        });
     }
 
     @Override
-    public void onUpdateReply(int index) {
+    public void onUpdateReply(int index, UUID id) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (index < mRecyclerView.getAdapter().getItemCount()) mRecyclerView.getAdapter().notifyItemChanged(index);
+//                if (index < mRecyclerView.getAdapter().getItemCount()) mRecyclerView.getAdapter().notifyItemChanged(index);
+
+                if (index != -1) {
+                    getReplyAsync(id, GET_REPLY_REASON_CODE.UPDATE, index);
+                }
             }
         });
     }
@@ -254,10 +259,13 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
 
     private void setEnableAllRepliesAsync(boolean isChecked) {
         WeakReference<ReplyLab.Callbacks> callbacksWeakReference = new WeakReference<>(RepliesFragment.this);
-        mReplyExecutorService.execute(new Runnable() {
+        if (mSetEnableAllFuture != null) mSetEnableAllFuture.cancel(true);
+        mSetEnableAllFuture = mReplyExecutorService.submit(new Callable<Object>() {
+
             @Override
-            public void run() {
-                ReplyLab.getInstance(getContext()).setEnabledAllReplies(getContext(), isChecked, callbacksWeakReference);
+            public Object call() throws Exception {
+                ((RepliesAdapter) mRecyclerView.getAdapter()).setEnableAllAsync(callbacksWeakReference, mSetEnableAllFuture, isChecked);
+                return null;
             }
         });
     }
@@ -404,5 +412,23 @@ public class RepliesFragment extends BottomNavBarFragment implements ReplyLab.Ca
             mReplies.add(reply);
             notifyItemInserted(mReplies.size() - 1);
         }
+
+        public void setEnableAllAsync(WeakReference<ReplyLab.Callbacks> callbacksWeakReference, Future<Object> future, boolean isChecked) {
+
+            if (mReplies == null) return;
+
+            for (int i=0; i<mReplies.size(); i++) {
+
+                if (future.isCancelled()) return;
+
+                if (!(mReplies.get(i).isEnabled() == isChecked)) {
+                    mReplies.get(i).setEnabled(isChecked);
+                    ReplyLab.getInstance(getContext()).update(getContext(), mReplies.get(i), callbacksWeakReference, i);
+                }
+
+
+            }
+        }
+
     }
 }
